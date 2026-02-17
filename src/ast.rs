@@ -20,7 +20,7 @@ pub struct Node {
 }
 
 impl Node {
-    pub const ZERO: Self = Self {
+    pub const EMPTY: Self = Self {
         kind: NodeKind::Unknown,
         span: Span::ZERO,
     };
@@ -37,5 +37,7 @@ pub enum NodeKind {
     Comp(Box<Node>, CompKind, Box<Node>),
     Range(Box<Node>, RangeKind, Box<Node>),
     UnOp(UnOpKind, Box<Node>),
+    Int(i64),
+    Let(Box<Node>),
     Unknown,
 }

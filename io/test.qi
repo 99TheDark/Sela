@@ -1,0 +1,15 @@
+
+
+
+let u= &v
+
+
+let x = -10 + 5 * 3
+let b = true and false or !true
+let s = "-10 + 5 * 3 ≠ $(x + 3 | true as Int) btw. $5" // comment btw
+
+let a = b + c + // should parse as `let a = b + c + d - e`
+        d - e
+
+let q = m // should parse as `let q = m; -c`
+-c

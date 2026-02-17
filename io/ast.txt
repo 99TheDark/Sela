@@ -1,668 +1,189 @@
 [
 │ Node {
-│ │ kind: BinOp(
+│ │ kind: Let(
 │ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 0 (0:0) to 1 (0:1),
-│ │ │ },
-│ │ │ Sub,
-│ │ │ Node {
-│ │ │ │ kind: UnOp(
-│ │ │ │ │ Ref,
+│ │ │ │ kind: BinOp(
 │ │ │ │ │ Node {
-│ │ │ │ │ │ kind: UnOp(
-│ │ │ │ │ │ │ Not,
+│ │ │ │ │ │ kind: BinOp(
 │ │ │ │ │ │ │ Node {
-│ │ │ │ │ │ │ │ kind: Unknown,
-│ │ │ │ │ │ │ │ span: 4 (0:4) to 5 (0:5),
+│ │ │ │ │ │ │ │ kind: UnOp(
+│ │ │ │ │ │ │ │ │ Neg,
+│ │ │ │ │ │ │ │ │ Node {
+│ │ │ │ │ │ │ │ │ │ kind: Int(
+│ │ │ │ │ │ │ │ │ │ │ 10,
+│ │ │ │ │ │ │ │ │ │ ),
+│ │ │ │ │ │ │ │ │ │ span: 9 (0:9) to 11 (0:11),
+│ │ │ │ │ │ │ │ │ },
+│ │ │ │ │ │ │ │ ),
+│ │ │ │ │ │ │ │ span: 8 (0:8) to 9 (0:9),
+│ │ │ │ │ │ │ },
+│ │ │ │ │ │ │ Add,
+│ │ │ │ │ │ │ Node {
+│ │ │ │ │ │ │ │ kind: Int(
+│ │ │ │ │ │ │ │ │ 5,
+│ │ │ │ │ │ │ │ ),
+│ │ │ │ │ │ │ │ span: 14 (0:14) to 15 (0:15),
 │ │ │ │ │ │ │ },
 │ │ │ │ │ │ ),
-│ │ │ │ │ │ span: 3 (0:3) to 4 (0:4),
+│ │ │ │ │ │ span: 8 (0:8) to 15 (0:15),
+│ │ │ │ │ },
+│ │ │ │ │ Mul,
+│ │ │ │ │ Node {
+│ │ │ │ │ │ kind: Int(
+│ │ │ │ │ │ │ 3,
+│ │ │ │ │ │ ),
+│ │ │ │ │ │ span: 18 (0:18) to 19 (0:19),
 │ │ │ │ │ },
 │ │ │ │ ),
-│ │ │ │ span: 2 (0:2) to 3 (0:3),
+│ │ │ │ span: 8 (0:8) to 19 (0:19),
 │ │ │ },
 │ │ ),
-│ │ span: 0 (0:0) to 3 (0:3),
+│ │ span: 0 (0:0) to 19 (0:19),
+│ },
+│ Node {
+│ │ kind: Let(
+│ │ │ Node {
+│ │ │ │ kind: KwBinOp(
+│ │ │ │ │ Node {
+│ │ │ │ │ │ kind: Unknown,
+│ │ │ │ │ │ span: 28 (1:8) to 32 (1:12),
+│ │ │ │ │ },
+│ │ │ │ │ And,
+│ │ │ │ │ Node {
+│ │ │ │ │ │ kind: KwBinOp(
+│ │ │ │ │ │ │ Node {
+│ │ │ │ │ │ │ │ kind: Unknown,
+│ │ │ │ │ │ │ │ span: 37 (1:17) to 42 (1:22),
+│ │ │ │ │ │ │ },
+│ │ │ │ │ │ │ And,
+│ │ │ │ │ │ │ Node {
+│ │ │ │ │ │ │ │ kind: UnOp(
+│ │ │ │ │ │ │ │ │ Not,
+│ │ │ │ │ │ │ │ │ Node {
+│ │ │ │ │ │ │ │ │ │ kind: Unknown,
+│ │ │ │ │ │ │ │ │ │ span: 47 (1:27) to 51 (1:31),
+│ │ │ │ │ │ │ │ │ },
+│ │ │ │ │ │ │ │ ),
+│ │ │ │ │ │ │ │ span: 46 (1:26) to 47 (1:27),
+│ │ │ │ │ │ │ },
+│ │ │ │ │ │ ),
+│ │ │ │ │ │ span: 37 (1:17) to 47 (1:27),
+│ │ │ │ │ },
+│ │ │ │ ),
+│ │ │ │ span: 28 (1:8) to 47 (1:27),
+│ │ │ },
+│ │ ),
+│ │ span: 20 (1:0) to 47 (1:27),
+│ },
+│ Node {
+│ │ kind: Let(
+│ │ │ Node {
+│ │ │ │ kind: Unknown,
+│ │ │ │ span: 60 (2:8) to 76 (2:24),
+│ │ │ },
+│ │ ),
+│ │ span: 52 (2:0) to 76 (2:24),
 │ },
 │ Node {
 │ │ kind: Unknown,
-│ │ span: 5 (0:5) to 6 (1:0),
+│ │ span: 76 (2:24) to 77 (2:25),
 │ },
 │ Node {
 │ │ kind: Unknown,
-│ │ span: 6 (1:0) to 7 (2:0),
+│ │ span: 0 (0:0) to 0 (0:0),
 │ },
 │ Node {
 │ │ kind: Unknown,
-│ │ span: 7 (2:0) to 13 (2:6),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 13 (2:6) to 14 (2:7),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 14 (2:7) to 20 (2:13),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 20 (2:13) to 21 (2:14),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 21 (2:14) to 26 (2:19),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 26 (2:19) to 27 (2:20),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 27 (2:20) to 32 (2:25),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 32 (2:25) to 33 (2:26),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 33 (2:26) to 38 (2:31),
+│ │ span: 79 (2:27) to 80 (2:28),
 │ },
 │ Node {
 │ │ kind: BinOp(
 │ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 38 (2:31) to 39 (2:32),
-│ │ │ },
-│ │ │ Add,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 40 (2:33) to 41 (2:34),
-│ │ │ },
-│ │ ),
-│ │ span: 38 (2:31) to 41 (2:34),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 41 (2:34) to 49 (2:42),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 49 (2:42) to 50 (3:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 50 (3:0) to 51 (4:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 51 (4:0) to 54 (4:3),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 54 (4:3) to 55 (4:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 55 (4:4) to 58 (4:7),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 58 (4:7) to 59 (4:8),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 59 (4:8) to 60 (4:9),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 60 (4:9) to 61 (4:10),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 61 (4:10) to 62 (4:11),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 62 (4:11) to 63 (4:12),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 63 (4:12) to 64 (4:13),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 64 (4:13) to 65 (5:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 65 (5:0) to 68 (5:3),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 68 (5:3) to 69 (5:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 69 (5:4) to 70 (5:5),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 70 (5:5) to 71 (5:6),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 71 (5:6) to 72 (5:7),
-│ },
-│ Node {
-│ │ kind: BinOp(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 72 (5:7) to 73 (5:8),
-│ │ │ },
-│ │ │ Sub,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 74 (5:9) to 76 (5:11),
-│ │ │ },
-│ │ ),
-│ │ span: 72 (5:7) to 76 (5:11),
-│ },
-│ Node {
-│ │ kind: BinOp(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 76 (5:11) to 77 (5:12),
-│ │ │ },
-│ │ │ Add,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 78 (5:13) to 79 (5:14),
-│ │ │ },
-│ │ ),
-│ │ span: 76 (5:11) to 79 (5:14),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 79 (5:14) to 80 (5:15),
-│ },
-│ Node {
-│ │ kind: BinOp(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 80 (5:15) to 81 (5:16),
-│ │ │ },
-│ │ │ Mul,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 82 (5:17) to 83 (5:18),
-│ │ │ },
-│ │ ),
-│ │ span: 80 (5:15) to 83 (5:18),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 83 (5:18) to 84 (5:19),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 84 (5:19) to 85 (6:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 85 (6:0) to 88 (6:3),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 88 (6:3) to 89 (6:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 89 (6:4) to 90 (6:5),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 90 (6:5) to 91 (6:6),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 91 (6:6) to 92 (6:7),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 92 (6:7) to 93 (6:8),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 93 (6:8) to 97 (6:12),
-│ },
-│ Node {
-│ │ kind: KwBinOp(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 97 (6:12) to 98 (6:13),
-│ │ │ },
-│ │ │ And,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 101 (6:16) to 102 (6:17),
-│ │ │ },
-│ │ ),
-│ │ span: 97 (6:12) to 102 (6:17),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 102 (6:17) to 107 (6:22),
-│ },
-│ Node {
-│ │ kind: KwBinOp(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 107 (6:22) to 108 (6:23),
-│ │ │ },
-│ │ │ And,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 110 (6:25) to 111 (6:26),
-│ │ │ },
-│ │ ),
-│ │ span: 107 (6:22) to 111 (6:26),
-│ },
-│ Node {
-│ │ kind: UnOp(
-│ │ │ Not,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 112 (6:27) to 116 (6:31),
-│ │ │ },
-│ │ ),
-│ │ span: 111 (6:26) to 112 (6:27),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 116 (6:31) to 117 (7:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 117 (7:0) to 120 (7:3),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 120 (7:3) to 121 (7:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 121 (7:4) to 122 (7:5),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 122 (7:5) to 123 (7:6),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 123 (7:6) to 124 (7:7),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 124 (7:7) to 125 (7:8),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 125 (7:8) to 141 (7:24),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 141 (7:24) to 142 (7:25),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 142 (7:25) to 143 (7:26),
-│ },
-│ Node {
-│ │ kind: BinOp(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 143 (7:26) to 144 (7:27),
-│ │ │ },
-│ │ │ Add,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 145 (7:28) to 146 (7:29),
-│ │ │ },
-│ │ ),
-│ │ span: 143 (7:26) to 146 (7:29),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 146 (7:29) to 147 (7:30),
-│ },
-│ Node {
-│ │ kind: BinOp(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 147 (7:30) to 148 (7:31),
+│ │ │ │ kind: Int(
+│ │ │ │ │ 3,
+│ │ │ │ ),
+│ │ │ │ span: 81 (2:29) to 82 (2:30),
 │ │ │ },
 │ │ │ Or,
 │ │ │ Node {
 │ │ │ │ kind: Unknown,
-│ │ │ │ span: 149 (7:32) to 150 (7:33),
+│ │ │ │ span: 85 (2:33) to 89 (2:37),
 │ │ │ },
 │ │ ),
-│ │ span: 147 (7:30) to 150 (7:33),
+│ │ span: 81 (2:29) to 89 (2:37),
 │ },
 │ Node {
 │ │ kind: Unknown,
-│ │ span: 150 (7:33) to 154 (7:37),
+│ │ span: 0 (0:0) to 0 (0:0),
 │ },
 │ Node {
 │ │ kind: Unknown,
-│ │ span: 154 (7:37) to 155 (7:38),
+│ │ span: 0 (0:0) to 0 (0:0),
 │ },
 │ Node {
 │ │ kind: Unknown,
-│ │ span: 155 (7:38) to 157 (7:40),
+│ │ span: 96 (2:44) to 97 (2:45),
 │ },
 │ Node {
 │ │ kind: Unknown,
-│ │ span: 157 (7:40) to 158 (7:41),
+│ │ span: 97 (2:45) to 106 (2:54),
 │ },
 │ Node {
-│ │ kind: Unknown,
-│ │ span: 158 (7:41) to 161 (7:44),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 161 (7:44) to 162 (7:45),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 162 (7:45) to 171 (7:54),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 171 (7:54) to 172 (7:55),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 172 (7:55) to 186 (7:69),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 186 (7:69) to 187 (8:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 187 (8:0) to 190 (8:3),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 190 (8:3) to 191 (8:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 191 (8:4) to 195 (8:8),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 195 (8:8) to 196 (8:9),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 196 (8:9) to 197 (8:10),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 197 (8:10) to 198 (8:11),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 198 (8:11) to 201 (8:14),
-│ },
-│ Node {
-│ │ kind: BinOp(
+│ │ kind: Let(
 │ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 201 (8:14) to 202 (8:15),
-│ │ │ },
-│ │ │ Add,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 203 (8:16) to 204 (8:17),
+│ │ │ │ kind: BinOp(
+│ │ │ │ │ Node {
+│ │ │ │ │ │ kind: Unknown,
+│ │ │ │ │ │ span: 131 (4:8) to 132 (4:9),
+│ │ │ │ │ },
+│ │ │ │ │ Add,
+│ │ │ │ │ Node {
+│ │ │ │ │ │ kind: BinOp(
+│ │ │ │ │ │ │ Node {
+│ │ │ │ │ │ │ │ kind: Unknown,
+│ │ │ │ │ │ │ │ span: 135 (4:12) to 136 (4:13),
+│ │ │ │ │ │ │ },
+│ │ │ │ │ │ │ Add,
+│ │ │ │ │ │ │ Node {
+│ │ │ │ │ │ │ │ kind: BinOp(
+│ │ │ │ │ │ │ │ │ Node {
+│ │ │ │ │ │ │ │ │ │ kind: Unknown,
+│ │ │ │ │ │ │ │ │ │ span: 190 (5:8) to 191 (5:9),
+│ │ │ │ │ │ │ │ │ },
+│ │ │ │ │ │ │ │ │ Sub,
+│ │ │ │ │ │ │ │ │ Node {
+│ │ │ │ │ │ │ │ │ │ kind: Unknown,
+│ │ │ │ │ │ │ │ │ │ span: 194 (5:12) to 195 (5:13),
+│ │ │ │ │ │ │ │ │ },
+│ │ │ │ │ │ │ │ ),
+│ │ │ │ │ │ │ │ span: 190 (5:8) to 195 (5:13),
+│ │ │ │ │ │ │ },
+│ │ │ │ │ │ ),
+│ │ │ │ │ │ span: 135 (4:12) to 195 (5:13),
+│ │ │ │ │ },
+│ │ │ │ ),
+│ │ │ │ span: 131 (4:8) to 195 (5:13),
 │ │ │ },
 │ │ ),
-│ │ span: 201 (8:14) to 204 (8:17),
+│ │ span: 123 (4:0) to 195 (5:13),
 │ },
 │ Node {
-│ │ kind: Unknown,
-│ │ span: 204 (8:17) to 208 (8:21),
-│ },
-│ Node {
-│ │ kind: BinOp(
+│ │ kind: Let(
 │ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 208 (8:21) to 209 (8:22),
-│ │ │ },
-│ │ │ Sub,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 210 (8:23) to 211 (8:24),
-│ │ │ },
-│ │ ),
-│ │ span: 208 (8:21) to 211 (8:24),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 211 (8:24) to 213 (8:26),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 213 (8:26) to 214 (9:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 214 (9:0) to 215 (10:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 215 (10:0) to 216 (10:1),
-│ },
-│ Node {
-│ │ kind: BinOp(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 216 (10:1) to 217 (10:2),
-│ │ │ },
-│ │ │ Add,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 218 (10:3) to 219 (10:4),
+│ │ │ │ kind: BinOp(
+│ │ │ │ │ Node {
+│ │ │ │ │ │ kind: Unknown,
+│ │ │ │ │ │ span: 205 (7:8) to 206 (7:9),
+│ │ │ │ │ },
+│ │ │ │ │ Sub,
+│ │ │ │ │ Node {
+│ │ │ │ │ │ kind: Unknown,
+│ │ │ │ │ │ span: 243 (8:1) to 244 (8:2),
+│ │ │ │ │ },
+│ │ │ │ ),
+│ │ │ │ span: 205 (7:8) to 244 (8:2),
 │ │ │ },
 │ │ ),
-│ │ span: 216 (10:1) to 219 (10:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 219 (10:4) to 220 (10:5),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 220 (10:5) to 221 (10:6),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 221 (10:6) to 222 (11:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 222 (11:0) to 223 (12:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 223 (12:0) to 224 (12:1),
-│ },
-│ Node {
-│ │ kind: BinOp(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 224 (12:1) to 225 (12:2),
-│ │ │ },
-│ │ │ Mul,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 226 (12:3) to 227 (12:4),
-│ │ │ },
-│ │ ),
-│ │ span: 224 (12:1) to 227 (12:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 227 (12:4) to 228 (12:5),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 228 (12:5) to 239 (12:16),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 239 (12:16) to 240 (13:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 240 (13:0) to 241 (14:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 241 (14:0) to 244 (14:3),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 244 (14:3) to 245 (14:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 245 (14:4) to 248 (14:7),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 248 (14:7) to 249 (14:8),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 249 (14:8) to 251 (14:10),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 251 (14:10) to 252 (15:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 252 (15:0) to 256 (15:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 256 (15:4) to 257 (15:5),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 257 (15:5) to 258 (15:6),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 258 (15:6) to 261 (15:9),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 261 (15:9) to 262 (15:10),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 262 (15:10) to 263 (15:11),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 263 (15:11) to 264 (15:12),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 264 (15:12) to 266 (15:14),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 266 (15:14) to 267 (15:15),
-│ },
-│ Node {
-│ │ kind: Range(
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 267 (15:15) to 268 (15:16),
-│ │ │ },
-│ │ │ Excl,
-│ │ │ Node {
-│ │ │ │ kind: Unknown,
-│ │ │ │ span: 271 (15:19) to 275 (15:23),
-│ │ │ },
-│ │ ),
-│ │ span: 267 (15:15) to 275 (15:23),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 275 (15:23) to 276 (15:24),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 276 (15:24) to 277 (15:25),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 277 (15:25) to 278 (16:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 278 (16:0) to 279 (16:1),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 279 (16:1) to 280 (16:2),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 280 (16:2) to 281 (16:3),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 281 (16:3) to 282 (16:4),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 282 (16:4) to 284 (16:6),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 284 (16:6) to 285 (16:7),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 285 (16:7) to 290 (16:12),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 290 (16:12) to 291 (16:13),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 291 (16:13) to 292 (16:14),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 292 (16:14) to 293 (16:15),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 293 (16:15) to 294 (17:0),
-│ },
-│ Node {
-│ │ kind: Unknown,
-│ │ span: 294 (17:0) to 295 (17:1),
+│ │ span: 197 (7:0) to 244 (8:2),
 │ },
 ]

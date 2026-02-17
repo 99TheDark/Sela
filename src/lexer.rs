@@ -6,20 +6,45 @@ use crate::token::{
     span::{Location, Span},
 };
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum TokenFilterMode {
+    WhitespaceAndComments,
+    Whitespace,
+    None,
+}
+
+impl Default for TokenFilterMode {
+    fn default() -> Self {
+        Self::WhitespaceAndComments
+    }
+}
+
+impl TokenFilterMode {
+    pub fn ignores_comments(&self) -> bool {
+        *self == Self::WhitespaceAndComments
+    }
+
+    pub fn ignores_whitespace(&self) -> bool {
+        *self == Self::WhitespaceAndComments || *self == Self::Whitespace
+    }
+}
+
 pub struct Lexer<'a> {
     loc: Location,
     chars: iter::Peekable<str::Chars<'a>>,
     interp_stack: Vec<usize>,
     just_exited: bool,
+    filter_mode: TokenFilterMode,
 }
 
 impl<'a> Lexer<'a> {
-    pub fn new(src: &'a str) -> Self {
+    pub fn new(src: &'a str, filter_mode: TokenFilterMode) -> Self {
         Self {
             loc: Location::ZERO,
             chars: src.chars().peekable(),
             interp_stack: Vec::new(),
             just_exited: false,
+            filter_mode,
         }
     }
 
@@ -119,7 +144,7 @@ impl<'a> Lexer<'a> {
         while let Some(ch) = self.next() {
             match ch {
                 '\"' => break,
-                '\\' if self.peek() == Some('\"') => {
+                '\\' => {
                     self.next();
                 }
                 '$' if self.peek() == Some('(') => {
@@ -153,94 +178,132 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    pub fn lex_token(&mut self) -> Option<Token> {
-        let start = self.loc;
+    fn lex_token_kind(&mut self) -> Option<TokenKind> {
+        let ch = self.next()?;
+        use TokenKind::*;
 
-        let kind = if self.just_exited {
-            self.just_exited = false;
-            self.string()
-        } else {
-            let ch = self.next()?;
-            use TokenKind::*;
-
-            match ch {
-                // To be expanded upon
-                ' ' | '\t' | '\r' => Whitespace,
-                '\n' => NewLine,
-                // Single-line comment: TBD
-                // Multi-line comment: TBD
-                'a'..='z' | 'A'..='Z' | '_' => {
-                    self.eat_while(
-                        |ch| matches!(ch, 'a'..='z' | 'A'..='Z' | '_'|'0'..='9'),
-                    );
-                    Ident
-                }
-                // TODO: Implement literally every other numeric representation
-                '0' => TokenKind::Int,
-                '0'..='9' => {
-                    self.eat_while(|ch| matches!(ch, '0'..='9' | '_'));
-                    TokenKind::Int
-                }
-                // Lit: TBD
-                '+' => Plus,
-                '-' => Dash,
-                '*' => Star,
-                '/' => {
-                    if self.peek() == Some('/') {
-                        self.eat_while(|ch| ch != '\n');
-                        LineComment
-                    } else {
-                        Slash
-                    }
-                }
-                '%' => Pct,
-                '&' => And,
-                '|' => Bar,
-                '^' => Caret,
-                '(' => {
-                    self.push_interp_stack();
-                    LParen
-                }
-                ')' => {
-                    self.pop_interp_stack();
-                    RParen
-                }
-                '[' => LBrack,
-                ']' => RBrack,
-                '{' => LBrace,
-                '}' => RBrace,
-                '@' => At,
-                ',' => Comma,
-                ':' => Colon,
-                ';' => Semi,
-                '$' => Dollar,
-
-                '=' => self.fork(Eq, '=', EqEq),
-                '>' => self.fork(Gt, '=', GtEq),
-                '<' => self.fork(Lt, '=', LtEq),
-                '!' => self.fork(Not, '=', NotEq),
-                '.' => {
-                    if !self.try_consume('.') {
-                        Dot
-                    } else if self.try_consume('<') {
-                        DotDotLt
-                    } else if self.try_consume('=') {
-                        DotDotEq
-                    } else {
-                        DotDot
-                    }
-                }
-                '\'' => self.char_or_lifetime(),
-                '"' => self.string(),
-                _ => Unknown,
+        let kind = match ch {
+            c if c.is_whitespace() => Whitespace,
+            '\n' => NewLine,
+            // Single-line comment: TBD
+            // Multi-line comment: TBD
+            'a'..='z' | 'A'..='Z' | '_' => {
+                self.eat_while(
+                    |ch| matches!(ch, 'a'..='z' | 'A'..='Z' | '_' | '0'..='9'),
+                );
+                Ident
             }
+            // TODO: Implement literally every other numeric representation
+            '0' => TokenKind::Int,
+            '0'..='9' => {
+                self.eat_while(|ch| matches!(ch, '0'..='9' | '_'));
+                TokenKind::Int
+            }
+            // Lit: TBD
+            '+' => Plus,
+            '-' => Dash,
+            '*' => Star,
+            '/' => {
+                if self.peek() == Some('/') {
+                    self.eat_while(|ch| ch != '\n');
+                    LineComment
+                } else {
+                    Slash
+                }
+            }
+            '%' => Pct,
+            '&' => And,
+            '|' => Bar,
+            '^' => Caret,
+            '(' => {
+                self.push_interp_stack();
+                LParen
+            }
+            ')' => {
+                self.pop_interp_stack();
+                RParen
+            }
+            '[' => LBrack,
+            ']' => RBrack,
+            '{' => LBrace,
+            '}' => RBrace,
+            '@' => At,
+            ',' => Comma,
+            ':' => Colon,
+            ';' => Semi,
+            '$' => Dollar,
+
+            '=' => self.fork(Eq, '=', EqEq),
+            '>' => self.fork(Gt, '=', GtEq),
+            '<' => self.fork(Lt, '=', LtEq),
+            '!' => self.fork(Not, '=', NotEq),
+            '.' => {
+                if !self.try_consume('.') {
+                    Dot
+                } else if self.try_consume('<') {
+                    DotDotLt
+                } else if self.try_consume('=') {
+                    DotDotEq
+                } else {
+                    DotDot
+                }
+            }
+            '\'' => self.char_or_lifetime(),
+            '"' => self.string(),
+            _ => Unknown,
         };
 
-        Some(Token::new(kind, Span::new(start, self.loc)))
+        Some(kind)
+    }
+
+    fn should_be_filtered(&self, kind: TokenKind) -> bool {
+        use TokenKind::{BlockComment, LineComment, Whitespace};
+
+        if self.filter_mode.ignores_whitespace() && kind == Whitespace {
+            return true;
+        }
+        if self.filter_mode.ignores_comments()
+            && matches!(kind, LineComment | BlockComment)
+        {
+            return true;
+        }
+
+        false
+    }
+
+    pub fn lex_token(&mut self) -> Option<Token> {
+        if self.just_exited {
+            let start = self.loc;
+            self.just_exited = false;
+            Some(Token::new(self.string(), Span::new(start, self.loc)))
+        } else {
+            loop {
+                let start = self.loc;
+                let kind = self.lex_token_kind()?;
+                if !self.should_be_filtered(kind) {
+                    return Some(Token::new(kind, Span::new(start, self.loc)));
+                }
+            }
+        }
     }
 }
 
-pub fn lex<'a>(src: &'a str) -> impl Iterator<Item = Token> {
-    let mut lexer = Lexer::new(src);
+fn lex_with_mode<'a>(
+    src: &'a str,
+    filter_mode: TokenFilterMode,
+) -> impl Iterator<Item = Token> {
+    let mut lexer = Lexer::new(src, filter_mode);
     iter::from_fn(move || lexer.lex_token())
+}
+
+pub fn lex<'a>(src: &'a str) -> impl Iterator<Item = Token> {
+    lex_with_mode(src, TokenFilterMode::WhitespaceAndComments)
+}
+
+pub fn lex_with_comments<'a>(src: &'a str) -> impl Iterator<Item = Token> {
+    lex_with_mode(src, TokenFilterMode::Whitespace)
+}
+
+pub fn lex_all<'a>(src: &'a str) -> impl Iterator<Item = Token> {
+    lex_with_mode(src, TokenFilterMode::None)
 }

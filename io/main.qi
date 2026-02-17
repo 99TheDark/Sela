@@ -1,5 +1,7 @@
 3-&!2
 
+"\$(a)b$(c)"
+
 "abc $("def $("ghi") jkl") mno" + "pqrst$"
 
 let mut i = 0

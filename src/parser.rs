@@ -24,15 +24,36 @@ where
         }
     }
 
-    pub fn next(&mut self) -> Option<Token> {
-        self.tokens.next()
-    }
-
     pub fn parse_next(&mut self) -> Option<ast::Node> {
         if self.tokens.peek().is_none() {
             return None;
         }
-        Some(self.parse_expr())
+        Some(self.parse_stmt())
+    }
+
+    pub fn parse_stmt(&mut self) -> ast::Node {
+        let Some(tok) = self.tokens.peek() else {
+            return ast::Node::EMPTY;
+        };
+        if tok.kind == TokenKind::Ident {
+            let src = tok.str_value(self.src);
+            let tok = self.tokens.next().unwrap();
+            let span = tok.span;
+            match src.as_str() {
+                "let" => {
+                    self.parse_expr();
+                    if self.tokens.next().map(|f| f.kind) != Some(TokenKind::Eq) {
+                        panic!("nooo :(");
+                    }
+                    let end = self.parse_expr();
+                    let esp = end.span;
+                    ast::Node::new(ast::NodeKind::Let(Box::new(end)), span.to(esp))
+                }
+                _ => ast::Node::EMPTY,
+            }
+        } else {
+            self.parse_expr()
+        }
     }
 
     pub fn parse_expr(&mut self) -> ast::Node {
@@ -54,7 +75,7 @@ where
             if right_prec < min_prec {
                 break;
             }
-            self.next();
+            self.tokens.next();
 
             let right = self.parse_binop_pratt(right_prec);
             left = op.make_node(left, right);
@@ -64,7 +85,7 @@ where
 
     pub fn parse_unop(&mut self) -> ast::Node {
         let Some(token) = self.tokens.peek() else {
-            return ast::Node::ZERO;
+            return ast::Node::EMPTY;
         };
 
         let span = token.span;
@@ -77,17 +98,22 @@ where
         };
 
         self.tokens.next();
-        let operand = Box::new(self.parse_expr());
+        let operand = Box::new(self.parse_primary());
         return ast::Node::new(ast::NodeKind::UnOp(sym, operand), span);
     }
 
     pub fn parse_primary(&mut self) -> ast::Node {
-        if let Some(token) = self.tokens.next() {
-            let span = token.span;
-            ast::Node::new(ast::NodeKind::Unknown, span)
-        } else {
-            ast::Node::new(ast::NodeKind::Unknown, Span::ZERO)
-        }
+        let Some(tok) = self.tokens.next() else {
+            return ast::Node::new(ast::NodeKind::Unknown, Span::ZERO);
+        };
+
+        let span = tok.span;
+        let src = tok.str_value(self.src);
+        let kind = match tok.kind {
+            TokenKind::Int => ast::NodeKind::Int(src.replace("_", "").parse().unwrap()),
+            _ => ast::NodeKind::Unknown,
+        };
+        ast::Node::new(kind, span)
     }
 }
 

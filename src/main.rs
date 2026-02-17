@@ -8,12 +8,11 @@ pub mod parser;
 pub mod token;
 
 fn main() -> Result<(), Box<dyn error::Error>> {
-    let src = fs::read_to_string("io/main.qi")?;
+    let src = fs::read_to_string("io/test.qi")?;
     let tokens = lexer::lex(&src);
 
     fs::write("io/tokens.txt", {
         lexer::lex(&src)
-            .filter(|tok| tok.kind != TokenKind::Whitespace)
             .map(|tok| {
                 format!(
                     "{}{:?}<{:?}> = `{}`",
