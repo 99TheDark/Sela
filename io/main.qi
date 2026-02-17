@@ -1,0 +1,18 @@
+3-&!2
+
+"abc $("def $("ghi") jkl") mno" + "pqrst$"
+
+let mut i = 0
+let x = -10 + 5 * 3
+let b = true and false or !true
+let s = "-10 + 5 * 3 = $(x + 3 | true as Int) btw. $5" // comment btw
+let char = 'A' + '\n' - ''
+
+i += 1
+
+i *= 100_000_000
+
+use std.io
+'abc: for j in 0..<1004 {
+    io.print(j)
+}
