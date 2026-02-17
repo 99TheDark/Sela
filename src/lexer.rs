@@ -51,7 +51,7 @@ impl<'a> Lexer<'a> {
     pub fn next(&mut self) -> Option<char> {
         let ch = self.chars.next()?;
 
-        self.loc.idx += 1;
+        self.loc.idx += ch.len_utf8();
         if ch == '\n' {
             self.loc.col = 0;
             self.loc.row += 1;
