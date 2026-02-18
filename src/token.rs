@@ -4,7 +4,7 @@ pub mod keyword;
 pub mod kind;
 pub mod span;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,

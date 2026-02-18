@@ -1,9 +1,12 @@
 use std::{iter, str};
 
-use crate::token::{
-    Token,
-    kind::TokenKind,
-    span::{Location, Span},
+use crate::{
+    error::Diagnostics,
+    token::{
+        Token,
+        kind::TokenKind,
+        span::{Location, Span},
+    },
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -30,18 +33,24 @@ impl TokenFilterMode {
 }
 
 pub struct Lexer<'a> {
-    loc: Location,
     chars: iter::Peekable<str::Chars<'a>>,
+    diag: &'a mut Diagnostics,
+    loc: Location,
     interp_stack: Vec<usize>,
     just_exited: bool,
     filter_mode: TokenFilterMode,
 }
 
 impl<'a> Lexer<'a> {
-    pub fn new(src: &'a str, filter_mode: TokenFilterMode) -> Self {
+    pub fn new(
+        src: &'a str,
+        diag: &'a mut Diagnostics,
+        filter_mode: TokenFilterMode,
+    ) -> Self {
         Self {
-            loc: Location::ZERO,
             chars: src.chars().peekable(),
+            diag,
+            loc: Location::ZERO,
             interp_stack: Vec::new(),
             just_exited: false,
             filter_mode,
@@ -290,20 +299,27 @@ impl<'a> Lexer<'a> {
 
 fn lex_with_mode<'a>(
     src: &'a str,
+    diag: &'a mut Diagnostics,
     filter_mode: TokenFilterMode,
 ) -> impl Iterator<Item = Token> {
-    let mut lexer = Lexer::new(src, filter_mode);
+    let mut lexer = Lexer::new(src, diag, filter_mode);
     iter::from_fn(move || lexer.lex_token())
 }
 
-pub fn lex<'a>(src: &'a str) -> impl Iterator<Item = Token> {
-    lex_with_mode(src, TokenFilterMode::WhitespaceAndComments)
+pub fn lex<'a>(src: &'a str, diag: &'a mut Diagnostics) -> impl Iterator<Item = Token> {
+    lex_with_mode(src, diag, TokenFilterMode::WhitespaceAndComments)
 }
 
-pub fn lex_with_comments<'a>(src: &'a str) -> impl Iterator<Item = Token> {
-    lex_with_mode(src, TokenFilterMode::Whitespace)
+pub fn lex_with_comments<'a>(
+    src: &'a str,
+    diag: &'a mut Diagnostics,
+) -> impl Iterator<Item = Token> {
+    lex_with_mode(src, diag, TokenFilterMode::Whitespace)
 }
 
-pub fn lex_all<'a>(src: &'a str) -> impl Iterator<Item = Token> {
-    lex_with_mode(src, TokenFilterMode::None)
+pub fn lex_all<'a>(
+    src: &'a str,
+    diag: &'a mut Diagnostics,
+) -> impl Iterator<Item = Token> {
+    lex_with_mode(src, diag, TokenFilterMode::None)
 }

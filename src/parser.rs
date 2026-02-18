@@ -6,7 +6,8 @@ pub mod unary;
 
 use crate::{
     ast,
-    token::{Token, kind::TokenKind, span::Span},
+    error::Diagnostics,
+    token::{Token, kind::TokenKind},
 };
 
 pub struct Parser<'a, I>
@@ -15,16 +16,18 @@ where
 {
     tokens: iter::Peekable<I>,
     src: &'a str,
+    diag: &'a mut Diagnostics,
 }
 
 impl<'a, I> Parser<'a, I>
 where
     I: Iterator<Item = Token>,
 {
-    pub fn new(tokens: I, src: &'a str) -> Self {
+    pub fn new(tokens: I, src: &'a str, diag: &'a mut Diagnostics) -> Self {
         Self {
             tokens: tokens.peekable(),
             src,
+            diag,
         }
     }
 
@@ -69,7 +72,7 @@ where
 
     pub fn parse_primary(&mut self) -> ast::Node {
         let Some(tok) = self.tokens.next() else {
-            return ast::Node::new(ast::NodeKind::Unknown, Span::ZERO);
+            return ast::Node::EMPTY;
         };
 
         match tok.kind {
@@ -84,15 +87,19 @@ where
                 ast::Node::new(kind, span)
             }
             TokenKind::Int => self.try_parse_int(tok),
-            _ => ast::Node::new(ast::NodeKind::Unknown, tok.span),
+            _ => ast::Node::failed(tok.span),
         }
     }
 }
 
-pub fn parse<I>(tokens: I, src: &str) -> impl Iterator<Item = ast::Node>
+pub fn parse<'a, I>(
+    tokens: I,
+    src: &'a str,
+    diag: &'a mut Diagnostics,
+) -> impl Iterator<Item = ast::Node>
 where
     I: Iterator<Item = Token>,
 {
-    let mut parser = Parser::new(tokens, src);
+    let mut parser = Parser::new(tokens, src, diag);
     iter::from_fn(move || parser.parse_next())
 }

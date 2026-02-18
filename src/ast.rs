@@ -25,6 +25,13 @@ impl Node {
         span: Span::ZERO,
     };
 
+    pub fn failed(span: Span) -> Self {
+        Self {
+            kind: NodeKind::Unknown,
+            span,
+        }
+    }
+
     pub fn new(kind: NodeKind, span: Span) -> Self {
         Self { kind, span }
     }

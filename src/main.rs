@@ -1,6 +1,11 @@
 use std::fs;
 
-use crate::token::kind::TokenKind;
+use crate::{
+    error::Diagnostics,
+    lexer::{Lexer, TokenFilterMode},
+    parser::Parser,
+    token::kind::TokenKind,
+};
 
 pub mod ast;
 pub mod error;
@@ -10,10 +15,14 @@ pub mod token;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let src = fs::read_to_string("io/test.qi")?;
-    let tokens = lexer::lex(&src);
+
+    let mut diag = Diagnostics::new();
+
+    let tokens = lexer::lex(&src, &mut diag);
 
     fs::write("io/tokens.txt", {
-        lexer::lex(&src)
+        let mut diag = Diagnostics::new();
+        lexer::lex(&src, &mut diag)
             .map(|tok| {
                 format!(
                     "{}{:?}<{:?}> = `{}`",
@@ -27,12 +36,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .join("\n")
     })?;
 
-    let ast = parser::parse(tokens, &src);
+    let ast = parser::parse(tokens, &src, &mut diag);
 
     fs::write(
         "io/ast.txt",
         format!("{:#?}", ast.collect::<Vec<_>>()).replace("    ", "│ "),
     )?;
+
+    println!("\x1b[31mHello, I am red.\x1b[0m");
 
     Ok(())
 }
