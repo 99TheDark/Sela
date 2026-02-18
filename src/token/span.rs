@@ -13,6 +13,13 @@ impl Location {
     pub const fn new(idx: usize, row: usize, col: usize) -> Self {
         Self { idx, row, col }
     }
+
+    pub const fn next(self) -> Self {
+        Self {
+            idx: self.idx + 1,
+            ..self
+        }
+    }
 }
 
 impl cmp::Ord for Location {
@@ -41,6 +48,13 @@ impl Span {
 
     pub const fn new(start: Location, end: Location) -> Self {
         Self { start, end }
+    }
+
+    pub const fn single(loc: Location) -> Self {
+        Self {
+            start: loc,
+            end: loc,
+        }
     }
 
     pub fn debug_src(&self, src: &str) -> String {

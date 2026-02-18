@@ -1,11 +1,6 @@
 use std::fs;
 
-use crate::{
-    error::Diagnostics,
-    lexer::{Lexer, TokenFilterMode},
-    parser::Parser,
-    token::kind::TokenKind,
-};
+use crate::{error::Diagnostics, lexer::Lexer, parser::Parser, token::kind::TokenKind};
 
 pub mod ast;
 pub mod error;
@@ -18,11 +13,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut diag = Diagnostics::new();
 
-    let tokens = lexer::lex(&src, &mut diag);
+    let tokens = Lexer::new(&src, &mut diag).lex();
 
     fs::write("io/tokens.txt", {
         let mut diag = Diagnostics::new();
-        lexer::lex(&src, &mut diag)
+        Lexer::new(&src, &mut diag)
+            .lex()
+            .into_iter()
             .map(|tok| {
                 format!(
                     "{}{:?}<{:?}> = `{}`",
@@ -36,14 +33,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .join("\n")
     })?;
 
-    let ast = parser::parse(tokens, &src, &mut diag);
+    let ast = Parser::new(&src, &tokens, &mut diag).parse();
 
-    fs::write(
-        "io/ast.txt",
-        format!("{:#?}", ast.collect::<Vec<_>>()).replace("    ", "│ "),
-    )?;
+    fs::write("io/ast.txt", format!("{:#?}", ast).replace("    ", "│ "))?;
 
-    println!("\x1b[31mHello, I am red.\x1b[0m");
+    println!("\x1b[31mHello, world! (in red)\x1b[0m");
 
     Ok(())
 }

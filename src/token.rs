@@ -15,6 +15,10 @@ impl Token {
         Self { kind, span }
     }
 
+    pub fn is_eof(self) -> bool {
+        self.kind == TokenKind::EOF
+    }
+
     pub fn debug_src(&self, src: &str) -> String {
         self.span.debug_src(src)
     }

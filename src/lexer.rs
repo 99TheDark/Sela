@@ -23,12 +23,12 @@ impl Default for TokenFilterMode {
 }
 
 impl TokenFilterMode {
-    pub fn ignores_comments(&self) -> bool {
-        *self == Self::WhitespaceAndComments
+    pub fn ignores_comments(self) -> bool {
+        self == Self::WhitespaceAndComments
     }
 
-    pub fn ignores_whitespace(&self) -> bool {
-        *self == Self::WhitespaceAndComments || *self == Self::Whitespace
+    pub fn ignores_whitespace(self) -> bool {
+        self == Self::WhitespaceAndComments || self == Self::Whitespace
     }
 }
 
@@ -42,7 +42,7 @@ pub struct Lexer<'a> {
 }
 
 impl<'a> Lexer<'a> {
-    pub fn new(
+    pub fn new_with_mode(
         src: &'a str,
         diag: &'a mut Diagnostics,
         filter_mode: TokenFilterMode,
@@ -55,6 +55,10 @@ impl<'a> Lexer<'a> {
             just_exited: false,
             filter_mode,
         }
+    }
+
+    pub fn new(src: &'a str, diag: &'a mut Diagnostics) -> Self {
+        Self::new_with_mode(src, diag, TokenFilterMode::WhitespaceAndComments)
     }
 
     pub fn next(&mut self) -> Option<char> {
@@ -187,10 +191,8 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn lex_token_kind(&mut self) -> Option<TokenKind> {
-        let ch = self.next()?;
+    fn lex_token_kind(&mut self, ch: char) -> TokenKind {
         use TokenKind::*;
-
         let kind = match ch {
             '\n' => NewLine,
             c if c.is_whitespace() => Whitespace,
@@ -262,7 +264,7 @@ impl<'a> Lexer<'a> {
             _ => Unknown,
         };
 
-        Some(kind)
+        kind
     }
 
     fn should_be_filtered(&self, kind: TokenKind) -> bool {
@@ -280,46 +282,21 @@ impl<'a> Lexer<'a> {
         false
     }
 
-    pub fn lex_token(&mut self) -> Option<Token> {
-        if self.just_exited {
+    pub fn lex(&mut self) -> Vec<Token> {
+        let mut tokens = Vec::new();
+        while let Some(ch) = self.chars.next() {
             let start = self.loc;
-            self.just_exited = false;
-            Some(Token::new(self.string(), Span::new(start, self.loc)))
-        } else {
-            loop {
+            let kind = self.lex_token_kind(ch);
+
+            if !self.should_be_filtered(kind) {
+                tokens.push(Token::new(kind, Span::new(start, self.loc)));
+            }
+            if self.just_exited {
                 let start = self.loc;
-                let kind = self.lex_token_kind()?;
-                if !self.should_be_filtered(kind) {
-                    return Some(Token::new(kind, Span::new(start, self.loc)));
-                }
+                self.just_exited = false;
+                tokens.push(Token::new(self.string(), Span::new(start, self.loc)));
             }
         }
+        tokens
     }
-}
-
-fn lex_with_mode<'a>(
-    src: &'a str,
-    diag: &'a mut Diagnostics,
-    filter_mode: TokenFilterMode,
-) -> impl Iterator<Item = Token> {
-    let mut lexer = Lexer::new(src, diag, filter_mode);
-    iter::from_fn(move || lexer.lex_token())
-}
-
-pub fn lex<'a>(src: &'a str, diag: &'a mut Diagnostics) -> impl Iterator<Item = Token> {
-    lex_with_mode(src, diag, TokenFilterMode::WhitespaceAndComments)
-}
-
-pub fn lex_with_comments<'a>(
-    src: &'a str,
-    diag: &'a mut Diagnostics,
-) -> impl Iterator<Item = Token> {
-    lex_with_mode(src, diag, TokenFilterMode::Whitespace)
-}
-
-pub fn lex_all<'a>(
-    src: &'a str,
-    diag: &'a mut Diagnostics,
-) -> impl Iterator<Item = Token> {
-    lex_with_mode(src, diag, TokenFilterMode::None)
 }

@@ -50,18 +50,25 @@ pub enum TokenKind {
     UntermQuotEsc,
     UntermStr,
     Unknown,
+    EOF,
 }
 
 impl TokenKind {
-    pub fn is_unknown(&self) -> bool {
-        *self == Self::Unknown
+    pub fn is_unknown(self) -> bool {
+        self == Self::Unknown
     }
 
     pub fn is_invalid(&self) -> bool {
         use TokenKind::*;
         matches!(
             self,
-            Unknown | NoChar | UntermComment | UntermQuot | UntermQuotEsc | UntermStr
+            Unknown
+                | EOF
+                | NoChar
+                | UntermComment
+                | UntermQuot
+                | UntermQuotEsc
+                | UntermStr
         )
     }
 }

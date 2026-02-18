@@ -1,18 +1,12 @@
 use crate::{
     ast::{self, unop::UnOpKind},
     parser::Parser,
-    token::{Token, kind::TokenKind},
+    token::kind::TokenKind,
 };
 
-impl<'a, I> Parser<'a, I>
-where
-    I: Iterator<Item = Token>,
-{
+impl<'a> Parser<'a> {
     pub fn parse_unop(&mut self) -> ast::Node {
-        let Some(token) = self.tokens.peek() else {
-            return ast::Node::EMPTY;
-        };
-
+        let token = self.current();
         let span = token.span;
 
         use TokenKind::*;
@@ -24,7 +18,7 @@ where
             _ => return self.parse_primary(),
         };
 
-        self.tokens.next();
+        self.advance();
         let operand = Box::new(self.parse_unop());
         return ast::Node::new(ast::NodeKind::UnOp(sym, operand), span);
     }

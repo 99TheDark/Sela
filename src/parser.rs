@@ -1,5 +1,3 @@
-use std::iter;
-
 pub mod binary;
 pub mod literal;
 pub mod unary;
@@ -7,63 +5,64 @@ pub mod unary;
 use crate::{
     ast,
     error::Diagnostics,
-    token::{Token, kind::TokenKind},
+    token::{
+        Token,
+        kind::TokenKind,
+        span::{Location, Span},
+    },
 };
 
-pub struct Parser<'a, I>
-where
-    I: Iterator<Item = Token>,
-{
-    tokens: iter::Peekable<I>,
+pub struct Parser<'a> {
     src: &'a str,
+    tokens: &'a [Token],
+    idx: usize,
     diag: &'a mut Diagnostics,
+    eof_token: Token,
 }
 
-impl<'a, I> Parser<'a, I>
-where
-    I: Iterator<Item = Token>,
-{
-    pub fn new(tokens: I, src: &'a str, diag: &'a mut Diagnostics) -> Self {
+impl<'a> Parser<'a> {
+    pub fn new(src: &'a str, tokens: &'a [Token], diag: &'a mut Diagnostics) -> Self {
+        let eof_loc = if let Some(last) = tokens.last() {
+            last.span.end.next()
+        } else {
+            Location::ZERO
+        };
+
         Self {
-            tokens: tokens.peekable(),
             src,
+            tokens,
+            idx: 0,
             diag,
+            eof_token: Token::new(TokenKind::EOF, Span::single(eof_loc)),
         }
     }
 
-    pub fn parse_next(&mut self) -> Option<ast::Node> {
-        if self.tokens.peek().is_none() {
-            return None;
+    pub fn advance(&mut self) {
+        if self.idx < self.tokens.len() {
+            self.idx += 1;
         }
-        Some(self.parse_stmt())
+    }
+
+    pub fn next(&mut self) -> Token {
+        if self.idx < self.tokens.len() {
+            let tok = self.tokens[self.idx];
+            self.idx += 1;
+            tok
+        } else {
+            self.eof_token
+        }
+    }
+
+    pub fn current(&self) -> Token {
+        if self.idx < self.tokens.len() {
+            self.tokens[self.idx]
+        } else {
+            self.eof_token
+        }
     }
 
     pub fn parse_stmt(&mut self) -> ast::Node {
-        let Some(tok) = self.tokens.peek() else {
-            return ast::Node::EMPTY;
-        };
-        if tok.kind == TokenKind::Ident {
-            let src = tok.src(self.src);
-            let tok = self.tokens.next().unwrap();
-            let span = tok.span;
-            match src {
-                "let" => {
-                    let vari = self.parse_expr();
-                    if self.tokens.next().map(|f| f.kind) != Some(TokenKind::Eq) {
-                        panic!("nooo :(");
-                    }
-                    let end = self.parse_expr();
-                    let esp = end.span;
-                    ast::Node::new(
-                        ast::NodeKind::Let(Box::new(vari), Box::new(end)),
-                        span.to(esp),
-                    )
-                }
-                _ => ast::Node::EMPTY,
-            }
-        } else {
-            self.parse_expr()
-        }
+        self.parse_expr()
     }
 
     pub fn parse_expr(&mut self) -> ast::Node {
@@ -71,9 +70,7 @@ where
     }
 
     pub fn parse_primary(&mut self) -> ast::Node {
-        let Some(tok) = self.tokens.next() else {
-            return ast::Node::EMPTY;
-        };
+        let tok = self.next();
 
         match tok.kind {
             TokenKind::Ident => {
@@ -90,16 +87,12 @@ where
             _ => ast::Node::failed(tok.span),
         }
     }
-}
 
-pub fn parse<'a, I>(
-    tokens: I,
-    src: &'a str,
-    diag: &'a mut Diagnostics,
-) -> impl Iterator<Item = ast::Node>
-where
-    I: Iterator<Item = Token>,
-{
-    let mut parser = Parser::new(tokens, src, diag);
-    iter::from_fn(move || parser.parse_next())
+    pub fn parse(&mut self) -> Vec<ast::Node> {
+        let mut stmts = Vec::new();
+        while self.idx < self.tokens.len() {
+            stmts.push(self.parse_stmt());
+        }
+        stmts
+    }
 }

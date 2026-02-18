@@ -1,9 +1,6 @@
 use crate::{ast, parser::Parser, token::Token};
 
-impl<'a, I> Parser<'a, I>
-where
-    I: Iterator<Item = Token>,
-{
+impl<'a> Parser<'a> {
     pub fn try_parse_int(&self, tok: Token) -> ast::Node {
         let span = tok.span;
         let src = tok.src(self.src);
