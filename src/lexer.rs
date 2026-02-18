@@ -183,8 +183,8 @@ impl<'a> Lexer<'a> {
         use TokenKind::*;
 
         let kind = match ch {
-            c if c.is_whitespace() => Whitespace,
             '\n' => NewLine,
+            c if c.is_whitespace() => Whitespace,
             // Single-line comment: TBD
             // Multi-line comment: TBD
             'a'..='z' | 'A'..='Z' | '_' => {

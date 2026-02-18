@@ -69,12 +69,9 @@ impl BinaryKind {
     pub fn precedence(&self) -> u8 {
         use BinaryKind::*;
         match self {
-            BinOp(BinOpKind::Mul | BinOpKind::Div | BinOpKind::Mod) => 0,
-            BinOp(BinOpKind::Add | BinOpKind::Sub) => 1,
-            BinOp(BinOpKind::Shl | BinOpKind::Shr) => 2,
-            BinOp(BinOpKind::And) => 3,
-            BinOp(BinOpKind::Xor) => 4,
-            BinOp(BinOpKind::Or) => 5,
+            Range(RangeKind::Full | RangeKind::Excl | RangeKind::Incl) => 0,
+            KwBinOp(KwBinOpKind::Or) => 1,
+            KwBinOp(KwBinOpKind::And) => 2,
             Comp(
                 CompKind::EqEq
                 | CompKind::NotEq
@@ -82,10 +79,13 @@ impl BinaryKind {
                 | CompKind::Gt
                 | CompKind::LtEq
                 | CompKind::GtEq,
-            ) => 6,
-            KwBinOp(KwBinOpKind::And) => 7,
-            KwBinOp(KwBinOpKind::Or) => 8,
-            Range(RangeKind::Full | RangeKind::Excl | RangeKind::Incl) => 9,
+            ) => 3,
+            BinOp(BinOpKind::Or) => 4,
+            BinOp(BinOpKind::Xor) => 5,
+            BinOp(BinOpKind::And) => 6,
+            BinOp(BinOpKind::Shl | BinOpKind::Shr) => 7,
+            BinOp(BinOpKind::Add | BinOpKind::Sub) => 8,
+            BinOp(BinOpKind::Mul | BinOpKind::Div | BinOpKind::Mod) => 9,
         }
     }
 

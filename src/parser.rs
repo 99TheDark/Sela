@@ -1,7 +1,11 @@
 use std::iter;
 
+pub mod binary;
+pub mod literal;
+pub mod unary;
+
 use crate::{
-    ast::{self, symbol::BinaryKind, unop::UnOpKind},
+    ast,
     token::{Token, kind::TokenKind, span::Span},
 };
 
@@ -41,13 +45,16 @@ where
             let span = tok.span;
             match src.as_str() {
                 "let" => {
-                    self.parse_expr();
+                    let vari = self.parse_expr();
                     if self.tokens.next().map(|f| f.kind) != Some(TokenKind::Eq) {
                         panic!("nooo :(");
                     }
                     let end = self.parse_expr();
                     let esp = end.span;
-                    ast::Node::new(ast::NodeKind::Let(Box::new(end)), span.to(esp))
+                    ast::Node::new(
+                        ast::NodeKind::Let(Box::new(vari), Box::new(end)),
+                        span.to(esp),
+                    )
                 }
                 _ => ast::Node::EMPTY,
             }
@@ -60,60 +67,25 @@ where
         self.parse_binop()
     }
 
-    pub fn parse_binop(&mut self) -> ast::Node {
-        self.parse_binop_pratt(0)
-    }
-
-    pub fn parse_binop_pratt(&mut self, min_prec: u8) -> ast::Node {
-        let mut left = self.parse_unop();
-        while let Some(token) = self.tokens.peek() {
-            let Some(op) = BinaryKind::from_token(*token, self.src) else {
-                break;
-            };
-
-            let right_prec = op.precedence();
-            if right_prec < min_prec {
-                break;
-            }
-            self.tokens.next();
-
-            let right = self.parse_binop_pratt(right_prec);
-            left = op.make_node(left, right);
-        }
-        left
-    }
-
-    pub fn parse_unop(&mut self) -> ast::Node {
-        let Some(token) = self.tokens.peek() else {
-            return ast::Node::EMPTY;
-        };
-
-        let span = token.span;
-        let sym = match token.kind {
-            TokenKind::Dash => UnOpKind::Neg,
-            TokenKind::Not => UnOpKind::Not,
-            TokenKind::And => UnOpKind::Ref,
-            TokenKind::Star => UnOpKind::Deref,
-            _ => return self.parse_primary(),
-        };
-
-        self.tokens.next();
-        let operand = Box::new(self.parse_primary());
-        return ast::Node::new(ast::NodeKind::UnOp(sym, operand), span);
-    }
-
     pub fn parse_primary(&mut self) -> ast::Node {
         let Some(tok) = self.tokens.next() else {
             return ast::Node::new(ast::NodeKind::Unknown, Span::ZERO);
         };
 
-        let span = tok.span;
-        let src = tok.str_value(self.src);
-        let kind = match tok.kind {
-            TokenKind::Int => ast::NodeKind::Int(src.replace("_", "").parse().unwrap()),
-            _ => ast::NodeKind::Unknown,
-        };
-        ast::Node::new(kind, span)
+        match tok.kind {
+            TokenKind::Ident => {
+                let span = tok.span;
+                let src = tok.str_value(self.src);
+                let kind = match src.as_str() {
+                    "true" => ast::NodeKind::Bool(true),
+                    "false" => ast::NodeKind::Bool(false),
+                    _ => ast::NodeKind::Ident(src), // TODO: temporary str store
+                };
+                ast::Node::new(kind, span)
+            }
+            TokenKind::Int => self.try_parse_int(tok),
+            _ => ast::Node::new(ast::NodeKind::Unknown, tok.span),
+        }
     }
 }
 

@@ -32,12 +32,14 @@ impl Node {
 
 #[derive(Debug)]
 pub enum NodeKind {
+    Ident(String),
     BinOp(Box<Node>, BinOpKind, Box<Node>),
     KwBinOp(Box<Node>, KwBinOpKind, Box<Node>),
     Comp(Box<Node>, CompKind, Box<Node>),
     Range(Box<Node>, RangeKind, Box<Node>),
     UnOp(UnOpKind, Box<Node>),
     Int(i64),
-    Let(Box<Node>),
+    Bool(bool),
+    Let(Box<Node>, Box<Node>),
     Unknown,
 }
