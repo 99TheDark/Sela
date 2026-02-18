@@ -15,7 +15,11 @@ impl Token {
         Self { kind, span }
     }
 
-    pub fn str_value(&self, src: &str) -> String {
-        self.span.str_value(src)
+    pub fn debug_src(&self, src: &str) -> String {
+        self.span.debug_src(src)
+    }
+
+    pub fn src<'a>(&self, src: &'a str) -> &'a str {
+        self.span.src(src)
     }
 }

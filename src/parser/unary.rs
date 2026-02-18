@@ -25,7 +25,7 @@ where
         };
 
         self.tokens.next();
-        let operand = Box::new(self.parse_primary());
+        let operand = Box::new(self.parse_unop());
         return ast::Node::new(ast::NodeKind::UnOp(sym, operand), span);
     }
 }

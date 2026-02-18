@@ -43,8 +43,12 @@ impl Span {
         Self { start, end }
     }
 
-    pub fn str_value(&self, src: &str) -> String {
+    pub fn debug_src(&self, src: &str) -> String {
         src[self.start.idx..self.end.idx].replace('\n', "\\n")
+    }
+
+    pub fn src<'a>(&self, src: &'a str) -> &'a str {
+        &src[self.start.idx..self.end.idx]
     }
 
     pub fn to(&self, to: Self) -> Self {

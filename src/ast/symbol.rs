@@ -36,9 +36,9 @@ impl BinaryKind {
         use crate::TokenKind::*;
 
         let kind = match token.kind {
-            Ident => match token.str_value(src).as_str() {
+            Ident => match token.src(src) {
                 "and" => Self::KwBinOp(KwBinOpKind::And),
-                "or" => Self::KwBinOp(KwBinOpKind::And),
+                "or" => Self::KwBinOp(KwBinOpKind::Or),
                 _ => return None,
             },
             Plus => Self::BinOp(BinOpKind::Add),

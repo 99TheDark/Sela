@@ -6,7 +6,7 @@ where
 {
     pub fn try_parse_int(&self, tok: Token) -> ast::Node {
         let span = tok.span;
-        let src = tok.str_value(self.src);
+        let src = tok.src(self.src);
         let val = src.replace("_", "").parse().unwrap();
 
         ast::Node::new(ast::NodeKind::Int(val), span)

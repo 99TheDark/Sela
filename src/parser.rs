@@ -40,10 +40,10 @@ where
             return ast::Node::EMPTY;
         };
         if tok.kind == TokenKind::Ident {
-            let src = tok.str_value(self.src);
+            let src = tok.src(self.src);
             let tok = self.tokens.next().unwrap();
             let span = tok.span;
-            match src.as_str() {
+            match src {
                 "let" => {
                     let vari = self.parse_expr();
                     if self.tokens.next().map(|f| f.kind) != Some(TokenKind::Eq) {
@@ -75,11 +75,11 @@ where
         match tok.kind {
             TokenKind::Ident => {
                 let span = tok.span;
-                let src = tok.str_value(self.src);
-                let kind = match src.as_str() {
+                let src = tok.src(self.src);
+                let kind = match src {
                     "true" => ast::NodeKind::Bool(true),
                     "false" => ast::NodeKind::Bool(false),
-                    _ => ast::NodeKind::Ident(src), // TODO: temporary str store
+                    _ => ast::NodeKind::Ident(src.to_string()), // TODO: temporary str store
                 };
                 ast::Node::new(kind, span)
             }

@@ -1,13 +1,14 @@
-use std::{error, fs};
+use std::fs;
 
 use crate::token::kind::TokenKind;
 
 pub mod ast;
+pub mod error;
 pub mod lexer;
 pub mod parser;
 pub mod token;
 
-fn main() -> Result<(), Box<dyn error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let src = fs::read_to_string("io/test.qi")?;
     let tokens = lexer::lex(&src);
 
@@ -19,7 +20,7 @@ fn main() -> Result<(), Box<dyn error::Error>> {
                     if tok.kind.is_unknown() { "!! " } else { "" },
                     tok.kind,
                     tok.span,
-                    tok.str_value(&src),
+                    tok.debug_src(&src),
                 )
             })
             .collect::<Vec<_>>()
