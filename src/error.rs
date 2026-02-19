@@ -1,4 +1,4 @@
-use crate::token::span::Span;
+use crate::{ast, token::span::Span};
 
 pub const CONSOLE_WIDTH: usize = 80;
 
@@ -40,6 +40,11 @@ impl<'a> Diagnostics<'a> {
         self.errors.push(Error { message, span });
     }
 
+    pub fn fail(&mut self, message: String, span: Span) -> ast::Node {
+        self.emit(message, span);
+        ast::Node::failed(span)
+    }
+
     fn above(&self, row: usize) -> u32 {
         const LEADING_SIZE: usize = 4;
         let top_row = row.saturating_sub(LEADING_SIZE);
@@ -56,13 +61,13 @@ impl<'a> Diagnostics<'a> {
         left_pad
     }
 
-    fn yellow(&self, s: String) -> String {
+    /*fn yellow(&self, s: String) -> String {
         if self.with_color {
             format!("\x1b[33m{}\x1b[0m", s)
         } else {
             s
         }
-    }
+    }*/
 
     fn red(&self, s: String) -> String {
         if self.with_color {
@@ -85,11 +90,16 @@ impl<'a> Diagnostics<'a> {
             let left_pad = self.above(error.span.start.row);
 
             // TODO: Currently assumes the error occurs on only one line, the span is not malformed, and the error message is short enough.
+            let len = if error.span.end.col > error.span.start.col {
+                error.span.end.col - error.span.start.col
+            } else {
+                1
+            };
             println!(
                 "{} | {}{} {}\n",
                 " ".repeat(left_pad as usize),
                 " ".repeat(error.span.start.col),
-                self.red("^".repeat(error.span.end.col - error.span.start.col)),
+                self.red("^".repeat(len)),
                 self.red(error.message.clone())
             );
         }

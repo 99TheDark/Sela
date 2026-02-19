@@ -1,6 +1,7 @@
 pub mod basic;
 pub mod binary;
 pub mod control;
+pub mod decl;
 pub mod literal;
 pub mod unary;
 
@@ -15,15 +16,15 @@ use crate::{
 };
 
 pub struct Parser<'a, 'b> {
-    src: &'b str,
-    tokens: &'b [Token],
+    src: &'a str,
+    tokens: &'a [Token],
     idx: usize,
-    diag: &'b mut Diagnostics<'a>,
+    diag: &'a mut Diagnostics<'b>,
     eof_token: Token,
 }
 
 impl<'a, 'b> Parser<'a, 'b> {
-    pub fn new(src: &'a str, tokens: &'b [Token], diag: &'b mut Diagnostics<'a>) -> Self {
+    pub fn new(src: &'a str, tokens: &'a [Token], diag: &'a mut Diagnostics<'b>) -> Self {
         let eof_loc = if let Some(last) = tokens.last() {
             last.span.end.next()
         } else {

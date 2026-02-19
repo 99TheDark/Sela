@@ -34,7 +34,7 @@ impl TokenFilterMode {
 
 pub struct Lexer<'a, 'b> {
     chars: iter::Peekable<str::Chars<'a>>,
-    diag: &'b mut Diagnostics<'a>,
+    diag: &'a mut Diagnostics<'b>,
     loc: Location,
     interp_stack: Vec<usize>,
     just_exited: bool,
@@ -44,7 +44,7 @@ pub struct Lexer<'a, 'b> {
 impl<'a, 'b> Lexer<'a, 'b> {
     pub fn new_with_mode(
         src: &'a str,
-        diag: &'b mut Diagnostics<'a>,
+        diag: &'a mut Diagnostics<'b>,
         filter_mode: TokenFilterMode,
     ) -> Self {
         Self {
@@ -57,7 +57,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         }
     }
 
-    pub fn new(src: &'a str, diag: &'b mut Diagnostics<'a>) -> Self {
+    pub fn new(src: &'a str, diag: &'a mut Diagnostics<'b>) -> Self {
         Self::new_with_mode(src, diag, TokenFilterMode::WhitespaceAndComments)
     }
 
