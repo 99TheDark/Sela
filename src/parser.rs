@@ -1,4 +1,6 @@
+pub mod basic;
 pub mod binary;
+pub mod control;
 pub mod literal;
 pub mod unary;
 
@@ -12,16 +14,16 @@ use crate::{
     },
 };
 
-pub struct Parser<'a> {
-    src: &'a str,
-    tokens: &'a [Token],
+pub struct Parser<'a, 'b> {
+    src: &'b str,
+    tokens: &'b [Token],
     idx: usize,
-    diag: &'a mut Diagnostics,
+    diag: &'b mut Diagnostics<'a>,
     eof_token: Token,
 }
 
-impl<'a> Parser<'a> {
-    pub fn new(src: &'a str, tokens: &'a [Token], diag: &'a mut Diagnostics) -> Self {
+impl<'a, 'b> Parser<'a, 'b> {
+    pub fn new(src: &'a str, tokens: &'b [Token], diag: &'b mut Diagnostics<'a>) -> Self {
         let eof_loc = if let Some(last) = tokens.last() {
             last.span.end.next()
         } else {
@@ -61,34 +63,7 @@ impl<'a> Parser<'a> {
         }
     }
 
-    pub fn parse_stmt(&mut self) -> ast::Node {
-        self.parse_expr()
-    }
-
-    pub fn parse_expr(&mut self) -> ast::Node {
-        self.parse_binop()
-    }
-
-    pub fn parse_primary(&mut self) -> ast::Node {
-        let tok = self.next();
-
-        match tok.kind {
-            TokenKind::Ident => {
-                let span = tok.span;
-                let src = tok.src(self.src);
-                let kind = match src {
-                    "true" => ast::NodeKind::Bool(true),
-                    "false" => ast::NodeKind::Bool(false),
-                    _ => ast::NodeKind::Ident(src.to_string()), // TODO: temporary str store
-                };
-                ast::Node::new(kind, span)
-            }
-            TokenKind::Int => self.try_parse_int(tok),
-            _ => ast::Node::failed(tok.span),
-        }
-    }
-
-    pub fn parse(&mut self) -> Vec<ast::Node> {
+    pub fn parse(mut self) -> Vec<ast::Node> {
         let mut stmts = Vec::new();
         while self.idx < self.tokens.len() {
             stmts.push(self.parse_stmt());

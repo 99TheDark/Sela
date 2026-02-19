@@ -32,19 +32,19 @@ impl TokenFilterMode {
     }
 }
 
-pub struct Lexer<'a> {
+pub struct Lexer<'a, 'b> {
     chars: iter::Peekable<str::Chars<'a>>,
-    diag: &'a mut Diagnostics,
+    diag: &'b mut Diagnostics<'a>,
     loc: Location,
     interp_stack: Vec<usize>,
     just_exited: bool,
     filter_mode: TokenFilterMode,
 }
 
-impl<'a> Lexer<'a> {
+impl<'a, 'b> Lexer<'a, 'b> {
     pub fn new_with_mode(
         src: &'a str,
-        diag: &'a mut Diagnostics,
+        diag: &'b mut Diagnostics<'a>,
         filter_mode: TokenFilterMode,
     ) -> Self {
         Self {
@@ -57,7 +57,7 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    pub fn new(src: &'a str, diag: &'a mut Diagnostics) -> Self {
+    pub fn new(src: &'a str, diag: &'b mut Diagnostics<'a>) -> Self {
         Self::new_with_mode(src, diag, TokenFilterMode::WhitespaceAndComments)
     }
 
@@ -282,10 +282,9 @@ impl<'a> Lexer<'a> {
         false
     }
 
-    pub fn lex(&mut self) -> Vec<Token> {
+    pub fn lex(mut self) -> Vec<Token> {
         let mut tokens = Vec::new();
-        while let Some(ch) = self.chars.next() {
-            let start = self.loc;
+        while let (start, Some(ch)) = (self.loc, self.next()) {
             let kind = self.lex_token_kind(ch);
 
             if !self.should_be_filtered(kind) {

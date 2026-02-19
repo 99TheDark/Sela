@@ -3,7 +3,7 @@ use crate::{
     parser::Parser,
 };
 
-impl<'a> Parser<'a> {
+impl<'a, 'b> Parser<'a, 'b> {
     pub fn parse_binop(&mut self) -> ast::Node {
         self.parse_binop_pratt(0)
     }

@@ -11,12 +11,12 @@ pub mod token;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let src = fs::read_to_string("io/test.qi")?;
 
-    let mut diag = Diagnostics::new();
+    let mut diag = Diagnostics::new("io/test.qi".to_string(), &src);
 
     let tokens = Lexer::new(&src, &mut diag).lex();
 
     fs::write("io/tokens.txt", {
-        let mut diag = Diagnostics::new();
+        let mut diag = Diagnostics::new("n/a".to_string(), &src);
         Lexer::new(&src, &mut diag)
             .lex()
             .into_iter()
@@ -36,6 +36,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let ast = Parser::new(&src, &tokens, &mut diag).parse();
 
     fs::write("io/ast.txt", format!("{:#?}", ast).replace("    ", "│ "))?;
+
+    diag.print();
 
     println!("\x1b[31mHello, world! (in red)\x1b[0m");
 

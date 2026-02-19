@@ -4,7 +4,7 @@ use crate::{
     token::kind::TokenKind,
 };
 
-impl<'a> Parser<'a> {
+impl<'a, 'b> Parser<'a, 'b> {
     pub fn parse_unop(&mut self) -> ast::Node {
         let token = self.current();
         let span = token.span;

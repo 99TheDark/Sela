@@ -1,6 +1,6 @@
 use crate::{ast, parser::Parser, token::Token};
 
-impl<'a> Parser<'a> {
+impl<'a, 'b> Parser<'a, 'b> {
     pub fn try_parse_int(&self, tok: Token) -> ast::Node {
         let span = tok.span;
         let src = tok.src(self.src);
