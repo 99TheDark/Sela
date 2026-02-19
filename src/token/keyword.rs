@@ -36,6 +36,10 @@ pub enum Keyword {
 }
 
 impl Keyword {
+    pub fn is_keyword(self) -> bool {
+        self != Self::NotReserved
+    }
+
     pub fn from_token(tok: Token, src: &str) -> Self {
         use Keyword::*;
         match tok.src(src) {

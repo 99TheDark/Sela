@@ -19,6 +19,10 @@ impl Token {
         self.kind == TokenKind::EOF
     }
 
+    pub fn is_nl(self) -> bool {
+        self.kind == TokenKind::NewLine
+    }
+
     pub fn debug_src(&self, src: &str) -> String {
         self.span.debug_src(src)
     }

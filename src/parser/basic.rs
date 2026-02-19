@@ -20,6 +20,7 @@ impl<'a, 'b> Parser<'a, 'b> {
         use Keyword::*;
         match kw {
             If => self.parse_if_else(),
+            Let => self.parse_decl(tok),
             _ => self.diag.fail(
                 format!("Unexpected reserved keyword '{}'", tok.src(self.src)),
                 tok.span,
@@ -46,6 +47,11 @@ impl<'a, 'b> Parser<'a, 'b> {
                 ast::Node::new(kind, span)
             }
             TokenKind::Int => self.try_parse_int(tok),
+            TokenKind::LParen => {
+                let expr = self.parse_expr();
+                self.expect(TokenKind::RParen, true);
+                expr
+            }
             _ => self
                 .diag
                 .fail(format!("Unexpected {:?} token", tok.kind), span),

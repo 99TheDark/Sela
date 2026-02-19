@@ -10,6 +10,7 @@ use crate::{
     error::Diagnostics,
     token::{
         Token,
+        keyword::Keyword,
         kind::TokenKind,
         span::{Location, Span},
     },
@@ -56,11 +57,58 @@ impl<'a, 'b> Parser<'a, 'b> {
         }
     }
 
+    pub fn next_broken(&mut self) -> Token {
+        while self.idx < self.tokens.len() {
+            let tok = self.tokens[self.idx];
+            self.idx += 1;
+            if !tok.is_nl() {
+                return tok;
+            }
+        }
+        self.eof_token
+    }
+
     pub fn current(&self) -> Token {
         if self.idx < self.tokens.len() {
             self.tokens[self.idx]
         } else {
             self.eof_token
+        }
+    }
+
+    fn expect(&mut self, expected: TokenKind, can_split: bool) -> Token {
+        let tok = if can_split {
+            self.next_broken()
+        } else {
+            self.next()
+        };
+        if tok.kind == expected {
+            tok
+        } else {
+            self.diag.emit(
+                format!(
+                    "Expected {:?} token, found {:?} token instead",
+                    expected, tok.kind
+                ),
+                tok.span,
+            );
+            Token::new(TokenKind::EOF, tok.span)
+        }
+    }
+
+    pub fn expect_keyword(&mut self, expected: Keyword) -> Token {
+        let tok = self.next();
+        if Keyword::from_token(tok, self.src).is_keyword() {
+            tok
+        } else {
+            self.diag.emit(
+                format!(
+                    "Expected {:?} token, found {:?} token instead",
+                    expected, tok.kind
+                ),
+                tok.span,
+            );
+            Token::new(TokenKind::EOF, tok.span)
         }
     }
 
