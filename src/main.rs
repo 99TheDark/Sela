@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, time};
 
 use crate::{error::Diagnostics, lexer::Lexer, parser::Parser, token::kind::TokenKind};
 
@@ -10,15 +10,13 @@ pub mod token;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let src = fs::read_to_string("io/test.qi")?;
-
     let mut diag = Diagnostics::new("io/test.qi".to_string(), &src);
 
     let tokens = Lexer::new(&src, &mut diag).lex();
 
     fs::write("io/tokens.txt", {
-        let mut diag = Diagnostics::new("n/a".to_string(), &src);
-        Lexer::new(&src, &mut diag)
-            .lex()
+        tokens
+            .clone()
             .into_iter()
             .map(|tok| {
                 format!(
@@ -35,7 +33,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let ast = Parser::new(&src, &tokens, &mut diag).parse();
 
-    fs::write("io/ast.txt", format!("{:#?}", ast).replace("    ", "│ "))?;
+    fs::write(
+        "io/ast.txt",
+        format!("{:#?}", ast).replace("    ", "  "), // │
+    )?;
 
     diag.print();
 

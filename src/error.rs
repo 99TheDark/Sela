@@ -61,7 +61,9 @@ impl<'a> Diagnostics<'a> {
     }
 
     fn column(&self, row: usize, idx: u32) -> usize {
-        self.src[row..idx as usize].graphemes(true).count()
+        self.src[self.line_starts[row]..idx as usize]
+            .graphemes(true)
+            .count()
     }
 
     fn visual_loc(&self, idx: u32) -> Location {

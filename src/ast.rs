@@ -1,3 +1,5 @@
+use core::fmt;
+
 use crate::{
     ast::{
         binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind, range::RangeKind,
@@ -13,7 +15,6 @@ pub mod range;
 pub mod symbol;
 pub mod unop;
 
-#[derive(Debug)]
 pub struct Node {
     pub kind: NodeKind,
     pub span: Span,
@@ -34,6 +35,13 @@ impl Node {
 
     pub fn new(kind: NodeKind, span: Span) -> Self {
         Self { kind, span }
+    }
+}
+
+impl fmt::Debug for Node {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Node ({:?}): ", self.span)?;
+        self.kind.fmt(f)
     }
 }
 

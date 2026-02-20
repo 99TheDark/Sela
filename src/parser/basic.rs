@@ -52,7 +52,7 @@ impl<'a, 'b> Parser<'a, 'b> {
             TokenKind::Int => self.try_parse_int(tok),
             TokenKind::LParen => {
                 let expr = self.parse_expr();
-                self.expect(TokenKind::RParen, true);
+                self.expect(TokenKind::RParen);
                 expr
             }
             _ => self

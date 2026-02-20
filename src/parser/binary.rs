@@ -12,12 +12,12 @@ impl<'a, 'b> Parser<'a, 'b> {
         let mut left = self.parse_unop();
 
         loop {
-            let token = self.current();
-            if token.is_eof() {
+            let tok = self.current();
+            if tok.is_eof() {
                 break;
             }
 
-            let Some(op) = BinaryKind::from_token(token, self.src) else {
+            let Some(op) = BinaryKind::from_token(tok, self.src) else {
                 break;
             };
 
@@ -27,6 +27,7 @@ impl<'a, 'b> Parser<'a, 'b> {
             }
 
             self.advance();
+            self.eat_nls();
 
             let right = self.parse_binop_pratt(prec + 1);
             left = op.make_node(left, right);
