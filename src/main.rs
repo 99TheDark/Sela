@@ -39,7 +39,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     diag.print();
 
-    println!("\x1b[31mHello, world! (in red)\x1b[0m");
-
     Ok(())
 }

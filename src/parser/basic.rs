@@ -6,6 +6,9 @@ use crate::{
 
 impl<'a, 'b> Parser<'a, 'b> {
     pub fn parse_stmt(&mut self) -> ast::Node {
+        while self.current().is_nl() {
+            self.advance();
+        }
         self.parse_expr()
     }
 

@@ -1,70 +1,35 @@
-use std::{cmp, fmt};
-
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd)]
-pub struct Location {
-    pub idx: usize,
-    pub row: usize,
-    pub col: usize,
-}
-
-impl Location {
-    pub const ZERO: Self = Self::new(0, 0, 0);
-
-    pub const fn new(idx: usize, row: usize, col: usize) -> Self {
-        Self { idx, row, col }
-    }
-
-    pub const fn next(self) -> Self {
-        Self {
-            idx: self.idx + 1,
-            ..self
-        }
-    }
-}
-
-impl cmp::Ord for Location {
-    fn cmp(&self, other: &Self) -> cmp::Ordering {
-        self.idx.cmp(&other.idx)
-    }
-}
-
-impl fmt::Debug for Location {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?} ({:?}:{:?})", self.idx, self.row, self.col)
-    }
-}
+use std::{fmt, ops::Range};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub struct Span {
-    pub start: Location,
-    pub end: Location,
+    pub start: u32,
+    pub end: u32,
 }
 
 impl Span {
-    pub const ZERO: Self = Self {
-        start: Location::ZERO,
-        end: Location::ZERO,
-    };
+    pub const ZERO: Self = Self { start: 0, end: 0 };
 
-    pub const fn new(start: Location, end: Location) -> Self {
+    pub const fn new(start: u32, end: u32) -> Self {
         Self { start, end }
     }
 
-    pub const fn single(loc: Location) -> Self {
-        Self {
-            start: loc,
-            end: loc,
-        }
+    pub const fn single(start: u32) -> Self {
+        Self { start, end: 0 }
+    }
+
+    fn range(&self) -> Range<usize> {
+        self.start as usize..self.end as usize
     }
 
     pub fn debug_src(&self, src: &str) -> String {
-        src[self.start.idx..self.end.idx].replace('\n', "\\n")
+        src[self.range()].replace('\n', "\\n")
     }
 
     pub fn src<'a>(&self, src: &'a str) -> &'a str {
-        &src[self.start.idx..self.end.idx]
+        &src[self.range()]
     }
 
+    // Assumes `to` is after `self`
     pub fn to(&self, to: Self) -> Self {
         Self::new(self.start, to.end)
     }
@@ -72,6 +37,6 @@ impl Span {
 
 impl fmt::Debug for Span {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?} to {:?}", self.start, self.end)
+        write!(f, "{}-{}", self.start, self.end)
     }
 }

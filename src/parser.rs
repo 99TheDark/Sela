@@ -8,12 +8,7 @@ pub mod unary;
 use crate::{
     ast,
     error::Diagnostics,
-    token::{
-        Token,
-        keyword::Keyword,
-        kind::TokenKind,
-        span::{Location, Span},
-    },
+    token::{Token, keyword::Keyword, kind::TokenKind, span::Span},
 };
 
 pub struct Parser<'a, 'b> {
@@ -26,11 +21,7 @@ pub struct Parser<'a, 'b> {
 
 impl<'a, 'b> Parser<'a, 'b> {
     pub fn new(src: &'a str, tokens: &'a [Token], diag: &'a mut Diagnostics<'b>) -> Self {
-        let eof_loc = if let Some(last) = tokens.last() {
-            last.span.end.next()
-        } else {
-            Location::ZERO
-        };
+        let eof_loc = tokens.last().map_or(0, |tok| tok.span.end + 1);
 
         Self {
             src,

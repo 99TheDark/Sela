@@ -2,11 +2,7 @@ use std::{iter, str};
 
 use crate::{
     error::Diagnostics,
-    token::{
-        Token,
-        kind::TokenKind,
-        span::{Location, Span},
-    },
+    token::{Token, kind::TokenKind, span::Span},
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -35,7 +31,7 @@ impl TokenFilterMode {
 pub struct Lexer<'a, 'b> {
     chars: iter::Peekable<str::Chars<'a>>,
     diag: &'a mut Diagnostics<'b>,
-    loc: Location,
+    idx: u32,
     interp_stack: Vec<usize>,
     just_exited: bool,
     filter_mode: TokenFilterMode,
@@ -50,7 +46,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         Self {
             chars: src.chars().peekable(),
             diag,
-            loc: Location::ZERO,
+            idx: 0,
             interp_stack: Vec::new(),
             just_exited: false,
             filter_mode,
@@ -63,15 +59,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
     pub fn next(&mut self) -> Option<char> {
         let ch = self.chars.next()?;
-
-        self.loc.idx += ch.len_utf8();
-        if ch == '\n' {
-            self.loc.col = 0;
-            self.loc.row += 1;
-        } else {
-            self.loc.col += 1;
-        }
-
+        self.idx += ch.len_utf8() as u32;
         Some(ch)
     }
 
@@ -284,16 +272,16 @@ impl<'a, 'b> Lexer<'a, 'b> {
 
     pub fn lex(mut self) -> Vec<Token> {
         let mut tokens = Vec::new();
-        while let (start, Some(ch)) = (self.loc, self.next()) {
+        while let (start, Some(ch)) = (self.idx, self.next()) {
             let kind = self.lex_token_kind(ch);
 
             if !self.should_be_filtered(kind) {
-                tokens.push(Token::new(kind, Span::new(start, self.loc)));
+                tokens.push(Token::new(kind, Span::new(start, self.idx)));
             }
             if self.just_exited {
-                let start = self.loc;
+                let start = self.idx;
                 self.just_exited = false;
-                tokens.push(Token::new(self.string(), Span::new(start, self.loc)));
+                tokens.push(Token::new(self.string(), Span::new(start, self.idx)));
             }
         }
         tokens

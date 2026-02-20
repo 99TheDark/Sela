@@ -1,4 +1,12 @@
-use crate::{ast, token::span::Span};
+pub mod utils;
+
+use unicode_segmentation::UnicodeSegmentation;
+
+use crate::{
+    ast,
+    error::utils::{Location, NumDigits},
+    token::span::Span,
+};
 
 pub const CONSOLE_WIDTH: usize = 80;
 
@@ -12,18 +20,9 @@ pub struct Error {
 pub struct Diagnostics<'a> {
     file_name: String,
     src: &'a str,
+    line_starts: Vec<usize>,
     with_color: bool,
     errors: Vec<Error>,
-}
-
-trait NumDigits {
-    fn num_digits(self) -> u32;
-}
-
-impl NumDigits for usize {
-    fn num_digits(self) -> u32 {
-        self.checked_ilog10().unwrap_or(0) + 1
-    }
 }
 
 impl<'a> Diagnostics<'a> {
@@ -31,6 +30,9 @@ impl<'a> Diagnostics<'a> {
         Self {
             file_name,
             src,
+            line_starts: std::iter::once(0)
+                .chain(src.match_indices('\n').map(|m| m.0 + 1))
+                .collect(),
             with_color: true,
             errors: Vec::new(),
         }
@@ -45,60 +47,72 @@ impl<'a> Diagnostics<'a> {
         ast::Node::failed(span)
     }
 
+    fn nth_line(&self, line_num: usize) -> &str {
+        if line_num < self.line_starts.len() - 1 {
+            &self.src[self.line_starts[line_num]..self.line_starts[line_num + 1] - 1]
+        } else {
+            &self.src[self.line_starts[line_num]..]
+        }
+    }
+
+    fn row(&self, idx: u32) -> usize {
+        let line_start_idx = self.line_starts.partition_point(|x| *x <= idx as usize);
+        line_start_idx - 1
+    }
+
+    fn column(&self, row: usize, idx: u32) -> usize {
+        self.src[row..idx as usize].graphemes(true).count()
+    }
+
+    fn visual_loc(&self, idx: u32) -> Location {
+        let row = self.row(idx);
+        let col = self.column(row, idx);
+        Location::new(row, col)
+    }
+
     fn above(&self, row: usize) -> u32 {
         const LEADING_SIZE: usize = 4;
         let top_row = row.saturating_sub(LEADING_SIZE);
         let left_pad = (row + 1).num_digits();
 
-        // TODO: Very inefficient, compute this ahead of time
-        let lines = self.src.split('\n').collect::<Vec<&str>>();
         for i in top_row..=row {
             let n = i + 1;
             let pad = left_pad - n.num_digits();
-            println!("{}{} | {}", n, " ".repeat(pad as usize), lines[i]);
+            println!("{}{} | {}", n, " ".repeat(pad as usize), self.nth_line(i));
         }
 
         left_pad
     }
 
-    /*fn yellow(&self, s: String) -> String {
-        if self.with_color {
-            format!("\x1b[33m{}\x1b[0m", s)
-        } else {
-            s
-        }
-    }*/
-
-    fn red(&self, s: String) -> String {
-        if self.with_color {
-            format!("\x1b[31m{}\x1b[0m", s)
-        } else {
-            s
-        }
-    }
-
     pub fn print(self) {
+        println!("{:?}", self.line_starts);
+
+        // TODO: Currently assumes the error occurs on only one line, the span is not malformed, and the error message is short enough.
         for error in &self.errors {
+            let start = self.visual_loc(error.span.start);
+            let end = self.visual_loc(error.span.end);
+
+            println!("{:?}: {:?} - {:?}", error.span, start, end);
+
             println!(
                 "{}: {}:{}:{}",
                 self.red("Error".to_string()),
                 self.file_name,
-                error.span.start.row,
-                error.span.start.col
+                start.row,
+                start.col
             );
 
-            let left_pad = self.above(error.span.start.row);
+            let left_pad = self.above(start.row);
 
-            // TODO: Currently assumes the error occurs on only one line, the span is not malformed, and the error message is short enough.
-            let len = if error.span.end.col > error.span.start.col {
-                error.span.end.col - error.span.start.col
+            let len = if end.col > start.col {
+                end.col - start.col
             } else {
                 1
             };
             println!(
                 "{} | {}{} {}\n",
                 " ".repeat(left_pad as usize),
-                " ".repeat(error.span.start.col),
+                " ".repeat(start.col),
                 self.red("^".repeat(len)),
                 self.red(error.message.clone())
             );
