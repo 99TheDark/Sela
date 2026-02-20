@@ -1,0 +1,2 @@
+# Qi (v2)
+Still on a very similar syntax path as the original Qi with similar feature ideas, though ever-evolving. The former got way too hard to develop so I'm going in for a rewrite. I'm taking it a lot more slow and steady.

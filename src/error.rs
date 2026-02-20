@@ -85,8 +85,6 @@ impl<'a> Diagnostics<'a> {
     }
 
     pub fn print(self) {
-        println!("{:?}", self.line_starts);
-
         // TODO: Currently assumes the error occurs on only one line, the span is not malformed, and the error message is short enough.
         for error in &self.errors {
             let start = self.visual_loc(error.span.start);
