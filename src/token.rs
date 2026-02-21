@@ -16,6 +16,7 @@ impl Token {
     }
 
     pub fn src<'a>(&self, src: &'a str) -> &'a str {
+        println!("{:?}", self.kind);
         self.span.src(src)
     }
 
@@ -29,5 +30,9 @@ impl Token {
 
     pub fn is_nl(self) -> bool {
         self.kind == TokenKind::NewLine
+    }
+
+    pub fn is_ident(self) -> bool {
+        self.kind == TokenKind::Ident
     }
 }

@@ -4,12 +4,12 @@ use crate::{
     token::{Token, keyword::Keyword, kind::TokenKind},
 };
 
-impl<'a, 'b> Parser<'a, 'b> {
-    pub fn parse_decl(&mut self, init: Token) -> ast::Node {
+impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+    pub fn parse_decl(&mut self, init: Token) -> &'ast ast::Node<'ast> {
         self.expect_keyword(Keyword::Mut);
         let vari = self.parse_expr();
         self.expect(TokenKind::Eq);
         let val = self.parse_expr();
-        ast::Node::new(ast::NodeKind::Let(Box::new(vari), Box::new(val)), init.span)
+        self.alloc(ast::Node::new(ast::NodeKind::Let(&vari, &val), init.span))
     }
 }

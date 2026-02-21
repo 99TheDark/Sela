@@ -4,15 +4,15 @@ use crate::{
     token::{keyword::Keyword, kind::TokenKind},
 };
 
-impl<'a, 'b> Parser<'a, 'b> {
-    pub fn parse_stmt(&mut self) -> ast::Node {
+impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+    pub fn parse_stmt(&mut self) -> &'ast ast::Node<'ast> {
         while self.current().is_nl() {
             self.advance();
         }
         self.parse_expr()
     }
 
-    pub fn parse_expr(&mut self) -> ast::Node {
+    pub fn parse_expr(&mut self) -> &'ast ast::Node<'ast> {
         let kw = Keyword::from_token(self.current(), self.src);
         if kw == NotReserved {
             return self.parse_binop();
@@ -27,17 +27,19 @@ impl<'a, 'b> Parser<'a, 'b> {
             _ => self.diag.fail(
                 format!("Unexpected reserved keyword '{}'", tok.src(self.src)),
                 tok.span,
+                self.arena,
             ),
         }
     }
 
-    pub fn parse_block(&mut self) -> ast::Node {
+    pub fn parse_block(&mut self) -> &'ast ast::Node<'ast> {
         todo!()
     }
 
-    pub fn parse_primary(&mut self) -> ast::Node {
+    pub fn parse_primary(&mut self) -> &'ast ast::Node<'ast> {
         let tok = self.next();
         let span = tok.span;
+
         let src = tok.src(self.src);
 
         match tok.kind {
@@ -47,7 +49,7 @@ impl<'a, 'b> Parser<'a, 'b> {
                     "false" => ast::NodeKind::Bool(false),
                     _ => ast::NodeKind::Ident(src.to_string()), // TODO: temporary str store
                 };
-                ast::Node::new(kind, span)
+                self.alloc(ast::Node::new(kind, span))
             }
             TokenKind::Int => self.try_parse_int(tok),
             TokenKind::LParen => {
@@ -55,9 +57,11 @@ impl<'a, 'b> Parser<'a, 'b> {
                 self.expect(TokenKind::RParen);
                 expr
             }
-            _ => self
-                .diag
-                .fail(format!("Unexpected {:?} token", tok.kind), span),
+            _ => self.diag.fail(
+                format!("Unexpected {:?} token", tok.kind),
+                span,
+                &self.arena,
+            ),
         }
     }
 }

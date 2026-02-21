@@ -15,12 +15,12 @@ pub mod range;
 pub mod symbol;
 pub mod unop;
 
-pub struct Node {
-    pub kind: NodeKind,
+pub struct Node<'a> {
+    pub kind: NodeKind<'a>,
     pub span: Span,
 }
 
-impl Node {
+impl<'a> Node<'a> {
     pub const EMPTY: Self = Self {
         kind: NodeKind::Unknown,
         span: Span::ZERO,
@@ -33,12 +33,12 @@ impl Node {
         }
     }
 
-    pub fn new(kind: NodeKind, span: Span) -> Self {
+    pub fn new(kind: NodeKind<'a>, span: Span) -> Self {
         Self { kind, span }
     }
 }
 
-impl fmt::Debug for Node {
+impl<'a> fmt::Debug for Node<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "Node ({:?}): ", self.span)?;
         self.kind.fmt(f)
@@ -46,15 +46,15 @@ impl fmt::Debug for Node {
 }
 
 #[derive(Debug)]
-pub enum NodeKind {
+pub enum NodeKind<'a> {
     Ident(String),
-    BinOp(Box<Node>, BinOpKind, Box<Node>),
-    KwBinOp(Box<Node>, KwBinOpKind, Box<Node>),
-    Comp(Box<Node>, CompKind, Box<Node>),
-    Range(Box<Node>, RangeKind, Box<Node>),
-    UnOp(UnOpKind, Box<Node>),
+    BinOp(&'a Node<'a>, BinOpKind, &'a Node<'a>),
+    KwBinOp(&'a Node<'a>, KwBinOpKind, &'a Node<'a>),
+    Comp(&'a Node<'a>, CompKind, &'a Node<'a>),
+    Range(&'a Node<'a>, RangeKind, &'a Node<'a>),
+    UnOp(UnOpKind, &'a Node<'a>),
     Int(i64),
     Bool(bool),
-    Let(Box<Node>, Box<Node>),
+    Let(&'a Node<'a>, &'a Node<'a>),
     Unknown,
 }

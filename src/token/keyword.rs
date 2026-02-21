@@ -42,6 +42,11 @@ impl Keyword {
 
     pub fn from_token(tok: Token, src: &str) -> Self {
         use Keyword::*;
+
+        if !tok.is_ident() {
+            return NotReserved;
+        }
+
         match tok.src(src) {
             "let" => Let,
             "const" => Const,

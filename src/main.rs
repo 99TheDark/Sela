@@ -1,4 +1,6 @@
-use std::{fs, time};
+use std::fs;
+
+use bumpalo::Bump;
 
 use crate::{error::Diagnostics, lexer::Lexer, parser::Parser, token::kind::TokenKind};
 
@@ -14,6 +16,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let tokens = Lexer::new(&src, &mut diag).lex();
 
+    // For debugging
     fs::write("io/tokens.txt", {
         tokens
             .clone()
@@ -31,13 +34,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .join("\n")
     })?;
 
-    let ast = Parser::new(&src, &tokens, &mut diag).parse();
+    let arena = Bump::new();
+    let ast = Parser::new(&src, &tokens, &mut diag, &arena).parse();
 
+    // For debugging
     fs::write(
         "io/ast.txt",
         format!("{:#?}", ast).replace("    ", "  "), // │
     )?;
 
+    println!("{}", &src);
     diag.print();
 
     Ok(())

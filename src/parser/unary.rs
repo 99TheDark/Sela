@@ -4,8 +4,8 @@ use crate::{
     token::kind::TokenKind,
 };
 
-impl<'a, 'b> Parser<'a, 'b> {
-    pub fn parse_unop(&mut self) -> ast::Node {
+impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+    pub fn parse_unop(&mut self) -> &'ast ast::Node<'ast> {
         let token = self.current();
         let span = token.span;
 
@@ -22,6 +22,6 @@ impl<'a, 'b> Parser<'a, 'b> {
         // self.eat_nls();
 
         let operand = Box::new(self.parse_unop());
-        return ast::Node::new(ast::NodeKind::UnOp(sym, operand), span);
+        self.alloc(ast::Node::new(ast::NodeKind::UnOp(sym, &operand), span))
     }
 }

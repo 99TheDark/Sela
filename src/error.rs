@@ -1,5 +1,6 @@
 pub mod utils;
 
+use bumpalo::Bump;
 use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{
@@ -42,9 +43,14 @@ impl<'a> Diagnostics<'a> {
         self.errors.push(Error { message, span });
     }
 
-    pub fn fail(&mut self, message: String, span: Span) -> ast::Node {
+    pub fn fail<'ast>(
+        &mut self,
+        message: String,
+        span: Span,
+        alloc: &'ast Bump,
+    ) -> &'ast ast::Node<'ast> {
         self.emit(message, span);
-        ast::Node::failed(span)
+        alloc.alloc(ast::Node::failed(span))
     }
 
     fn nth_line(&self, line_num: usize) -> &str {

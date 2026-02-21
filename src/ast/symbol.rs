@@ -1,5 +1,7 @@
 use std::fmt;
 
+use bumpalo::Bump;
+
 use crate::{
     ast::{
         self, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind, range::RangeKind,
@@ -89,17 +91,22 @@ impl BinaryKind {
         }
     }
 
-    pub fn make_node(&self, left: ast::Node, right: ast::Node) -> ast::Node {
+    pub fn make_node<'ast>(
+        &self,
+        left: &'ast ast::Node<'ast>,
+        right: &'ast ast::Node<'ast>,
+        alloc: &'ast Bump,
+    ) -> &'ast ast::Node<'ast> {
         let span = left.span.to(right.span);
 
         use BinaryKind::*;
         let kind = match self {
-            BinOp(op) => ast::NodeKind::BinOp(Box::new(left), *op, Box::new(right)),
-            KwBinOp(op) => ast::NodeKind::KwBinOp(Box::new(left), *op, Box::new(right)),
-            Comp(cmp) => ast::NodeKind::Comp(Box::new(left), *cmp, Box::new(right)),
-            Range(mode) => ast::NodeKind::Range(Box::new(left), *mode, Box::new(right)),
+            BinOp(op) => ast::NodeKind::BinOp(&left, *op, &right),
+            KwBinOp(op) => ast::NodeKind::KwBinOp(&left, *op, &right),
+            Comp(cmp) => ast::NodeKind::Comp(&left, *cmp, &right),
+            Range(mode) => ast::NodeKind::Range(&left, *mode, &right),
         };
 
-        ast::Node::new(kind, span)
+        alloc.alloc(ast::Node::new(kind, span))
     }
 }

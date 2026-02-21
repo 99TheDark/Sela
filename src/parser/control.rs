@@ -1,19 +1,19 @@
 use crate::{ast, parser::Parser};
 
-impl<'a, 'b> Parser<'a, 'b> {
-    pub fn parse_if_else(&mut self) -> ast::Node {
+impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+    pub fn parse_if_else(&mut self) -> &'ast ast::Node<'ast> {
         todo!()
     }
 
-    pub fn parse_for_loop(&mut self) -> ast::Node {
+    pub fn parse_for_loop(&mut self) -> &'ast ast::Node<'ast> {
         todo!()
     }
 
-    pub fn parse_while_loop(&mut self) -> ast::Node {
+    pub fn parse_while_loop(&mut self) -> &'ast ast::Node<'ast> {
         todo!()
     }
 
-    pub fn parse_loop(&mut self) -> ast::Node {
+    pub fn parse_loop(&mut self) -> &'ast ast::Node<'ast> {
         todo!()
     }
 }

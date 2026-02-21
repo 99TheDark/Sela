@@ -3,12 +3,12 @@ use crate::{
     parser::Parser,
 };
 
-impl<'a, 'b> Parser<'a, 'b> {
-    pub fn parse_binop(&mut self) -> ast::Node {
+impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+    pub fn parse_binop(&mut self) -> &'ast ast::Node<'ast> {
         self.parse_binop_pratt(0)
     }
 
-    pub fn parse_binop_pratt(&mut self, min_prec: u8) -> ast::Node {
+    pub fn parse_binop_pratt(&mut self, min_prec: u8) -> &'ast ast::Node<'ast> {
         let mut left = self.parse_unop();
 
         loop {
@@ -30,7 +30,7 @@ impl<'a, 'b> Parser<'a, 'b> {
             self.eat_nls();
 
             let right = self.parse_binop_pratt(prec + 1);
-            left = op.make_node(left, right);
+            left = op.make_node(&left, right, &self.arena);
         }
         left
     }

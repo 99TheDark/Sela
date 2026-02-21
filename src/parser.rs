@@ -7,23 +7,31 @@ pub mod unary;
 
 use std::fmt;
 
+use bumpalo::Bump;
+
 use crate::{
     ast,
     error::Diagnostics,
     token::{Token, keyword::Keyword, kind::TokenKind, span::Span},
 };
 
-pub struct Parser<'a, 'b> {
-    src: &'a str,
-    tokens: &'a [Token],
+pub struct Parser<'ast, 'diag, 'src> {
+    src: &'src str,
+    tokens: &'src [Token],
     idx: usize,
-    diag: &'a mut Diagnostics<'b>,
+    diag: &'diag mut Diagnostics<'src>,
     eof_token: Token,
+    arena: &'ast Bump,
 }
 
-impl<'a, 'b> Parser<'a, 'b> {
-    pub fn new(src: &'a str, tokens: &'a [Token], diag: &'a mut Diagnostics<'b>) -> Self {
-        let eof_loc = tokens.last().map_or(0, |tok| tok.span.end + 1);
+impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+    pub fn new(
+        src: &'src str,
+        tokens: &'src [Token],
+        diag: &'diag mut Diagnostics<'src>,
+        arena: &'ast Bump,
+    ) -> Self {
+        let eof_loc = tokens.last().map_or(0, |tok| tok.span.end);
 
         Self {
             src,
@@ -31,6 +39,7 @@ impl<'a, 'b> Parser<'a, 'b> {
             idx: 0,
             diag,
             eof_token: Token::new(TokenKind::EOF, Span::single(eof_loc)),
+            arena,
         }
     }
 
@@ -130,10 +139,18 @@ impl<'a, 'b> Parser<'a, 'b> {
         )
     }
 
-    pub fn parse(mut self) -> Vec<ast::Node> {
+    pub fn alloc<T>(&mut self, elem: T) -> &'ast T {
+        self.arena.alloc(elem)
+    }
+
+    pub fn parse(mut self) -> Vec<&'ast ast::Node<'ast>> {
         let mut stmts = Vec::new();
-        while self.idx < self.tokens.len() {
-            stmts.push(self.parse_stmt());
+        loop {
+            if self.idx >= self.tokens.len() {
+                break;
+            }
+            let stmt = self.parse_stmt();
+            stmts.push(stmt);
         }
         stmts
     }
