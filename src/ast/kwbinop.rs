@@ -7,6 +7,14 @@ pub enum KwBinOpKind {
 }
 
 impl Symbol for KwBinOpKind {
+    fn name(&self) -> &str {
+        use KwBinOpKind::*;
+        match self {
+            And => "And",
+            Or => "Or",
+        }
+    }
+
     fn as_str(&self) -> &str {
         use KwBinOpKind::*;
         match self {

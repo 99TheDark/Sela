@@ -55,6 +55,6 @@ pub enum NodeKind<'a> {
     UnOp(UnOpKind, &'a Node<'a>),
     Int(i64),
     Bool(bool),
-    Let(&'a Node<'a>, &'a Node<'a>),
+    Decl(&'a Node<'a>, &'a Node<'a>),
     Unknown,
 }

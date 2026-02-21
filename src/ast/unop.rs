@@ -9,6 +9,16 @@ pub enum UnOpKind {
 }
 
 impl Symbol for UnOpKind {
+    fn name(&self) -> &str {
+        use UnOpKind::*;
+        match self {
+            Neg => "Negate",
+            Not => "Not",
+            Ref => "Reference",
+            Deref => "Dereference",
+        }
+    }
+
     fn as_str(&self) -> &str {
         use UnOpKind::*;
         match self {

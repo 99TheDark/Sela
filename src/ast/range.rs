@@ -8,6 +8,15 @@ pub enum RangeKind {
 }
 
 impl Symbol for RangeKind {
+    fn name(&self) -> &str {
+        use RangeKind::*;
+        match self {
+            Full => "Full Range",
+            Excl => "Exclusive Range",
+            Incl => "Inclusive Range",
+        }
+    }
+
     fn as_str(&self) -> &str {
         use RangeKind::*;
         match self {

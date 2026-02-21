@@ -8,6 +8,7 @@ pub mod ast;
 pub mod error;
 pub mod lexer;
 pub mod parser;
+pub mod pretty;
 pub mod token;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -40,10 +41,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let ast = Parser::new(&src, &tokens, &mut diag, &arena).parse();
 
     // For debugging
-    fs::write(
-        "io/ast.txt",
-        format!("{:#?}", ast).replace("    ", "  "), // │
-    )?;
+    pretty::write_file("io/ast.txt".to_string(), &ast)?;
+    pretty::print(&ast)?;
 
     diag.print();
 

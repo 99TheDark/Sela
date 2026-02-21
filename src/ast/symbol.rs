@@ -10,6 +10,7 @@ use crate::{
 };
 
 pub trait Symbol: fmt::Debug + Copy + Clone {
+    fn name(&self) -> &str;
     fn as_str(&self) -> &str;
 }
 
@@ -22,6 +23,16 @@ pub enum BinaryKind {
 }
 
 impl Symbol for BinaryKind {
+    fn name(&self) -> &str {
+        use BinaryKind::*;
+        match self {
+            BinOp(kind) => kind.name(),
+            KwBinOp(kind) => kind.name(),
+            Comp(kind) => kind.name(),
+            Range(kind) => kind.name(),
+        }
+    }
+
     fn as_str(&self) -> &str {
         use BinaryKind::*;
         match self {

@@ -6,9 +6,6 @@ use crate::{
 
 impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
     pub fn parse_stmt(&mut self) -> &'ast ast::Node<'ast> {
-        while self.current().is_nl() {
-            self.advance();
-        }
         self.parse_expr()
     }
 
@@ -53,9 +50,9 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
             }
             TokenKind::Int => self.try_parse_int(tok),
             TokenKind::LParen => {
-                self.eat_nls();
+                //self.eat_nls();
                 let expr = self.parse_expr();
-                self.eat_nls();
+                //self.eat_nls();
                 self.expect(TokenKind::RParen);
                 expr
             }

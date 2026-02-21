@@ -27,7 +27,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
             }
 
             self.advance();
-            self.eat_nls();
+            //self.eat_nls();
 
             let right = self.parse_binop_pratt(prec + 1);
             left = op.make_node(&left, right, &self.arena);

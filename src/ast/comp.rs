@@ -11,6 +11,18 @@ pub enum CompKind {
 }
 
 impl Symbol for CompKind {
+    fn name(&self) -> &str {
+        use CompKind::*;
+        match self {
+            EqEq => "Equal",
+            NotEq => "Not Equal",
+            Lt => "Less Than",
+            Gt => "Greater Than",
+            LtEq => "Less Than or Equal",
+            GtEq => "Greater Than or Equal",
+        }
+    }
+
     fn as_str(&self) -> &str {
         use CompKind::*;
         match self {
