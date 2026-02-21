@@ -69,11 +69,11 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
     }
 
     pub fn eat_nls(&mut self) {
-        self.eat_until(|tok| !tok.is_nl());
+        self.eat_until(|tok| tok.is_nl());
     }
 
     pub fn eat_line(&mut self) {
-        self.eat_until(|tok| tok.is_nl());
+        self.eat_until(|tok| !tok.is_nl());
     }
 
     pub fn current(&self) -> Token {

@@ -16,7 +16,6 @@ impl Token {
     }
 
     pub fn src<'a>(&self, src: &'a str) -> &'a str {
-        println!("{:?}", self.kind);
         self.span.src(src)
     }
 

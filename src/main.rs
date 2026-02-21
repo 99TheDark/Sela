@@ -43,7 +43,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         format!("{:#?}", ast).replace("    ", "  "), // │
     )?;
 
-    println!("{}", &src);
     diag.print();
 
     Ok(())

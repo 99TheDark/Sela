@@ -13,8 +13,11 @@ impl Span {
         Self { start, end }
     }
 
-    pub const fn single(start: u32) -> Self {
-        Self { start, end: start }
+    pub const fn single(loc: u32) -> Self {
+        Self {
+            start: loc,
+            end: loc,
+        }
     }
 
     fn range(&self) -> Range<usize> {
@@ -26,7 +29,6 @@ impl Span {
     }
 
     pub fn src<'a>(&self, src: &'a str) -> &'a str {
-        println!("{:?}", self.range());
         &src[self.range()]
     }
 
