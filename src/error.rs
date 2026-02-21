@@ -98,14 +98,12 @@ impl<'a> Diagnostics<'a> {
             let start = self.visual_loc(error.span.start);
             let end = self.visual_loc(error.span.end);
 
-            println!("{:?}: {:?} - {:?}", error.span, start, end);
-
             println!(
                 "{}: {}:{}:{}",
                 self.red("Error".to_string()),
                 self.file_name,
-                start.row,
-                start.col
+                start.row + 1,
+                start.col + 1
             );
 
             let left_pad = self.above(start.row);

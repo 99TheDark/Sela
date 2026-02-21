@@ -11,8 +11,10 @@ pub mod parser;
 pub mod token;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let src = fs::read_to_string("io/test.qi")?;
-    let mut diag = Diagnostics::new("io/test.qi".to_string(), &src);
+    let file = "io/test.qi";
+
+    let src = fs::read_to_string(file)?;
+    let mut diag = Diagnostics::new(file.to_string(), &src);
 
     let tokens = Lexer::new(&src, &mut diag).lex();
 
