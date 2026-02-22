@@ -104,18 +104,26 @@ impl BinaryKind {
 
     pub fn make_node<'ast>(
         &self,
-        left: &'ast ast::Node<'ast>,
-        right: &'ast ast::Node<'ast>,
+        lhs: &'ast ast::Node<'ast>,
+        rhs: &'ast ast::Node<'ast>,
         alloc: &'ast Bump,
     ) -> &'ast ast::Node<'ast> {
-        let span = left.span.to(right.span);
+        let span = lhs.span.to(rhs.span);
 
         use BinaryKind::*;
         let kind = match self {
-            BinOp(op) => ast::NodeKind::BinOp(&left, *op, &right),
-            KwBinOp(op) => ast::NodeKind::KwBinOp(&left, *op, &right),
-            Comp(cmp) => ast::NodeKind::Comp(&left, *cmp, &right),
-            Range(mode) => ast::NodeKind::Range(&left, *mode, &right),
+            BinOp(op) => ast::NodeKind::BinOp { lhs, op: *op, rhs },
+            KwBinOp(op) => ast::NodeKind::KwBinOp { lhs, op: *op, rhs },
+            Comp(comp) => ast::NodeKind::Comp {
+                lhs,
+                comp: *comp,
+                rhs,
+            },
+            Range(range) => ast::NodeKind::Range {
+                from: Some(lhs),
+                range: *range,
+                to: Some(rhs),
+            },
         };
 
         alloc.alloc(ast::Node::new(kind, span))

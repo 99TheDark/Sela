@@ -1,103 +1,126 @@
 List
 ├─ Declaration
-│   ├─ Identifier (function)
-│   └─ Unknown
+│  ├─ Pattern: Identifier (function)
+│  └─ Value: <! Unknown !>
 ├─ Unary Operation
-│   ├─ Reference (&)
-│   └─ Identifier (v)
+│  ├─ Operator: Reference (&)
+│  └─ Right-hand Side: Identifier (v)
 ├─ Identifier (dx)
 ├─ Declaration
-│   ├─ Identifier (k)
-│   └─ Binary Operation
-│       ├─ Binary Operation
-│       │   ├─ Integer (3)
-│       │   ├─ Subtract (-)
-│       │   └─ Integer (2)
-│       ├─ Add (+)
-│       └─ Binary Operation
-│           ├─ Integer (7)
-│           ├─ Multiply (*)
-│           └─ Integer (8)
+│  ├─ Pattern: Identifier (k)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Binary Operation
+│     │  ├─ Left-hand Side: Integer (3)
+│     │  ├─ Operator: Subtract (-)
+│     │  └─ Right-hand Side: Integer (2)
+│     ├─ Operator: Add (+)
+│     └─ Right-hand Side: Binary Operation
+│        ├─ Left-hand Side: Integer (7)
+│        ├─ Operator: Multiply (*)
+│        └─ Right-hand Side: Integer (8)
 ├─ Unary Operation
-│   ├─ Negate (-)
-│   └─ Integer (2)
+│  ├─ Operator: Negate (-)
+│  └─ Right-hand Side: Integer (2)
 ├─ Declaration
-│   ├─ Identifier (a1)
-│   └─ Binary Operation
-│       ├─ Binary Operation
-│       │   ├─ Binary Operation
-│       │   │   ├─ Binary Operation
-│       │   │   │   ├─ Binary Operation
-│       │   │   │   │   ├─ Binary Operation
-│       │   │   │   │   │   ├─ Binary Operation
-│       │   │   │   │   │   │   ├─ Binary Operation
-│       │   │   │   │   │   │   │   ├─ Binary Operation
-│       │   │   │   │   │   │   │   │   ├─ Binary Operation
-│       │   │   │   │   │   │   │   │   │   ├─ Integer (0)
-│       │   │   │   │   │   │   │   │   │   ├─ Subtract (-)
-│       │   │   │   │   │   │   │   │   │   └─ Integer (1)
-│       │   │   │   │   │   │   │   │   ├─ Multiply (*)
-│       │   │   │   │   │   │   │   │   └─ Integer (2)
-│       │   │   │   │   │   │   │   ├─ Add (+)
-│       │   │   │   │   │   │   │   └─ Binary Operation
-│       │   │   │   │   │   │   │       ├─ Integer (5)
-│       │   │   │   │   │   │   │       ├─ Divide (/)
-│       │   │   │   │   │   │   │       └─ Integer (6)
-│       │   │   │   │   │   │   ├─ Add (+)
-│       │   │   │   │   │   │   └─ Integer (0)
-│       │   │   │   │   │   ├─ Multiply (*)
-│       │   │   │   │   │   └─ Binary Operation
-│       │   │   │   │   │       ├─ Integer (3)
-│       │   │   │   │   │       ├─ Add (+)
-│       │   │   │   │   │       └─ Integer (4)
-│       │   │   │   │   ├─ Divide (/)
-│       │   │   │   │   └─ Integer (8)
-│       │   │   │   ├─ Add (+)
-│       │   │   │   └─ Integer (4)
-│       │   │   ├─ Subtract (-)
-│       │   │   └─ Binary Operation
-│       │   │       ├─ Integer (7)
-│       │   │       ├─ Multiply (*)
-│       │   │       └─ Integer (8)
-│       │   ├─ Subtract (-)
-│       │   └─ Integer (1)
-│       ├─ Add (+)
-│       └─ Binary Operation
-│           ├─ Binary Operation
-│           │   ├─ Integer (94)
-│           │   ├─ Multiply (*)
-│           │   └─ Integer (14087)
-│           ├─ Divide (/)
-│           └─ Binary Operation
-│               ├─ Binary Operation
-│               │   ├─ Integer (6)
-│               │   ├─ Add (+)
-│               │   └─ Integer (88)
-│               ├─ Subtract (-)
-│               └─ Integer (1)
+│  ├─ Pattern: Identifier (a1)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Binary Operation
+│     │  ├─ Left-hand Side: Binary Operation
+│     │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │  │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │  │  │  │  ├─ Left-hand Side: Integer (0)
+│     │  │  │  │  │  │  │  │  │  ├─ Operator: Subtract (-)
+│     │  │  │  │  │  │  │  │  │  └─ Right-hand Side: Integer (1)
+│     │  │  │  │  │  │  │  │  ├─ Operator: Multiply (*)
+│     │  │  │  │  │  │  │  │  └─ Right-hand Side: Integer (2)
+│     │  │  │  │  │  │  │  ├─ Operator: Add (+)
+│     │  │  │  │  │  │  │  └─ Right-hand Side: Binary Operation
+│     │  │  │  │  │  │  │     ├─ Left-hand Side: Integer (5)
+│     │  │  │  │  │  │  │     ├─ Operator: Divide (/)
+│     │  │  │  │  │  │  │     └─ Right-hand Side: Integer (6)
+│     │  │  │  │  │  │  ├─ Operator: Add (+)
+│     │  │  │  │  │  │  └─ Right-hand Side: Integer (0)
+│     │  │  │  │  │  ├─ Operator: Multiply (*)
+│     │  │  │  │  │  └─ Right-hand Side: Binary Operation
+│     │  │  │  │  │     ├─ Left-hand Side: Integer (3)
+│     │  │  │  │  │     ├─ Operator: Add (+)
+│     │  │  │  │  │     └─ Right-hand Side: Integer (4)
+│     │  │  │  │  ├─ Operator: Divide (/)
+│     │  │  │  │  └─ Right-hand Side: Integer (8)
+│     │  │  │  ├─ Operator: Add (+)
+│     │  │  │  └─ Right-hand Side: Integer (4)
+│     │  │  ├─ Operator: Subtract (-)
+│     │  │  └─ Right-hand Side: Binary Operation
+│     │  │     ├─ Left-hand Side: Integer (7)
+│     │  │     ├─ Operator: Multiply (*)
+│     │  │     └─ Right-hand Side: Integer (8)
+│     │  ├─ Operator: Subtract (-)
+│     │  └─ Right-hand Side: Integer (1)
+│     ├─ Operator: Add (+)
+│     └─ Right-hand Side: Binary Operation
+│        ├─ Left-hand Side: Binary Operation
+│        │  ├─ Left-hand Side: Integer (94)
+│        │  ├─ Operator: Multiply (*)
+│        │  └─ Right-hand Side: Integer (14087)
+│        ├─ Operator: Divide (/)
+│        └─ Right-hand Side: Binary Operation
+│           ├─ Left-hand Side: Binary Operation
+│           │  ├─ Left-hand Side: Integer (6)
+│           │  ├─ Operator: Add (+)
+│           │  └─ Right-hand Side: Integer (88)
+│           ├─ Operator: Subtract (-)
+│           └─ Right-hand Side: Integer (1)
 ├─ Declaration
-│   ├─ Identifier (u)
-│   └─ Binary Operation
-│       ├─ Integer (5)
-│       ├─ Exclusive Or (^)
-│       └─ Binary Operation
-│           ├─ Integer (2)
-│           ├─ Subtract (-)
-│           └─ Integer (1)
-└─ Declaration
-    ├─ Identifier (v)
-    └─ Binary Keyword Operation
-        ├─ Binary Keyword Operation
-        │   ├─ Comparison
-        │   │   ├─ Integer (3)
-        │   │   ├─ Equal (==)
-        │   │   └─ Integer (2)
-        │   ├─ And (and)
-        │   └─ Comparison
-        │       ├─ Identifier (y)
-        │       ├─ Greater Than (>)
-        │       └─ Integer (5)
-        ├─ Or (or)
-        └─ Unary Operation
-            ├─ Not (!)
-            └─ Identifier (a1)
+│  ├─ Pattern: Identifier (u)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Integer (5)
+│     ├─ Operator: Exclusive Or (^)
+│     └─ Right-hand Side: Binary Operation
+│        ├─ Left-hand Side: Integer (2)
+│        ├─ Operator: Subtract (-)
+│        └─ Right-hand Side: Integer (1)
+├─ Declaration
+│  ├─ Pattern: Identifier (v)
+│  └─ Value: Binary Keyword Operation
+│     ├─ Left-hand Side: Binary Keyword Operation
+│     │  ├─ Left-hand Side: Comparison
+│     │  │  ├─ Left-hand Side: Integer (3)
+│     │  │  ├─ Comparator: Equal (==)
+│     │  │  └─ Right-hand Side: Integer (2)
+│     │  ├─ Operator: And (and)
+│     │  └─ Right-hand Side: Comparison
+│     │     ├─ Left-hand Side: Identifier (y)
+│     │     ├─ Comparator: Greater Than (>)
+│     │     └─ Right-hand Side: Integer (5)
+│     ├─ Operator: Or (or)
+│     └─ Right-hand Side: Unary Operation
+│        ├─ Operator: Not (!)
+│        └─ Right-hand Side: Identifier (a1)
+├─ <! Unknown !>
+├─ Identifier (std)
+├─ <! Unknown !>
+├─ Identifier (io)
+└─ If Statement
+   ├─ Condition: Comparison
+   │  ├─ Left-hand Side: Identifier (x)
+   │  ├─ Comparator: Greater Than (>)
+   │  └─ Right-hand Side: Integer (5)
+   ├─ Then Body: Block
+   │  ├─ Identifier (io)
+   │  ├─ <! Unknown !>
+   │  ├─ Identifier (print)
+   │  ├─ <! Unknown !>
+   │  ├─ Identifier (io)
+   │  ├─ <! Unknown !>
+   │  ├─ Identifier (print)
+   │  ├─ <! Unknown !>
+   │  ├─ Identifier (u)
+   │  ├─ <! Unknown !>
+   │  ├─ <! Unknown !>
+   │  └─ <! Unknown !>
+   └─ Else Body: Optional Node

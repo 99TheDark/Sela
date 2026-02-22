@@ -23,6 +23,10 @@ let u = 5 ^
 
 let v = 3 == 2 and y > 5 or !a1
 
-//if x > 5 {
-//
-//}
+use std.io
+if x > 5 {
+    io.print("Hello, world!")
+    io.print("u = 5 ^ (2 - 1) = $(u).")
+} else {
+    io.print("Oh no...")
+}

@@ -10,7 +10,7 @@ use bumpalo::Bump;
 use crate::{
     ast,
     error::Diagnostics,
-    token::{Token, kind::TokenKind, span::Span},
+    token::{Token, keyword::Keyword, kind::TokenKind, span::Span},
 };
 
 pub struct Parser<'ast, 'diag, 'src> {
@@ -84,7 +84,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         }
     }
 
-    pub fn expect(&mut self, expected: TokenKind) {
+    pub fn expect(&mut self, expected: TokenKind) -> Token {
         let tok = self.next();
         if tok.kind != expected {
             self.diag.emit(
@@ -95,18 +95,26 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
                 tok.span,
             );
         }
+        tok
+    }
+
+    pub fn at_keyword(&self, kw: Keyword) -> bool {
+        Keyword::from_token(self.current(), self.src) == kw
     }
 
     pub fn alloc<T>(&mut self, elem: T) -> &'ast T {
         self.arena.alloc(elem)
     }
 
-    pub fn parse(mut self) -> Vec<&'ast ast::Node<'ast>> {
+    pub fn parse_stmts<F>(&mut self, should_exit: F) -> Vec<&'ast ast::Node<'ast>>
+    where
+        F: Fn(Token) -> bool,
+    {
         let mut stmts = Vec::new();
         loop {
             self.eat_nls();
 
-            if self.idx >= self.tokens.len() {
+            if self.current().is_eof() || should_exit(self.current()) {
                 break;
             }
 
@@ -114,5 +122,9 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
             stmts.push(stmt);
         }
         stmts
+    }
+
+    pub fn parse(mut self) -> Vec<&'ast ast::Node<'ast>> {
+        self.parse_stmts(|_| false)
     }
 }

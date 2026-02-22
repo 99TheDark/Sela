@@ -20,6 +20,13 @@ impl Span {
         }
     }
 
+    pub fn shrink(&self, left: u32, right: u32) -> Self {
+        Self {
+            start: self.start + left,
+            end: self.end - right,
+        }
+    }
+
     fn range(&self) -> Range<usize> {
         self.start as usize..self.end as usize
     }

@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     pretty::write_file("io/ast.txt".to_string(), &ast)?;
     pretty::print(&ast)?;
 
-    diag.print();
+    //   diag.print();
 
     Ok(())
 }

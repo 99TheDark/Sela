@@ -1,14 +1,11 @@
-use crate::{
-    ast,
-    parser::Parser,
-    token::{Token, kind::TokenKind},
-};
+use crate::{ast, parser::Parser, token::kind::TokenKind};
 
 impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
-    pub fn parse_decl(&mut self, init: Token) -> &'ast ast::Node<'ast> {
-        let vari = self.parse_expr(); // TODO: Parse pattern
+    pub fn parse_decl(&mut self) -> &'ast ast::Node<'ast> {
+        let start = self.next();
+        let pat = self.parse_expr(); // TODO: Parse pattern
         self.expect(TokenKind::Eq);
         let val = self.parse_expr();
-        self.alloc(ast::Node::new(ast::NodeKind::Decl(&vari, &val), init.span))
+        self.alloc(ast::Node::new(ast::NodeKind::Decl { pat, val }, start.span))
     }
 }

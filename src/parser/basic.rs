@@ -15,22 +15,27 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
             return self.parse_binop();
         }
 
-        let tok = self.next();
-
         use Keyword::*;
         match kw {
             If => self.parse_if_else(),
-            Let => self.parse_decl(tok),
-            _ => self.diag.fail(
-                format!("Unexpected reserved keyword '{}'", tok.src(self.src)),
-                tok.span,
-                self.arena,
-            ),
+            Let => self.parse_decl(),
+            _ => {
+                let tok = self.next();
+                self.diag.fail(
+                    format!("Unexpected reserved keyword '{}'", tok.src(self.src)),
+                    tok.span,
+                    self.arena,
+                )
+            }
         }
     }
 
     pub fn parse_block(&mut self) -> &'ast ast::Node<'ast> {
-        todo!()
+        let start = self.expect(TokenKind::LBrace).span;
+        let body = self.parse_stmts(|tok| tok.kind == TokenKind::RBrace);
+        let end = self.expect(TokenKind::RBrace).span;
+
+        self.alloc(ast::Node::new(ast::NodeKind::Block(body), start.to(end)))
     }
 
     pub fn parse_primary(&mut self) -> &'ast ast::Node<'ast> {

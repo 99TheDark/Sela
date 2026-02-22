@@ -19,9 +19,14 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         };
 
         self.advance();
-        // self.eat_nls();
 
         let operand = Box::new(self.parse_unop());
-        self.alloc(ast::Node::new(ast::NodeKind::UnOp(sym, &operand), span))
+        self.alloc(ast::Node::new(
+            ast::NodeKind::UnOp {
+                op: sym,
+                rhs: &operand,
+            },
+            span,
+        ))
     }
 }

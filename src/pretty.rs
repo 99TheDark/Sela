@@ -14,19 +14,56 @@ pub mod ast;
 pub mod color;
 pub mod theme;
 
+/// Automatically generates a SmallVec while casting all items to &dyn Pretty
+///
+/// # Example
+/// ```
+/// prettyvec![lhs, op, rhs];
+/// ```
 #[macro_export]
 macro_rules! prettyvec {
-    ($( $x:expr ),* $(,)?) => {
+    [$(($name:literal, $child:expr)),* $(,)?] => {
         {
-            smallvec::smallvec![$($x as &dyn crate::pretty::Pretty,)*]
+            smallvec::smallvec![
+                $(
+                    crate::pretty::PrettyChild::Named(
+                        crate::pretty::NamedPrettyChild::new(
+                            $name,
+                            $child as &dyn crate::pretty::Pretty,
+                        ),
+                    ),
+                )*
+            ]
         }
     };
 }
 
+pub enum PrettyChild<'a> {
+    Named(NamedPrettyChild<'a>),
+    Unnamed(&'a dyn Pretty),
+}
+
+pub struct NamedPrettyChild<'a> {
+    name: &'a str,
+    child: &'a dyn Pretty,
+}
+
+impl<'a> NamedPrettyChild<'a> {
+    pub fn new(name: &'a str, child: &'a dyn Pretty) -> Self {
+        Self { name, child }
+    }
+}
+
 pub trait Pretty {
     fn title(&self) -> String;
-    fn color(&self) -> Option<AnsiColor>;
-    fn children(&self) -> SmallVec<[&dyn Pretty; 3]>;
+
+    fn color(&self) -> Option<AnsiColor> {
+        None
+    }
+
+    fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]> {
+        prettyvec![]
+    }
 }
 
 pub struct Formatter<B: io::Write> {
@@ -45,10 +82,15 @@ impl<B: io::Write> Formatter<B> {
     }
 
     pub fn format(&mut self, node: &dyn Pretty) -> io::Result<()> {
-        self.format_node(node, false)
+        self.format_node(node, None, false)
     }
 
-    fn format_node(&mut self, node: &dyn Pretty, is_last: bool) -> io::Result<()> {
+    fn format_node(
+        &mut self,
+        node: &dyn Pretty,
+        prefix: Option<&str>,
+        is_last: bool,
+    ) -> io::Result<()> {
         self.start_line(is_last)?;
 
         let title = if let Some(color) = node.color() {
@@ -56,13 +98,25 @@ impl<B: io::Write> Formatter<B> {
         } else {
             node.title()
         };
-        writeln!(self.buffer, "{}", title)?;
+
+        if let Some(pre) = prefix {
+            writeln!(self.buffer, "{}: {}", pre, title)?;
+        } else {
+            writeln!(self.buffer, "{}", title)?;
+        }
 
         let children = node.children();
 
         self.stack.push(is_last);
         for (i, child) in children.iter().enumerate() {
-            self.format_node(*child, i == children.len() - 1)?;
+            let is_last = i == children.len() - 1;
+            match child {
+                PrettyChild::Named(NamedPrettyChild {
+                    name,
+                    child: pretty,
+                }) => self.format_node(*pretty, Some(name), is_last),
+                PrettyChild::Unnamed(pretty) => self.format_node(*pretty, None, is_last),
+            }?;
         }
         self.stack.pop();
 
@@ -94,7 +148,7 @@ impl<B: io::Write> Formatter<B> {
 
     fn empty(&self) -> &'static [u8] {
         match self.theme.spacing {
-            Spacing::Full => b"    ",
+            Spacing::Full => b"   ",
             Spacing::Compact => b"  ",
         }
     }
@@ -102,12 +156,12 @@ impl<B: io::Write> Formatter<B> {
     fn down(&self) -> String {
         match (self.theme.coloring, self.theme.spacing) {
             (Coloring::Colorful, Spacing::Full) => {
-                format!("{}   ", AnsiColor::Gray.color(self.theme.v_bar))
+                format!("{}  ", AnsiColor::Gray.color(self.theme.v_bar))
             }
             (Coloring::Colorful, Spacing::Compact) => {
                 format!("{} ", AnsiColor::Gray.color(self.theme.v_bar))
             }
-            (Coloring::None, Spacing::Full) => format!("{}   ", self.theme.v_bar),
+            (Coloring::None, Spacing::Full) => format!("{}  ", self.theme.v_bar),
             (Coloring::None, Spacing::Compact) => format!("{} ", self.theme.v_bar),
         }
     }

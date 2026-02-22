@@ -48,13 +48,41 @@ impl<'a> fmt::Debug for Node<'a> {
 #[derive(Debug)]
 pub enum NodeKind<'a> {
     Ident(String),
-    BinOp(&'a Node<'a>, BinOpKind, &'a Node<'a>),
-    KwBinOp(&'a Node<'a>, KwBinOpKind, &'a Node<'a>),
-    Comp(&'a Node<'a>, CompKind, &'a Node<'a>),
-    Range(&'a Node<'a>, RangeKind, &'a Node<'a>),
-    UnOp(UnOpKind, &'a Node<'a>),
+    BinOp {
+        lhs: &'a Node<'a>,
+        op: BinOpKind,
+        rhs: &'a Node<'a>,
+    },
+    KwBinOp {
+        lhs: &'a Node<'a>,
+        op: KwBinOpKind,
+        rhs: &'a Node<'a>,
+    },
+    Comp {
+        lhs: &'a Node<'a>,
+        comp: CompKind,
+        rhs: &'a Node<'a>,
+    },
+    Range {
+        from: Option<&'a Node<'a>>,
+        range: RangeKind,
+        to: Option<&'a Node<'a>>,
+    },
+    UnOp {
+        op: UnOpKind,
+        rhs: &'a Node<'a>,
+    },
     Int(i64),
     Bool(bool),
-    Decl(&'a Node<'a>, &'a Node<'a>),
+    Decl {
+        pat: &'a Node<'a>,
+        val: &'a Node<'a>,
+    },
+    If {
+        cond: &'a Node<'a>,
+        body: &'a Node<'a>,
+        fallback: Option<&'a Node<'a>>,
+    },
+    Block(Vec<&'a Node<'a>>),
     Unknown,
 }
