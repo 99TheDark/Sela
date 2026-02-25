@@ -19,6 +19,14 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         match kw {
             If => self.parse_if_else(),
             Let => self.parse_decl(),
+            True => {
+                let tok = self.next();
+                self.alloc(ast::Node::new(ast::NodeKind::Bool(true), tok.span))
+            }
+            False => {
+                let tok = self.next();
+                self.alloc(ast::Node::new(ast::NodeKind::Bool(false), tok.span))
+            }
             _ => {
                 let tok = self.next();
                 self.diag.fail(

@@ -30,3 +30,5 @@ if x > 5 {
 } else {
     io.print("Oh no...")
 }
+
+if true {}

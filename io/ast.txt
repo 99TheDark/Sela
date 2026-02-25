@@ -105,22 +105,30 @@ List
 ├─ Identifier (std)
 ├─ <! Unknown !>
 ├─ Identifier (io)
+├─ If Statement
+│  ├─ Condition: Comparison
+│  │  ├─ Left-hand Side: Identifier (x)
+│  │  ├─ Comparator: Greater Than (>)
+│  │  └─ Right-hand Side: Integer (5)
+│  ├─ Then Body: Block
+│  │  ├─ Identifier (io)
+│  │  ├─ <! Unknown !>
+│  │  ├─ Identifier (print)
+│  │  ├─ <! Unknown !>
+│  │  ├─ Identifier (io)
+│  │  ├─ <! Unknown !>
+│  │  ├─ Identifier (print)
+│  │  ├─ <! Unknown !>
+│  │  ├─ Identifier (u)
+│  │  ├─ <! Unknown !>
+│  │  ├─ <! Unknown !>
+│  │  └─ <! Unknown !>
+│  └─ Else Body: Some Block
+│     ├─ Identifier (io)
+│     ├─ <! Unknown !>
+│     ├─ Identifier (print)
+│     └─ <! Unknown !>
 └─ If Statement
-   ├─ Condition: Comparison
-   │  ├─ Left-hand Side: Identifier (x)
-   │  ├─ Comparator: Greater Than (>)
-   │  └─ Right-hand Side: Integer (5)
+   ├─ Condition: Boolean (true)
    ├─ Then Body: Block
-   │  ├─ Identifier (io)
-   │  ├─ <! Unknown !>
-   │  ├─ Identifier (print)
-   │  ├─ <! Unknown !>
-   │  ├─ Identifier (io)
-   │  ├─ <! Unknown !>
-   │  ├─ Identifier (print)
-   │  ├─ <! Unknown !>
-   │  ├─ Identifier (u)
-   │  ├─ <! Unknown !>
-   │  ├─ <! Unknown !>
-   │  └─ <! Unknown !>
-   └─ Else Body: Optional Node
+   └─ Else Body: None

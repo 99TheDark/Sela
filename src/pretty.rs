@@ -3,7 +3,7 @@ use std::{
     io::{self, BufWriter, Write},
 };
 
-use smallvec::SmallVec;
+use smallvec::{SmallVec, smallvec};
 
 use crate::pretty::{
     color::AnsiColor,
@@ -14,44 +14,47 @@ pub mod ast;
 pub mod color;
 pub mod theme;
 
-/// Automatically generates a SmallVec while casting all items to &dyn Pretty
-///
-/// # Example
-/// ```
-/// prettyvec![lhs, op, rhs];
-/// ```
-#[macro_export]
-macro_rules! prettyvec {
-    [$(($name:literal, $child:expr)),* $(,)?] => {
-        {
-            smallvec::smallvec![
-                $(
-                    crate::pretty::PrettyChild::Named(
-                        crate::pretty::NamedPrettyChild::new(
-                            $name,
-                            $child as &dyn crate::pretty::Pretty,
-                        ),
-                    ),
-                )*
-            ]
-        }
-    };
+// Hopefully can later use `SmallVec<[T; 3]>`
+pub struct Builder<'a>(SmallVec<[PrettyChild<'a>; 3]>);
+
+impl<'a> Builder<'a> {
+    pub fn new() -> Self {
+        Self(SmallVec::new())
+    }
+
+    pub fn empty() -> SmallVec<[PrettyChild<'a>; 3]> {
+        smallvec![]
+    }
+
+    pub fn named(mut self, name: &'a str, inner: &'a dyn Pretty) -> Self {
+        self.0.push(PrettyChild::Named { name, inner });
+        self
+    }
+
+    pub fn prefixed(
+        mut self,
+        name: &'a str,
+        prefix: &'a str,
+        inner: &'a dyn Pretty,
+    ) -> Self {
+        self.0.push(PrettyChild::Prefixed { name, prefix, inner });
+        self
+    }
+
+    pub fn unnamed(mut self, inner: &'a dyn Pretty) -> Self {
+        self.0.push(PrettyChild::Unnamed { inner });
+        self
+    }
+
+    pub fn finish(self) -> SmallVec<[PrettyChild<'a>; 3]> {
+        self.0
+    }
 }
 
 pub enum PrettyChild<'a> {
-    Named(NamedPrettyChild<'a>),
-    Unnamed(&'a dyn Pretty),
-}
-
-pub struct NamedPrettyChild<'a> {
-    name: &'a str,
-    child: &'a dyn Pretty,
-}
-
-impl<'a> NamedPrettyChild<'a> {
-    pub fn new(name: &'a str, child: &'a dyn Pretty) -> Self {
-        Self { name, child }
-    }
+    Named { name: &'a str, inner: &'a dyn Pretty },
+    Prefixed { name: &'a str, prefix: &'a str, inner: &'a dyn Pretty },
+    Unnamed { inner: &'a dyn Pretty },
 }
 
 pub trait Pretty {
@@ -61,9 +64,7 @@ pub trait Pretty {
         None
     }
 
-    fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]> {
-        prettyvec![]
-    }
+    fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]>;
 }
 
 pub struct Formatter<B: io::Write> {
@@ -74,20 +75,17 @@ pub struct Formatter<B: io::Write> {
 
 impl<B: io::Write> Formatter<B> {
     pub const fn new(buffer: B, theme: Theme) -> Self {
-        Self {
-            buffer,
-            stack: Vec::new(),
-            theme,
-        }
+        Self { buffer, stack: Vec::new(), theme }
     }
 
     pub fn format(&mut self, node: &dyn Pretty) -> io::Result<()> {
-        self.format_node(node, None, false)
+        self.format_node(node, None, None, false)
     }
 
     fn format_node(
         &mut self,
         node: &dyn Pretty,
+        name: Option<&str>,
         prefix: Option<&str>,
         is_last: bool,
     ) -> io::Result<()> {
@@ -99,11 +97,14 @@ impl<B: io::Write> Formatter<B> {
             node.title()
         };
 
-        if let Some(pre) = prefix {
-            writeln!(self.buffer, "{}: {}", pre, title)?;
-        } else {
-            writeln!(self.buffer, "{}", title)?;
-        }
+        match (name, prefix) {
+            (Some(name), Some(prefix)) => {
+                writeln!(self.buffer, "{}: {} {}", name, prefix, title)
+            }
+            (Some(name), None) => writeln!(self.buffer, "{}: {}", name, title),
+            (None, Some(prefix)) => writeln!(self.buffer, "{} {}", prefix, title),
+            (None, None) => writeln!(self.buffer, "{}", title),
+        }?;
 
         let children = node.children();
 
@@ -111,11 +112,15 @@ impl<B: io::Write> Formatter<B> {
         for (i, child) in children.iter().enumerate() {
             let is_last = i == children.len() - 1;
             match child {
-                PrettyChild::Named(NamedPrettyChild {
-                    name,
-                    child: pretty,
-                }) => self.format_node(*pretty, Some(name), is_last),
-                PrettyChild::Unnamed(pretty) => self.format_node(*pretty, None, is_last),
+                PrettyChild::Named { name, inner } => {
+                    self.format_node(*inner, Some(name), None, is_last)
+                }
+                PrettyChild::Prefixed { name, prefix, inner } => {
+                    self.format_node(*inner, Some(name), Some(prefix), is_last)
+                }
+                PrettyChild::Unnamed { inner } => {
+                    self.format_node(*inner, None, None, is_last)
+                }
             }?;
         }
         self.stack.pop();
@@ -167,11 +172,7 @@ impl<B: io::Write> Formatter<B> {
     }
 
     fn connector(&self, is_last: bool) -> String {
-        let join = if is_last {
-            self.theme.dl_bend
-        } else {
-            self.theme.l_conn
-        };
+        let join = if is_last { self.theme.dl_bend } else { self.theme.l_conn };
 
         match (self.theme.coloring, self.theme.spacing) {
             (Coloring::Colorful, Spacing::Full) => {
