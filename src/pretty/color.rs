@@ -21,7 +21,7 @@ pub enum AnsiColor {
 }
 
 impl AnsiColor {
-    pub fn ansi_code(&self) -> u8 {
+    pub const fn ansi_code(&self) -> u8 {
         use AnsiColor::*;
         match self {
             Black => 30,
@@ -45,5 +45,13 @@ impl AnsiColor {
 
     pub fn color<S: Display>(&self, s: S) -> String {
         format!("\x1b[{}m{}\x1b[0m", self.ansi_code(), s)
+    }
+
+    pub fn color_start(&self) -> String {
+        format!("\x1b[{}m", self.ansi_code())
+    }
+
+    pub fn color_end<'a>() -> &'a str {
+        "\x1b[0m"
     }
 }

@@ -77,11 +77,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
     }
 
     pub fn current(&self) -> Token {
-        if self.idx < self.tokens.len() {
-            self.tokens[self.idx]
-        } else {
-            self.eof_token
-        }
+        if self.idx < self.tokens.len() { self.tokens[self.idx] } else { self.eof_token }
     }
 
     pub fn expect(&mut self, expected: TokenKind) -> Token {
@@ -100,6 +96,15 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
 
     pub fn at_keyword(&self, kw: Keyword) -> bool {
         Keyword::from_token(self.current(), self.src) == kw
+    }
+
+    pub fn at_and_eat(&mut self, kind: TokenKind) -> bool {
+        if self.current().kind == kind {
+            self.advance();
+            true
+        } else {
+            false
+        }
     }
 
     pub fn alloc<T>(&mut self, elem: T) -> &'ast T {

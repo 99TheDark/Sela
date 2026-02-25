@@ -12,7 +12,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
     pub fn parse_expr(&mut self) -> &'ast ast::Node<'ast> {
         let kw = Keyword::from_token(self.current(), self.src);
         if kw == NotReserved {
-            return self.parse_binop();
+            return self.parse_access();
         }
 
         use Keyword::*;

@@ -14,10 +14,12 @@ impl<'a> Pretty for ast::Node<'a> {
             Comp { .. } => "Comparison".to_string(),
             Range { .. } => "Range".to_string(),
             UnOp { .. } => "Unary Operation".to_string(),
+            Access { .. } => "Member Access".to_string(),
             Int(val) => format!("Integer ({})", val),
             Bool(val) => format!("Boolean ({})", val),
             Decl { .. } => "Declaration".to_string(),
             If { .. } => "If Statement".to_string(),
+            Block(e) if e.is_empty() => "Empty Block".to_string(),
             Block(_) => "Block".to_string(),
             Unknown => "<! Unknown !>".to_string(),
         }
@@ -25,11 +27,13 @@ impl<'a> Pretty for ast::Node<'a> {
 
     fn color(&self) -> Option<AnsiColor> {
         use ast::NodeKind::*;
-        let col = match self.kind {
+        let col = match &self.kind {
             // BinOp(..) | Comp(..) | Range(..) | UnOp(..) => AnsiColor::White,
             KwBinOp { .. } | If { .. } => AnsiColor::Purple,
+            Access { .. } => AnsiColor::Yellow,
             Ident(_) => AnsiColor::Cyan,
             Decl { .. } => AnsiColor::Green,
+            Block(e) if e.is_empty() => AnsiColor::Gray,
             Unknown => AnsiColor::Red,
             _ => return None,
         };
@@ -63,6 +67,10 @@ impl<'a> Pretty for ast::Node<'a> {
                 .named("Operator", op)
                 .named("Right-hand Side", *rhs)
                 .finish(),
+            Access { parent, child } => pretty::Builder::new()
+                .named("Parent", *parent)
+                .named("Child", *child)
+                .finish(),
             Decl { pat, val } => pretty::Builder::new()
                 .named("Pattern", *pat)
                 .named("Value", *val)
@@ -94,7 +102,11 @@ impl<T: Symbol> Pretty for T {
 
 impl<'a> Pretty for Vec<&'a ast::Node<'a>> {
     fn title(&self) -> String {
-        "List".to_string()
+        if self.is_empty() { "Empty List" } else { "List" }.to_string()
+    }
+
+    fn color(&self) -> Option<AnsiColor> {
+        if self.is_empty() { Some(AnsiColor::Gray) } else { None }
     }
 
     fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]> {
@@ -110,6 +122,10 @@ impl<'a> Pretty for Option<&'a ast::Node<'a>> {
             Some(inner) => format!("Some {}", inner.title()),
             None => "None".to_string(),
         }
+    }
+
+    fn color(&self) -> Option<AnsiColor> {
+        if self.is_some() { None } else { Some(AnsiColor::Gray) }
     }
 
     fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]> {

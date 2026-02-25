@@ -97,14 +97,29 @@ impl<B: io::Write> Formatter<B> {
             node.title()
         };
 
+        let colored = if self.theme.coloring == Coloring::Colorful
+            && let Some(color) = node.color()
+        {
+            write!(self.buffer, "{}", color.color_start())?;
+            true
+        } else {
+            false
+        };
+
         match (name, prefix) {
             (Some(name), Some(prefix)) => {
-                writeln!(self.buffer, "{}: {} {}", name, prefix, title)
+                write!(self.buffer, "{}: {} {}", name, prefix, title)
             }
-            (Some(name), None) => writeln!(self.buffer, "{}: {}", name, title),
-            (None, Some(prefix)) => writeln!(self.buffer, "{} {}", prefix, title),
-            (None, None) => writeln!(self.buffer, "{}", title),
+            (Some(name), None) => write!(self.buffer, "{}: {}", name, title),
+            (None, Some(prefix)) => write!(self.buffer, "{} {}", prefix, title),
+            (None, None) => write!(self.buffer, "{}", title),
         }?;
+
+        if colored {
+            writeln!(self.buffer, "{}", AnsiColor::color_end())?;
+        } else {
+            writeln!(self.buffer)?;
+        }
 
         let children = node.children();
 

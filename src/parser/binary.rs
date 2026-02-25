@@ -1,9 +1,23 @@
 use crate::{
     ast::{self, symbol::BinaryKind},
     parser::Parser,
+    token::kind::TokenKind,
 };
 
 impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+    pub fn parse_access(&mut self) -> &'ast ast::Node<'ast> {
+        let left = self.parse_binop();
+        if !self.at_and_eat(TokenKind::Dot) {
+            return left;
+        }
+
+        let right = self.parse_binop();
+        self.alloc(ast::Node::new(
+            ast::NodeKind::Access { parent: left, child: right },
+            left.span.to(right.span),
+        ))
+    }
+
     pub fn parse_binop(&mut self) -> &'ast ast::Node<'ast> {
         self.parse_binop_pratt(0)
     }

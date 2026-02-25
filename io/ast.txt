@@ -102,33 +102,33 @@ List
 │        ├─ Operator: Not (!)
 │        └─ Right-hand Side: Identifier (a1)
 ├─ <! Unknown !>
-├─ Identifier (std)
-├─ <! Unknown !>
-├─ Identifier (io)
+├─ Member Access
+│  ├─ Parent: Identifier (std)
+│  └─ Child: Identifier (io)
 ├─ If Statement
 │  ├─ Condition: Comparison
 │  │  ├─ Left-hand Side: Identifier (x)
 │  │  ├─ Comparator: Greater Than (>)
 │  │  └─ Right-hand Side: Integer (5)
 │  ├─ Then Body: Block
-│  │  ├─ Identifier (io)
+│  │  ├─ Member Access
+│  │  │  ├─ Parent: Identifier (io)
+│  │  │  └─ Child: Identifier (print)
 │  │  ├─ <! Unknown !>
-│  │  ├─ Identifier (print)
-│  │  ├─ <! Unknown !>
-│  │  ├─ Identifier (io)
-│  │  ├─ <! Unknown !>
-│  │  ├─ Identifier (print)
+│  │  ├─ Member Access
+│  │  │  ├─ Parent: Identifier (io)
+│  │  │  └─ Child: Identifier (print)
 │  │  ├─ <! Unknown !>
 │  │  ├─ Identifier (u)
 │  │  ├─ <! Unknown !>
 │  │  ├─ <! Unknown !>
 │  │  └─ <! Unknown !>
 │  └─ Else Body: Some Block
-│     ├─ Identifier (io)
-│     ├─ <! Unknown !>
-│     ├─ Identifier (print)
+│     ├─ Member Access
+│     │  ├─ Parent: Identifier (io)
+│     │  └─ Child: Identifier (print)
 │     └─ <! Unknown !>
 └─ If Statement
    ├─ Condition: Boolean (true)
-   ├─ Then Body: Block
+   ├─ Then Body: Empty Block
    └─ Else Body: None
