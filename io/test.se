@@ -21,4 +21,4 @@ if x > 5 {
     io.print("Oh no...")
 }
 
-if true {}
+if !!!true {}

@@ -28,7 +28,7 @@ pub enum Keyword {
     As,    //\\ as
     True,  //\\ true
     False, //\\ false
-    Pulse, //\\ pulse
+    Charm, //\\ charm
     And,   //\\ and
     Or,    //\\ or
     Use,   //\\ use
@@ -74,7 +74,7 @@ impl Keyword {
             "as" => As,
             "true" => True,
             "false" => False,
-            "pulse" => Pulse,
+            "charm" => Charm,
             "and" => And,
             "or" => Or,
             "use" => Use,

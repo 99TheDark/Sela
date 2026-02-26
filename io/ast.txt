@@ -129,6 +129,12 @@ List
 │     │  └─ Child: Identifier (print)
 │     └─ <! Unknown !>
 └─ If Statement
-   ├─ Condition: Boolean (true)
+   ├─ Condition: Unary Operation
+   │  ├─ Operator: Not (!)
+   │  └─ Right-hand Side: Unary Operation
+   │     ├─ Operator: Not (!)
+   │     └─ Right-hand Side: Unary Operation
+   │        ├─ Operator: Not (!)
+   │        └─ Right-hand Side: Boolean (true)
    ├─ Then Body: Empty Block
    └─ Else Body: None
