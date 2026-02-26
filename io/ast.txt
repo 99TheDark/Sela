@@ -128,13 +128,37 @@ List
 │     │  ├─ Parent: Identifier (io)
 │     │  └─ Child: Identifier (print)
 │     └─ <! Unknown !>
-└─ If Statement
-   ├─ Condition: Unary Operation
-   │  ├─ Operator: Not (!)
-   │  └─ Right-hand Side: Unary Operation
-   │     ├─ Operator: Not (!)
-   │     └─ Right-hand Side: Unary Operation
-   │        ├─ Operator: Not (!)
-   │        └─ Right-hand Side: Boolean (true)
-   ├─ Then Body: Empty Block
-   └─ Else Body: None
+├─ If Statement
+│  ├─ Condition: Unary Operation
+│  │  ├─ Operator: Not (!)
+│  │  └─ Right-hand Side: Unary Operation
+│  │     ├─ Operator: Not (!)
+│  │     └─ Right-hand Side: Unary Operation
+│  │        ├─ Operator: Not (!)
+│  │        └─ Right-hand Side: Boolean (true)
+│  ├─ Then Body: Empty Block
+│  └─ Else Body: None
+├─ For Loop
+│  ├─ Variable: Identifier (num)
+│  ├─ Iterable: Range
+│  │  ├─ From: Some Integer (1)
+│  │  ├─ Range Type: Inclusive Range (..=)
+│  │  └─ To: Some Integer (5)
+│  └─ Body: Block
+│     ├─ Member Access
+│     │  ├─ Parent: Identifier (io)
+│     │  └─ Child: Identifier (print)
+│     └─ Identifier (num)
+└─ Loop
+   └─ Body: Block
+      └─ While Loop
+         ├─ Condition: Comparison
+         │  ├─ Left-hand Side: Identifier (x)
+         │  ├─ Comparator: Greater Than (>)
+         │  └─ Right-hand Side: Integer (5)
+         └─ Body: Block
+            ├─ Binary Operation
+            │  ├─ Left-hand Side: Identifier (x)
+            │  ├─ Operator: Subtract (-)
+            │  └─ Right-hand Side: <! Unknown !>
+            └─ Integer (1)

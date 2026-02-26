@@ -19,6 +19,9 @@ impl<'a> Pretty for ast::Node<'a> {
             Bool(val) => format!("Boolean ({})", val),
             Decl { .. } => "Declaration".to_string(),
             If { .. } => "If Statement".to_string(),
+            Loop { .. } => "Loop".to_string(),
+            While { .. } => "While Loop".to_string(),
+            For { .. } => "For Loop".to_string(),
             Block(e) if e.is_empty() => "Empty Block".to_string(),
             Block(_) => "Block".to_string(),
             Unknown => "<! Unknown !>".to_string(),
@@ -29,7 +32,9 @@ impl<'a> Pretty for ast::Node<'a> {
         use ast::NodeKind::*;
         let col = match &self.kind {
             // BinOp(..) | Comp(..) | Range(..) | UnOp(..) => AnsiColor::White,
-            KwBinOp { .. } | If { .. } => AnsiColor::Purple,
+            KwBinOp { .. } | If { .. } | Loop { .. } | While { .. } | For { .. } => {
+                AnsiColor::Purple
+            }
             Access { .. } => AnsiColor::Yellow,
             Ident(_) => AnsiColor::Cyan,
             Decl { .. } => AnsiColor::Green,
@@ -79,6 +84,16 @@ impl<'a> Pretty for ast::Node<'a> {
                 .named("Condition", *cond)
                 .named("Then Body", *body)
                 .named("Else Body", fallback)
+                .finish(),
+            Loop { body } => pretty::Builder::new().named("Body", *body).finish(),
+            While { cond, body } => pretty::Builder::new()
+                .named("Condition", *cond)
+                .named("Body", *body)
+                .finish(),
+            For { vari, iter, body } => pretty::Builder::new()
+                .named("Variable", *vari)
+                .named("Iterable", *iter)
+                .named("Body", *body)
                 .finish(),
             Block(elems) => elems.children(),
             _ => pretty::Builder::empty(),

@@ -11,9 +11,9 @@ All keywords, operators, and types currently decided to exist in the Sela progra
 |While|`while`|For|`for`|Match|`match`|
 |Break|`break`|Continue|`continue`|Return|`return`|
 |Self Value|`self`|Self Type|`Self`|Macro|`macro`|
-|As|`as`|True|`true`|False|`false`|
-|Charm|`charm`|And|`and`|Or|`or`|
-|Use|`use`|
+|Use|`use`|Charm|`charm`|As|`as`|
+True|`true`|False|`false`|In|`in`|
+|And|`and`|Or|`or`|
 
 ## Operators
 |Name|Operator|Name|Operator|

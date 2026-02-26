@@ -13,6 +13,9 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         use Keyword::*;
         match Keyword::from_token(self.current(), self.src) {
             If => self.parse_if_else(),
+            Loop => self.parse_loop(),
+            While => self.parse_while_loop(),
+            For => self.parse_for_loop(),
             Let => self.parse_decl(),
             True | False | NotReserved => self.parse_access(),
             _ => {

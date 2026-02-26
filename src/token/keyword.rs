@@ -22,16 +22,15 @@ pub enum Keyword {
     Ret,   //\\ return
     LSelf, //\\ self
     BSelf, //\\ Self
-    Oper,  //\\ oper
     Macro, //\\ macro
-    Quote, //\\ quote
+    Use,   //\\ use
+    Charm, //\\ charm
     As,    //\\ as
     True,  //\\ true
     False, //\\ false
-    Charm, //\\ charm
+    In,    //\\ in
     And,   //\\ and
     Or,    //\\ or
-    Use,   //\\ use
     NotReserved,
 }
 
@@ -68,16 +67,15 @@ impl Keyword {
             "return" => Ret,
             "self" => LSelf,
             "Self" => BSelf,
-            "oper" => Oper,
             "macro" => Macro,
-            "quote" => Quote,
+            "use" => Use,
+            "charm" => Charm,
             "as" => As,
             "true" => True,
             "false" => False,
-            "charm" => Charm,
+            "in" => In,
             "and" => And,
             "or" => Or,
-            "use" => Use,
             _ => NotReserved,
         }
     }

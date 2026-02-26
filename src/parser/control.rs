@@ -14,25 +14,37 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
             (None, start.span.to(body.span))
         };
 
+        self.alloc(ast::Node::new(ast::NodeKind::If { cond, body, fallback }, span))
+    }
+
+    pub fn parse_loop(&mut self) -> &'ast ast::Node<'ast> {
+        let start = self.next();
+        let body = self.parse_block();
+
+        self.alloc(ast::Node::new(ast::NodeKind::Loop { body }, start.span.to(body.span)))
+    }
+
+    pub fn parse_while_loop(&mut self) -> &'ast ast::Node<'ast> {
+        let start = self.next();
+        let cond = self.parse_expr();
+        let body = self.parse_block();
+
         self.alloc(ast::Node::new(
-            ast::NodeKind::If {
-                cond,
-                body,
-                fallback,
-            },
-            span,
+            ast::NodeKind::While { cond, body },
+            start.span.to(body.span),
         ))
     }
 
     pub fn parse_for_loop(&mut self) -> &'ast ast::Node<'ast> {
-        todo!()
-    }
+        let start = self.next();
+        let vari = self.parse_expr();
+        self.expect_keyword(Keyword::In);
+        let iter = self.parse_expr();
+        let body = self.parse_block();
 
-    pub fn parse_while_loop(&mut self) -> &'ast ast::Node<'ast> {
-        todo!()
-    }
-
-    pub fn parse_loop(&mut self) -> &'ast ast::Node<'ast> {
-        todo!()
+        self.alloc(ast::Node::new(
+            ast::NodeKind::For { vari, iter, body },
+            start.span.to(body.span),
+        ))
     }
 }

@@ -52,6 +52,9 @@ pub enum NodeKind<'a> {
     Bool(bool),
     Decl { pat: &'a Node<'a>, val: &'a Node<'a> },
     If { cond: &'a Node<'a>, body: &'a Node<'a>, fallback: Option<&'a Node<'a>> },
+    Loop { body: &'a Node<'a> },
+    While { cond: &'a Node<'a>, body: &'a Node<'a> },
+    For { vari: &'a Node<'a>, iter: &'a Node<'a>, body: &'a Node<'a> },
     Block(Vec<&'a Node<'a>>),
     Unknown,
 }

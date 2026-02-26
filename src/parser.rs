@@ -95,6 +95,20 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         tok
     }
 
+    pub fn expect_keyword(&mut self, expected: Keyword) -> Token {
+        let tok = self.next();
+        if Keyword::from_token(tok, &self.src) == expected {
+            self.diag.emit(
+                format!(
+                    "Expected {:?} keyword, found {:?} token instead",
+                    expected, tok.kind
+                ),
+                tok.span,
+            );
+        }
+        tok
+    }
+
     pub fn at_keyword(&self, kw: Keyword) -> bool {
         Keyword::from_token(self.current(), self.src) == kw
     }
