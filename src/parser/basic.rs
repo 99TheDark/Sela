@@ -10,23 +10,11 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
     }
 
     pub fn parse_expr(&mut self) -> &'ast ast::Node<'ast> {
-        let kw = Keyword::from_token(self.current(), self.src);
-        if kw == NotReserved {
-            return self.parse_access();
-        }
-
         use Keyword::*;
-        match kw {
+        match Keyword::from_token(self.current(), self.src) {
             If => self.parse_if_else(),
             Let => self.parse_decl(),
-            True => {
-                let tok = self.next();
-                self.alloc(ast::Node::new(ast::NodeKind::Bool(true), tok.span))
-            }
-            False => {
-                let tok = self.next();
-                self.alloc(ast::Node::new(ast::NodeKind::Bool(false), tok.span))
-            }
+            True | False | NotReserved => self.parse_access(),
             _ => {
                 let tok = self.next();
                 self.diag.fail(
@@ -62,10 +50,22 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
                 self.alloc(ast::Node::new(kind, span))
             }
             TokenKind::Int => self.try_parse_int(tok),
+            /*TokenKind::String => {
+                // TODO: Parse escape strings
+                let src = tok.src(&self.src);
+                if src.chars().nth(0) != Some('\"') {
+                    self.diag.fail(
+                        format!("Unexpected {:?} token", tok.kind),
+                        span,
+                        &self.arena,
+                    )
+                } else {
+                    println!("str: '{}'", src);
+                    self.alloc(ast::Node::failed(tok.span))
+                }
+            }*/
             TokenKind::LParen => {
-                //self.eat_nls();
                 let expr = self.parse_expr();
-                //self.eat_nls();
                 self.expect(TokenKind::RParen);
                 expr
             }

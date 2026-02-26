@@ -1,8 +1,7 @@
-use crate::token::{kind::TokenKind, span::Span};
+use crate::{span::Span, token::kind::TokenKind};
 
 pub mod keyword;
 pub mod kind;
-pub mod span;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct Token {

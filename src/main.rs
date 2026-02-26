@@ -9,6 +9,7 @@ pub mod error;
 pub mod lexer;
 pub mod parser;
 pub mod pretty;
+pub mod span;
 pub mod token;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -44,7 +45,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     pretty::write_file("io/ast.txt".to_string(), &ast)?;
     pretty::print(&ast)?;
 
-    //   diag.print();
+    println!();
+    diag.print();
 
     Ok(())
 }

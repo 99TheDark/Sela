@@ -6,7 +6,7 @@ use unicode_segmentation::UnicodeSegmentation;
 use crate::{
     ast,
     error::utils::{Location, NumDigits},
-    token::span::Span,
+    span::Span,
 };
 
 pub const CONSOLE_WIDTH: usize = 80;
@@ -67,9 +67,7 @@ impl<'a> Diagnostics<'a> {
     }
 
     fn column(&self, row: usize, idx: u32) -> usize {
-        self.src[self.line_starts[row]..idx as usize]
-            .graphemes(true)
-            .count()
+        self.src[self.line_starts[row]..idx as usize].graphemes(true).count()
     }
 
     fn visual_loc(&self, idx: u32) -> Location {
@@ -108,11 +106,7 @@ impl<'a> Diagnostics<'a> {
 
             let left_pad = self.above(start.row);
 
-            let len = if end.col > start.col {
-                end.col - start.col
-            } else {
-                1
-            };
+            let len = if end.col > start.col { end.col - start.col } else { 1 };
             println!(
                 "{} | {}{} {}\n",
                 " ".repeat(left_pad as usize),

@@ -5,7 +5,7 @@ use crate::{
         binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind, range::RangeKind,
         unop::UnOpKind,
     },
-    token::span::Span,
+    span::Span,
 };
 
 pub mod binop;

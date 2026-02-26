@@ -2,7 +2,8 @@ use std::{iter, str};
 
 use crate::{
     error::Diagnostics,
-    token::{Token, kind::TokenKind, span::Span},
+    span::Span,
+    token::{Token, kind::TokenKind},
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]

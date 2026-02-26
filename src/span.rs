@@ -14,17 +14,11 @@ impl Span {
     }
 
     pub const fn single(loc: u32) -> Self {
-        Self {
-            start: loc,
-            end: loc,
-        }
+        Self { start: loc, end: loc }
     }
 
     pub fn shrink(&self, left: u32, right: u32) -> Self {
-        Self {
-            start: self.start + left,
-            end: self.end - right,
-        }
+        Self { start: self.start + left, end: self.end - right }
     }
 
     fn range(&self) -> Range<usize> {

@@ -10,7 +10,8 @@ use bumpalo::Bump;
 use crate::{
     ast,
     error::Diagnostics,
-    token::{Token, keyword::Keyword, kind::TokenKind, span::Span},
+    span::Span,
+    token::{Token, keyword::Keyword, kind::TokenKind},
 };
 
 pub struct Parser<'ast, 'diag, 'src> {
