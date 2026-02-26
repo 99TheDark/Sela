@@ -13,7 +13,7 @@ pub mod span;
 pub mod token;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let file = "io/test.qi";
+    let file = "io/test.se";
 
     let src = fs::read_to_string(file)?;
     let mut diag = Diagnostics::new(file.to_string(), &src);

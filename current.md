@@ -1,5 +1,5 @@
 # Current Decisions
-All keywords, operators, and types currently decided to exist in the Qi programming language. These must currently be used somewhere in example code even if the feature's use is highly likely to be adapted, unless its use is guaranteed (like the modulus operator). Decisions may—and often will—be overturned on this document. Not every potential feature used will be documented here as currently definite.
+All keywords, operators, and types currently decided to exist in the Sela programming language. These must currently be used somewhere in example code even if the feature's use is highly likely to be adapted, unless its use is guaranteed (like the modulus operator). Decisions may—and often will—be overturned on this document. Not every potential feature used will be documented here as currently definite.
 
 ## Keywords
 |Name|Keyword|Name|Keyword|Name|Keyword|
@@ -12,7 +12,7 @@ All keywords, operators, and types currently decided to exist in the Qi programm
 |Break|`break`|Continue|`continue`|Return|`return`|
 |Self Value|`self`|Self Type|`self`|Operator|`oper`|
 |Macro|`macro`|Quote|`quote`|As|`as`|
-|True|`true`|Falase|`false`|Pulse|`pulse`|
+|True|`true`|Falase|`false`|Charm|`charm`|
 |And|`and`|Or|`or`|Use|`use`|
 
 ## Operators
