@@ -10,10 +10,10 @@ All keywords, operators, and types currently decided to exist in the Sela progra
 |If|`if`|Else|`else`|Loop|`loop`|
 |While|`while`|For|`for`|Match|`match`|
 |Break|`break`|Continue|`continue`|Return|`return`|
-|Self Value|`self`|Self Type|`self`|Operator|`oper`|
-|Macro|`macro`|Quote|`quote`|As|`as`|
-|True|`true`|Falase|`false`|Charm|`charm`|
-|And|`and`|Or|`or`|Use|`use`|
+|Self Value|`self`|Self Type|`Self`|Macro|`macro`|
+|As|`as`|True|`true`|False|`false`|
+|Charm|`charm`|And|`and`|Or|`or`|
+|Use|`use`|
 
 ## Operators
 |Name|Operator|Name|Operator|

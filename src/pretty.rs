@@ -218,12 +218,12 @@ impl<B: io::Write> io::Write for Formatter<B> {
 
 pub fn write_file(file_name: String, src: &dyn Pretty) -> io::Result<()> {
     let file = File::create(file_name)?;
-    let mut writer = BufWriter::new(file);
+    let mut buffer = BufWriter::new(file);
 
-    Formatter::new(&mut writer, Theme::sharp(Coloring::None, Spacing::Full))
+    Formatter::new(&mut buffer, Theme::sharp(Coloring::None, Spacing::Full))
         .format(src)?;
 
-    writer.flush()
+    buffer.flush()
 }
 
 pub fn print(src: &dyn Pretty) -> io::Result<()> {
