@@ -38,6 +38,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
     pub fn parse_for_loop(&mut self) -> &'ast ast::Node<'ast> {
         let start = self.next();
         let vari = self.parse_expr();
+
         self.expect_keyword(Keyword::In);
         let iter = self.parse_expr();
         let body = self.parse_block();

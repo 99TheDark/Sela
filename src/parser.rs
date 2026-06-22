@@ -1,16 +1,17 @@
 pub mod basic;
 pub mod binary;
 pub mod control;
-pub mod decl;
+pub mod import;
 pub mod literal;
+pub mod set;
 pub mod unary;
 
 use bumpalo::Bump;
 
 use crate::{
     ast,
-    error::Diagnostics,
-    span::Span,
+    core::span::Span,
+    error::{Diagnostics, ErrorKind},
     token::{Token, keyword::Keyword, kind::TokenKind},
 };
 
@@ -18,6 +19,7 @@ pub struct Parser<'ast, 'diag, 'src> {
     src: &'src str,
     tokens: &'src [Token],
     idx: usize,
+    in_recovery: bool,
     diag: &'diag mut Diagnostics<'src>,
     eof_token: Token,
     arena: &'ast Bump,
@@ -36,6 +38,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
             src,
             tokens,
             idx: 0,
+            in_recovery: false,
             diag,
             eof_token: Token::new(TokenKind::EOF, Span::single(eof_loc)),
             arena,
@@ -81,10 +84,19 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         if self.idx < self.tokens.len() { self.tokens[self.idx] } else { self.eof_token }
     }
 
+    pub fn peek(&self) -> Token {
+        if self.idx + 1 < self.tokens.len() {
+            self.tokens[self.idx + 1]
+        } else {
+            self.eof_token
+        }
+    }
+
     pub fn expect(&mut self, expected: TokenKind) -> Token {
         let tok = self.next();
         if tok.kind != expected {
             self.diag.emit(
+                ErrorKind::Syntax,
                 format!(
                     "Expected {:?} token, found {:?} token instead",
                     expected, tok.kind
@@ -97,15 +109,30 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
 
     pub fn expect_keyword(&mut self, expected: Keyword) -> Token {
         let tok = self.next();
-        if Keyword::from_token(tok, &self.src) == expected {
-            self.diag.emit(
-                format!(
-                    "Expected {:?} keyword, found {:?} token instead",
-                    expected, tok.kind
-                ),
-                tok.span,
-            );
+
+        let kw = Keyword::from_token(tok, &self.src);
+        if kw != expected {
+            if kw == Keyword::NotReserved {
+                self.diag.emit(
+                    ErrorKind::Syntax,
+                    format!(
+                        "Expected {:?} keyword, found {:?} token instead",
+                        expected, tok.kind
+                    ),
+                    tok.span,
+                );
+            } else {
+                self.diag.emit(
+                    ErrorKind::Syntax,
+                    format!(
+                        "Expected {:?} keyword, found {:?} keyword instead",
+                        expected, kw
+                    ),
+                    tok.span,
+                );
+            }
         }
+
         tok
     }
 

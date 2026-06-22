@@ -1,4 +1,4 @@
-use crate::{span::Span, token::kind::TokenKind};
+use crate::{core::span::Span, token::kind::TokenKind};
 
 pub mod keyword;
 pub mod kind;

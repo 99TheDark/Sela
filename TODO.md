@@ -5,3 +5,8 @@
 - Better error escaping for incorrect tokens; e.g. `{ let a = }` should properly exit the block
     - Eat the entire line if the compiler gets really confused
 - Partial ranges
+- Assert correct AST nodes types when parsing
+- Implement parallellism for lexing + parsing + type signatures
+- Harvest type signatures (functions, types, aliases, classes, constants, etc) for a global pool
+- Use Cells to reserve spots for future arena allocs to be more cache-friendly when traversing
+- Decouple ast nodes and ast node data to preserve space

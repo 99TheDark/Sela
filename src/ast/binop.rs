@@ -1,4 +1,4 @@
-use crate::ast::symbol::Symbol;
+use crate::{ast::symbol::Symbol, token::Token};
 
 #[derive(Debug, Copy, Clone)]
 pub enum BinOpKind {
@@ -12,6 +12,25 @@ pub enum BinOpKind {
     Xor,
     Shr,
     Shl,
+}
+
+impl BinOpKind {
+    pub fn from_token(tok: Token) -> Option<Self> {
+        use crate::TokenKind::*;
+        match tok.kind {
+            Plus => Some(Self::Add),
+            Dash => Some(Self::Sub),
+            Star => Some(Self::Mul),
+            Slash => Some(Self::Div),
+            Pct => Some(Self::Mod),
+            And => Some(Self::And),
+            Bar => Some(Self::Or),
+            Caret => Some(Self::Xor),
+            GtGt => Some(Self::Shr),
+            LtLt => Some(Self::Shl),
+            _ => None,
+        }
+    }
 }
 
 impl Symbol for BinOpKind {

@@ -16,6 +16,7 @@ let u = 5 ^
 let v = 3 == 2 and y > 5 or !a1
 
 use std.io
+use charm.ship
 if x > 5 {
     io.print("Hello, world!")
     io.print("u = 5 ^ (2 - 1) = $(u).")
@@ -23,11 +24,17 @@ if x > 5 {
     io.print("Oh no...")
 }
 
+let x = ship.Ship(row: 6, column: 3, direction: ship.Direction.Horizontal)
+
 if !!!true {}
+
+n >>= if x >= 5 { 3 << 2 } else { n - 1 }
 
 for num in 1..=5 {
     io.print(num)
 }
+
+v = 1 - v
 
 loop {
     while x > 5 {

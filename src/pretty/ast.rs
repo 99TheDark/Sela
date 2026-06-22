@@ -18,12 +18,14 @@ impl<'a> Pretty for ast::Node<'a> {
             Int(val) => format!("Integer ({})", val),
             Bool(val) => format!("Boolean ({})", val),
             Decl { .. } => "Declaration".to_string(),
+            Assign { .. } => "Assignment".to_string(),
             If { .. } => "If Statement".to_string(),
             Loop { .. } => "Loop".to_string(),
             While { .. } => "While Loop".to_string(),
             For { .. } => "For Loop".to_string(),
             Block(e) if e.is_empty() => "Empty Block".to_string(),
             Block(_) => "Block".to_string(),
+            Use { .. } => "Use".to_string(),
             Unknown => "<! Unknown !>".to_string(),
         }
     }
@@ -32,12 +34,13 @@ impl<'a> Pretty for ast::Node<'a> {
         use ast::NodeKind::*;
         let col = match &self.kind {
             // BinOp(..) | Comp(..) | Range(..) | UnOp(..) => AnsiColor::White,
+            Use { .. } => AnsiColor::Blue,
             KwBinOp { .. } | If { .. } | Loop { .. } | While { .. } | For { .. } => {
                 AnsiColor::Purple
             }
             Access { .. } => AnsiColor::Yellow,
             Ident(_) => AnsiColor::Cyan,
-            Decl { .. } => AnsiColor::Green,
+            Decl { .. } | Assign { .. } => AnsiColor::Green,
             Block(e) if e.is_empty() => AnsiColor::Gray,
             Unknown => AnsiColor::Red,
             _ => return None,

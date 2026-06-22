@@ -5,14 +5,35 @@ use unicode_segmentation::UnicodeSegmentation;
 
 use crate::{
     ast,
+    core::span::Span,
     error::utils::{Location, NumDigits},
-    span::Span,
 };
 
 pub const CONSOLE_WIDTH: usize = 80;
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum ErrorKind {
+    Syntax,
+}
+
+impl ErrorKind {
+    pub fn as_str(&self) -> &'static str {
+        use ErrorKind::*;
+        match self {
+            Syntax => "Syntax",
+        }
+    }
+}
+
+impl std::fmt::Display for ErrorKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Error {
+    pub kind: ErrorKind,
     pub message: String,
     pub span: Span,
 }
@@ -31,6 +52,7 @@ impl<'a> Diagnostics<'a> {
         Self {
             file_name,
             src,
+            // ! This is a bottleneck
             line_starts: std::iter::once(0)
                 .chain(src.match_indices('\n').map(|m| m.0 + 1))
                 .collect(),
@@ -39,17 +61,18 @@ impl<'a> Diagnostics<'a> {
         }
     }
 
-    pub fn emit(&mut self, message: String, span: Span) {
-        self.errors.push(Error { message, span });
+    pub fn emit(&mut self, kind: ErrorKind, message: String, span: Span) {
+        self.errors.push(Error { kind, message, span });
     }
 
     pub fn fail<'ast>(
         &mut self,
+        kind: ErrorKind,
         message: String,
         span: Span,
         alloc: &'ast Bump,
     ) -> &'ast ast::Node<'ast> {
-        self.emit(message, span);
+        self.emit(kind, message, span);
         alloc.alloc(ast::Node::failed(span))
     }
 
@@ -98,7 +121,7 @@ impl<'a> Diagnostics<'a> {
 
             println!(
                 "{}: {}:{}:{}",
-                self.red("Error".to_string()),
+                self.red(format!("{} Error", error.kind)),
                 self.file_name,
                 start.row + 1,
                 start.col + 1

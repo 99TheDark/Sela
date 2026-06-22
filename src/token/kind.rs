@@ -12,10 +12,15 @@ pub enum TokenKind {
     Annot,
     Eq,       //\\ =
     Plus,     //\\ +
+    PlusEq,   //\\ +=
     Dash,     //\\ -
+    DashEq,   //\\ -=
     Star,     //\\ *
+    StarEq,   //\\ *=
     Slash,    //\\ /
+    SlashEq,  //\\ /=
     Pct,      //\\ %
+    PctEq,    //\\ %=
     Gt,       //\\ >
     Lt,       //\\ <
     EqEq,     //\\ ==
@@ -23,10 +28,15 @@ pub enum TokenKind {
     GtEq,     //\\ >=
     LtEq,     //\\ <=
     GtGt,     //\\ >>
+    GtGtEq,   //\\ >>=
     LtLt,     //\\ <<
+    LtLtEq,   //\\ <<=
     Caret,    //\\ ^
+    CaretEq,  //\\ ^=
     And,      //\\ &
+    AndEq,    //\\ &=
     Bar,      //\\ |
+    BarEq,    //\\ |=
     Not,      //\\ !
     LParen,   //\\ (
     RParen,   //\\ )
@@ -43,6 +53,7 @@ pub enum TokenKind {
     DotDotLt, //\\ ..<
     DotDotEq, //\\ ..=
     Dollar,   //\\ $
+    Tick,     //\\ `
 
     NoChar, //\\ ''
     UntermComment,

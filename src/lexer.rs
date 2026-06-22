@@ -1,8 +1,10 @@
 use std::{iter, str};
 
+use smallvec::SmallVec;
+
 use crate::{
+    core::span::Span,
     error::Diagnostics,
-    span::Span,
     token::{Token, kind::TokenKind},
 };
 
@@ -33,7 +35,7 @@ pub struct Lexer<'a, 'b> {
     chars: iter::Peekable<str::Chars<'a>>,
     diag: &'a mut Diagnostics<'b>,
     idx: u32,
-    interp_stack: Vec<usize>,
+    interp_stack: SmallVec<[usize; 2]>,
     just_exited: bool,
     filter_mode: TokenFilterMode,
 }
@@ -48,7 +50,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
             chars: src.chars().peekable(),
             diag,
             idx: 0,
-            interp_stack: Vec::new(),
+            interp_stack: SmallVec::new(),
             just_exited: false,
             filter_mode,
         }
@@ -200,21 +202,24 @@ impl<'a, 'b> Lexer<'a, 'b> {
                 TokenKind::Int
             }
             // Lit: TBD
-            '+' => Plus,
-            '-' => Dash,
-            '*' => Star,
-            '/' => {
-                if self.peek() == Some('/') {
+            '+' => self.fork(Plus, '=', PlusEq),
+            '-' => self.fork(Dash, '=', DashEq),
+            '*' => self.fork(Star, '=', StarEq),
+            '/' => match self.peek() {
+                Some('/') => {
                     self.eat_while(|ch| ch != '\n');
                     LineComment
-                } else {
-                    Slash
                 }
-            }
-            '%' => Pct,
-            '&' => And,
-            '|' => Bar,
-            '^' => Caret,
+                Some('=') => {
+                    self.next();
+                    SlashEq
+                }
+                _ => Slash,
+            },
+            '%' => self.fork(Pct, '=', PctEq),
+            '&' => self.fork(And, '=', AndEq),
+            '|' => self.fork(Bar, '=', BarEq),
+            '^' => self.fork(Caret, '=', CaretEq),
             '(' => {
                 self.push_interp_stack();
                 LParen
@@ -234,8 +239,28 @@ impl<'a, 'b> Lexer<'a, 'b> {
             '$' => Dollar,
 
             '=' => self.fork(Eq, '=', EqEq),
-            '>' => self.fork(Gt, '=', GtEq),
-            '<' => self.fork(Lt, '=', LtEq),
+            '>' => match self.peek() {
+                Some('=') => {
+                    self.next();
+                    GtEq
+                }
+                Some('>') => {
+                    self.next();
+                    self.fork(GtGt, '=', GtGtEq)
+                }
+                _ => Gt,
+            },
+            '<' => match self.peek() {
+                Some('=') => {
+                    self.next();
+                    LtEq
+                }
+                Some('<') => {
+                    self.next();
+                    self.fork(LtLt, '=', LtLtEq)
+                }
+                _ => Lt,
+            },
             '!' => self.fork(Not, '=', NotEq),
             '.' => {
                 if !self.try_consume('.') {

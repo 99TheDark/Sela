@@ -1,5 +1,6 @@
 use crate::{
     ast,
+    error::ErrorKind,
     parser::Parser,
     token::{keyword::Keyword, kind::TokenKind},
 };
@@ -17,10 +18,13 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
             While => self.parse_while_loop(),
             For => self.parse_for_loop(),
             Let => self.parse_decl(),
-            True | False | NotReserved => self.parse_access(),
+            Use => self.parse_use(),
+            True | False => self.parse_primary(),
+            NotReserved => self.parse_assign(),
             _ => {
                 let tok = self.next();
                 self.diag.fail(
+                    ErrorKind::Syntax,
                     format!("Unexpected reserved keyword '{}'", tok.src(self.src)),
                     tok.span,
                     self.arena,
@@ -38,6 +42,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
     }
 
     pub fn parse_primary(&mut self) -> &'ast ast::Node<'ast> {
+        println!("ii {:?} |> '{}'", self.current(), self.current().src(self.src));
         let tok = self.next();
         let span = tok.span;
 
@@ -73,6 +78,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
                 expr
             }
             _ => self.diag.fail(
+                ErrorKind::Syntax,
                 format!("Unexpected {:?} token", tok.kind),
                 span,
                 &self.arena,

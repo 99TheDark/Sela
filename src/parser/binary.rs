@@ -6,12 +6,17 @@ use crate::{
 
 impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
     pub fn parse_access(&mut self) -> &'ast ast::Node<'ast> {
+        // TODO: Wait this isn't right... that means a+b.c+d = (a+b).(c+d)
         let left = self.parse_binop();
+        println!("oo {:?} |> '{}'", left, self.current().src(self.src));
         if !self.at_and_eat(TokenKind::Dot) {
+            println!("pp {:?} |> '{}'", self.current(), self.current().src(self.src));
             return left;
         }
 
+        println!("qq {:?} |> '{}'", self.current(), self.current().src(self.src));
         let right = self.parse_binop();
+        println!("rr {:?} |> '{}'", self.current(), self.current().src(self.src));
         self.alloc(ast::Node::new(
             ast::NodeKind::Access { parent: left, child: right },
             left.span.to(right.span),

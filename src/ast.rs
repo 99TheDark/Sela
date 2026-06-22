@@ -2,12 +2,13 @@ use core::fmt;
 
 use crate::{
     ast::{
-        binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind, range::RangeKind,
-        unop::UnOpKind,
+        assign::AssignKind, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind,
+        range::RangeKind, unop::UnOpKind,
     },
-    span::Span,
+    core::span::Span,
 };
 
+pub mod assign;
 pub mod binop;
 pub mod comp;
 pub mod kwbinop;
@@ -39,6 +40,8 @@ impl<'a> fmt::Debug for Node<'a> {
     }
 }
 
+// TODO: Use bumpalo references instead; `BinOp(&'ast ast::BinOpData<'ast>),`
+// Allows for fixed-size (~8 byte data + 8 byte tag) `NodeKind`s and thus 24-bye `Node`s
 #[derive(Debug)]
 pub enum NodeKind<'a> {
     Ident(String),
@@ -51,10 +54,12 @@ pub enum NodeKind<'a> {
     Int(i64),
     Bool(bool),
     Decl { pat: &'a Node<'a>, val: &'a Node<'a> },
+    Assign { vari: &'a Node<'a>, assign: AssignKind, val: &'a Node<'a> },
     If { cond: &'a Node<'a>, body: &'a Node<'a>, fallback: Option<&'a Node<'a>> },
     Loop { body: &'a Node<'a> },
     While { cond: &'a Node<'a>, body: &'a Node<'a> },
     For { vari: &'a Node<'a>, iter: &'a Node<'a>, body: &'a Node<'a> },
+    Use { path: &'a Node<'a> },
     Block(Vec<&'a Node<'a>>),
     Unknown,
 }
