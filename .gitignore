@@ -2,4 +2,5 @@
 .DS_Store
 flamegraph.svg
 docs/design
-io/
+io/huge_errorless.se
+io/huge.se
