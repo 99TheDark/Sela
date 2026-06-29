@@ -28,7 +28,7 @@ impl AssignKind {
             GtGtEq => Some(Self::ShrEq),
             LtLtEq => Some(Self::ShlEq),
             CaretEq => Some(Self::XorEq),
-            AndEq => Some(Self::AndEq),
+            AmpEq => Some(Self::AndEq),
             BarEq => Some(Self::OrEq),
             _ => None,
         }

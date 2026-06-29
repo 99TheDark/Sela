@@ -1,3 +1,4 @@
+pub mod natural;
 pub mod utils;
 
 use bumpalo::Bump;

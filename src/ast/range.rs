@@ -1,4 +1,4 @@
-use crate::ast::symbol::Symbol;
+use crate::{ast::symbol::Symbol, token::Token};
 
 #[derive(Debug, Copy, Clone)]
 pub enum RangeKind {
@@ -24,5 +24,18 @@ impl Symbol for RangeKind {
             Excl => "..<",
             Incl => "..=",
         }
+    }
+}
+
+impl RangeKind {
+    pub fn from_token(tok: Token) -> Option<Self> {
+        use crate::TokenKind::*;
+        let kind = match tok.kind {
+            DotDot => RangeKind::Full,
+            DotDotLt => RangeKind::Excl,
+            DotDotEq => RangeKind::Incl,
+            _ => return None,
+        };
+        Some(kind)
     }
 }

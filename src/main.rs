@@ -2,7 +2,10 @@ use std::fs::{self};
 
 use bumpalo::Bump;
 
-use crate::{error::Diagnostics, lexer::Lexer, parser::Parser, token::kind::TokenKind};
+use crate::{
+    error::Diagnostics, lexer::Lexer, parser::Parser, timing::Stopwatch,
+    token::kind::TokenKind,
+};
 
 pub mod ast;
 pub mod core;
@@ -10,16 +13,21 @@ pub mod error;
 pub mod lexer;
 pub mod parser;
 pub mod pretty;
+pub mod timing;
 pub mod token;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let is_debug = cfg!(debug_assertions);
 
-    let file = if is_debug { "io/test.se" } else { "io/huge.se" };
+    let file = if is_debug { "io/test.se" } else { "io/huge_errorless.se" };
+
+    let mut watch = Stopwatch::start();
 
     let src = fs::read_to_string(file)?;
     let arena = Bump::new();
     let mut diag = Diagnostics::new(file.to_string(), &src);
+
+    watch.split("File Reading");
 
     let tokens = {
         let tokens = Lexer::new(&src, &mut diag).lex();
@@ -47,6 +55,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         tokens
     };
 
+    watch.split("Lexing");
+
     let ast = {
         let ast = Parser::new(&src, &tokens, &mut diag, &arena).parse();
 
@@ -61,9 +71,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ast
     };
 
+    watch.split("Parsing");
+
     drop(tokens);
+    watch.split("Token Stream Deallocation");
 
     drop(ast); // temporarily
+    watch.split("AST Deallocation");
+
+    let total_time = watch.dump();
+    println!(
+        "{} LOC/s",
+        (src.chars().filter(|&c| c == '\n').count() as f64 / total_time.as_secs_f64())
+            as u64
+    );
 
     Ok(())
 }

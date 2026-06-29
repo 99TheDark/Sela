@@ -1,18 +1,18 @@
 use crate::{
     ast,
     error::ErrorKind,
-    parser::Parser,
+    parser::RDParser,
     token::{keyword::Keyword, kind::TokenKind},
 };
 
-impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
     pub fn parse_stmt(&mut self) -> &'ast ast::Node<'ast> {
         self.parse_expr()
     }
 
     pub fn parse_expr(&mut self) -> &'ast ast::Node<'ast> {
         use Keyword::*;
-        match Keyword::from_token(self.current(), self.src) {
+        match self.current().to_keyword(self.src) {
             If => self.parse_if_else(),
             Loop => self.parse_loop(),
             While => self.parse_while_loop(),
@@ -42,7 +42,6 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
     }
 
     pub fn parse_primary(&mut self) -> &'ast ast::Node<'ast> {
-        println!("ii {:?} |> '{}'", self.current(), self.current().src(self.src));
         let tok = self.next();
         let span = tok.span;
 

@@ -23,7 +23,7 @@ impl BinOpKind {
             Star => Some(Self::Mul),
             Slash => Some(Self::Div),
             Pct => Some(Self::Mod),
-            And => Some(Self::And),
+            Amp => Some(Self::And),
             Bar => Some(Self::Or),
             Caret => Some(Self::Xor),
             GtGt => Some(Self::Shr),

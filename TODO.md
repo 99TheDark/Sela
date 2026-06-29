@@ -1,5 +1,6 @@
 # To do
 - Implement forced parens on operators
+- Rewrite pretty like wtf
 - Multi-line comments
 - Add complexity to errors (contextual regions, like where borrows occur, the start and end of a function, etc)
 - Better error escaping for incorrect tokens; e.g. `{ let a = }` should properly exit the block
@@ -10,3 +11,5 @@
 - Harvest type signatures (functions, types, aliases, classes, constants, etc) for a global pool
 - Use Cells to reserve spots for future arena allocs to be more cache-friendly when traversing
 - Decouple ast nodes and ast node data to preserve space
+- What happes if I insert non-UTF-8 characters into my source code?
+- Maybe try out on-demand lexing/file reading

@@ -14,7 +14,6 @@ pub mod ast;
 pub mod color;
 pub mod theme;
 
-// Hopefully can later use `SmallVec<[T; 3]>`
 pub struct Builder<'a>(SmallVec<[PrettyChild<'a>; 3]>);
 
 impl<'a> Builder<'a> {
@@ -22,11 +21,11 @@ impl<'a> Builder<'a> {
         Self(SmallVec::new())
     }
 
-    pub fn empty() -> SmallVec<[PrettyChild<'a>; 3]> {
+    pub fn empty() -> PrettyChildren<'a> {
         smallvec![]
     }
 
-    pub fn named(mut self, name: &'a str, inner: &'a dyn Pretty) -> Self {
+    pub fn named(mut self, name: &'a str, inner: &'a dyn Pretty<'a>) -> Self {
         self.0.push(PrettyChild::Named { name, inner });
         self
     }
@@ -35,36 +34,38 @@ impl<'a> Builder<'a> {
         mut self,
         name: &'a str,
         prefix: &'a str,
-        inner: &'a dyn Pretty,
+        inner: &'a dyn Pretty<'a>,
     ) -> Self {
         self.0.push(PrettyChild::Prefixed { name, prefix, inner });
         self
     }
 
-    pub fn unnamed(mut self, inner: &'a dyn Pretty) -> Self {
+    pub fn unnamed(mut self, inner: &'a dyn Pretty<'a>) -> Self {
         self.0.push(PrettyChild::Unnamed { inner });
         self
     }
 
-    pub fn finish(self) -> SmallVec<[PrettyChild<'a>; 3]> {
+    pub fn finish(self) -> PrettyChildren<'a> {
         self.0
     }
 }
 
 pub enum PrettyChild<'a> {
-    Named { name: &'a str, inner: &'a dyn Pretty },
-    Prefixed { name: &'a str, prefix: &'a str, inner: &'a dyn Pretty },
-    Unnamed { inner: &'a dyn Pretty },
+    Named { name: &'a str, inner: &'a dyn Pretty<'a> },
+    Prefixed { name: &'a str, prefix: &'a str, inner: &'a dyn Pretty<'a> },
+    Unnamed { inner: &'a dyn Pretty<'a> },
 }
 
-pub trait Pretty {
+pub type PrettyChildren<'a> = SmallVec<[PrettyChild<'a>; 3]>;
+
+pub trait Pretty<'a> {
     fn title(&self) -> String;
 
     fn color(&self) -> Option<AnsiColor> {
         None
     }
 
-    fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]>;
+    fn children(&'a self) -> PrettyChildren<'a>;
 }
 
 pub struct Formatter<B: io::Write> {
@@ -73,18 +74,18 @@ pub struct Formatter<B: io::Write> {
     theme: Theme,
 }
 
-impl<B: io::Write> Formatter<B> {
+impl<'a, B: io::Write> Formatter<B> {
     pub const fn new(buffer: B, theme: Theme) -> Self {
         Self { buffer, stack: Vec::new(), theme }
     }
 
-    pub fn format(&mut self, node: &dyn Pretty) -> io::Result<()> {
+    pub fn format(&mut self, node: &'a dyn Pretty<'a>) -> io::Result<()> {
         self.format_node(node, None, None, false)
     }
 
     fn format_node(
         &mut self,
-        node: &dyn Pretty,
+        node: &'a dyn Pretty<'a>,
         name: Option<&str>,
         prefix: Option<&str>,
         is_last: bool,
@@ -216,7 +217,7 @@ impl<B: io::Write> io::Write for Formatter<B> {
     }
 }
 
-pub fn write_file(file_name: String, src: &dyn Pretty) -> io::Result<()> {
+pub fn write_file<'a>(file_name: String, src: &'a dyn Pretty<'a>) -> io::Result<()> {
     let file = File::create(file_name)?;
     let mut buffer = BufWriter::new(file);
 
@@ -226,7 +227,7 @@ pub fn write_file(file_name: String, src: &dyn Pretty) -> io::Result<()> {
     buffer.flush()
 }
 
-pub fn print(src: &dyn Pretty) -> io::Result<()> {
+pub fn print<'a>(src: &'a dyn Pretty<'a>) -> io::Result<()> {
     let stdout = std::io::stdout();
     let mut buffer = stdout.lock();
 

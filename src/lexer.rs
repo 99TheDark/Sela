@@ -100,6 +100,52 @@ impl<'a, 'b> Lexer<'a, 'b> {
         }
     }
 
+    pub fn eat_while_mut<F>(&mut self, mut valid: F)
+    where
+        F: FnMut(char) -> bool,
+    {
+        while let Some(ch) = self.peek() {
+            if !valid(ch) {
+                break;
+            }
+            self.next();
+        }
+    }
+
+    fn number(&mut self) -> TokenKind {
+        let mut seen_dot = false; // This means no .123
+        let mut seen_exp = false;
+        let mut just_saw_exp = false;
+        self.eat_while_mut(|ch| {
+            if just_saw_exp {
+                just_saw_exp = false;
+                if matches!(ch, '+' | '-') {
+                    return true;
+                }
+            }
+
+            match ch {
+                '.' => {
+                    if seen_dot {
+                        false
+                    } else {
+                        seen_dot = true;
+                        true
+                    }
+                }
+                'e' | 'E' => {
+                    seen_exp = true;
+                    just_saw_exp = true;
+                    true
+                }
+                '0'..='9' | '_' => true,
+                _ => false,
+            }
+        });
+
+        if seen_dot || seen_exp { TokenKind::Float } else { TokenKind::Int }
+    }
+
     fn char_or_lifetime(&mut self) -> TokenKind {
         use TokenKind::*;
 
@@ -197,13 +243,14 @@ impl<'a, 'b> Lexer<'a, 'b> {
             }
             // TODO: Implement literally every other numeric representation
             '0' => TokenKind::Int,
-            '0'..='9' => {
-                self.eat_while(|ch| matches!(ch, '0'..='9' | '_'));
-                TokenKind::Int
-            }
+            '0'..='9' => self.number(),
             // Lit: TBD
             '+' => self.fork(Plus, '=', PlusEq),
-            '-' => self.fork(Dash, '=', DashEq),
+            '-' => match self.peek() {
+                Some('=') => DashEq,
+                Some('>') => Arrow,
+                _ => Dash,
+            },
             '*' => self.fork(Star, '=', StarEq),
             '/' => match self.peek() {
                 Some('/') => {
@@ -217,7 +264,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
                 _ => Slash,
             },
             '%' => self.fork(Pct, '=', PctEq),
-            '&' => self.fork(And, '=', AndEq),
+            '&' => self.fork(Amp, '=', AmpEq),
             '|' => self.fork(Bar, '=', BarEq),
             '^' => self.fork(Caret, '=', CaretEq),
             '(' => {

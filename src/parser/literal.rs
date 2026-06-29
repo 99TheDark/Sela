@@ -1,6 +1,6 @@
-use crate::{ast, parser::Parser, token::Token};
+use crate::{ast, parser::RDParser, token::Token};
 
-impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
     pub fn try_parse_int(&mut self, tok: Token) -> &'ast ast::Node<'ast> {
         let span = tok.span;
         let src = tok.src(self.src);

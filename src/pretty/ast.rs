@@ -1,10 +1,10 @@
 use crate::{
-    ast::{self, symbol::Symbol},
-    pretty::{self, AnsiColor, Pretty, PrettyChild},
+    ast::{self, NodeRef, symbol::Symbol},
+    pretty::{self, AnsiColor, Pretty, PrettyChild, PrettyChildren},
 };
 use smallvec::SmallVec;
 
-impl<'a> Pretty for ast::Node<'a> {
+impl<'a> Pretty<'a> for ast::Node<'a> {
     fn title(&self) -> String {
         use ast::NodeKind::*;
         match &self.kind {
@@ -15,7 +15,9 @@ impl<'a> Pretty for ast::Node<'a> {
             Range { .. } => "Range".to_string(),
             UnOp { .. } => "Unary Operation".to_string(),
             Access { .. } => "Member Access".to_string(),
+            Invoc { .. } => "Invocation".to_string(),
             Int(val) => format!("Integer ({})", val),
+            Float(val) => format!("Floating-Point Number ({})", val),
             Bool(val) => format!("Boolean ({})", val),
             Decl { .. } => "Declaration".to_string(),
             Assign { .. } => "Assignment".to_string(),
@@ -24,7 +26,9 @@ impl<'a> Pretty for ast::Node<'a> {
             While { .. } => "While Loop".to_string(),
             For { .. } => "For Loop".to_string(),
             Block(e) if e.is_empty() => "Empty Block".to_string(),
+            Parens(_) => "Parentheses".to_string(),
             Block(_) => "Block".to_string(),
+            Pair { .. } => "Pair".to_string(),
             Use { .. } => "Use".to_string(),
             Unknown => "<! Unknown !>".to_string(),
         }
@@ -38,7 +42,7 @@ impl<'a> Pretty for ast::Node<'a> {
             KwBinOp { .. } | If { .. } | Loop { .. } | While { .. } | For { .. } => {
                 AnsiColor::Purple
             }
-            Access { .. } => AnsiColor::Yellow,
+            Access { .. } | Pair { .. } => AnsiColor::Yellow,
             Ident(_) => AnsiColor::Cyan,
             Decl { .. } | Assign { .. } => AnsiColor::Green,
             Block(e) if e.is_empty() => AnsiColor::Gray,
@@ -48,7 +52,7 @@ impl<'a> Pretty for ast::Node<'a> {
         Some(col)
     }
 
-    fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]> {
+    fn children(&'a self) -> PrettyChildren<'a> {
         use ast::NodeKind::*;
         match &self.kind {
             BinOp { lhs, op, rhs } => pretty::Builder::new()
@@ -67,9 +71,9 @@ impl<'a> Pretty for ast::Node<'a> {
                 .named("Right-hand Side", *rhs)
                 .finish(),
             Range { from, range, to } => pretty::Builder::new()
-                .named("From", from)
+                .named("From", *Box::leak(Box::new(from)))
                 .named("Range Type", range)
-                .named("To", to)
+                .named("To", *Box::leak(Box::new(to)))
                 .finish(),
             UnOp { op, rhs } => pretty::Builder::new()
                 .named("Operator", op)
@@ -79,6 +83,10 @@ impl<'a> Pretty for ast::Node<'a> {
                 .named("Parent", *parent)
                 .named("Child", *child)
                 .finish(),
+            Invoc { callee, args } => pretty::Builder::new()
+                .named("Callee", *callee)
+                .named("Arguments", *args)
+                .finish(),
             Decl { pat, val } => pretty::Builder::new()
                 .named("Pattern", *pat)
                 .named("Value", *val)
@@ -86,7 +94,7 @@ impl<'a> Pretty for ast::Node<'a> {
             If { cond, body, fallback } => pretty::Builder::new()
                 .named("Condition", *cond)
                 .named("Then Body", *body)
-                .named("Else Body", fallback)
+                .named("Else Body", *Box::leak(Box::new(fallback)))
                 .finish(),
             Loop { body } => pretty::Builder::new().named("Body", *body).finish(),
             While { cond, body } => pretty::Builder::new()
@@ -98,13 +106,17 @@ impl<'a> Pretty for ast::Node<'a> {
                 .named("Iterable", *iter)
                 .named("Body", *body)
                 .finish(),
+            Parens(elems) => elems.children(),
             Block(elems) => elems.children(),
+            Pair { lhs, rhs } => {
+                pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
+            }
             _ => pretty::Builder::empty(),
         }
     }
 }
 
-impl<T: Symbol> Pretty for T {
+impl<'a, T: Symbol> Pretty<'a> for T {
     fn title(&self) -> String {
         format!("{} ({})", self.name(), self.as_str())
     }
@@ -113,12 +125,12 @@ impl<T: Symbol> Pretty for T {
         None
     }
 
-    fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]> {
+    fn children(&self) -> PrettyChildren<'a> {
         pretty::Builder::empty()
     }
 }
 
-impl<'a> Pretty for Vec<&'a ast::Node<'a>> {
+impl<'a> Pretty<'a> for Vec<NodeRef<'a>> {
     fn title(&self) -> String {
         if self.is_empty() { "Empty List" } else { "List" }.to_string()
     }
@@ -127,14 +139,36 @@ impl<'a> Pretty for Vec<&'a ast::Node<'a>> {
         if self.is_empty() { Some(AnsiColor::Gray) } else { None }
     }
 
-    fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]> {
+    fn children(&self) -> PrettyChildren<'a> {
         self.iter()
             .map(|node| PrettyChild::Unnamed { inner: *node as &dyn Pretty })
             .collect()
     }
 }
 
-impl<'a> Pretty for Option<&'a ast::Node<'a>> {
+impl<'a, A> Pretty<'a> for SmallVec<A>
+where
+    A: smallvec::Array<Item = NodeRef<'a>>,
+{
+    fn title(&self) -> String {
+        if self.is_empty() { "Empty List" } else { "List" }.to_string()
+    }
+
+    fn color(&self) -> Option<AnsiColor> {
+        if self.is_empty() { Some(AnsiColor::Gray) } else { None }
+    }
+
+    fn children(&self) -> PrettyChildren<'a> {
+        let x: PrettyChildren<'a> = self
+            .iter()
+            .map(|y| *y as &dyn Pretty)
+            .map(|z| PrettyChild::Unnamed { inner: z })
+            .collect();
+        x
+    }
+}
+
+impl<'a> Pretty<'a> for Option<NodeRef<'a>> {
     fn title(&self) -> String {
         match self {
             Some(inner) => format!("Some {}", inner.title()),
@@ -146,7 +180,7 @@ impl<'a> Pretty for Option<&'a ast::Node<'a>> {
         if self.is_some() { None } else { Some(AnsiColor::Gray) }
     }
 
-    fn children(&self) -> SmallVec<[PrettyChild<'_>; 3]> {
+    fn children(&self) -> PrettyChildren<'a> {
         self.map_or_else(|| pretty::Builder::empty(), |inner| inner.children())
     }
 }
