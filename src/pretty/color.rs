@@ -47,11 +47,16 @@ impl AnsiColor {
         format!("\x1b[{}m{}\x1b[0m", self.ansi_code(), s)
     }
 
-    pub fn color_start(&self) -> String {
+    pub fn start(&self) -> String {
         format!("\x1b[{}m", self.ansi_code())
     }
 
-    pub fn color_end<'a>() -> &'a str {
+    pub fn end(&self) -> &'static str {
+        Self::color_terminator()
+    }
+
+    #[inline(always)]
+    pub fn color_terminator() -> &'static str {
         "\x1b[0m"
     }
 }

@@ -2,7 +2,6 @@
 - Implement forced parens on operators
 - `mmap` large files and otherwise don't
 - Make error printer automatically wrap lines
-- Rewrite pretty like wtf
 - Multi-line comments
 - Add complexity to errors (contextual regions, like where borrows occur, the start and end of a function, etc)
 - Better error escaping for incorrect tokens; e.g. `{ let a = }` should properly exit the block
