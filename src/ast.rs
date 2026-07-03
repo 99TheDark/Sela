@@ -1,7 +1,5 @@
 use core::fmt;
 
-use smallvec::SmallVec;
-
 use crate::{
     ast::{
         assign::AssignKind, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind,
@@ -62,13 +60,13 @@ pub enum NodeKind<'a> {
     Float(f64),
     Bool(bool),
     Decl { pat: NodeRef<'a>, val: NodeRef<'a> },
-    Assign { vari: NodeRef<'a>, assign: AssignKind, val: NodeRef<'a> },
+    Assign { pat: NodeRef<'a>, assign: AssignKind, val: NodeRef<'a> },
     If { cond: NodeRef<'a>, body: NodeRef<'a>, fallback: Option<NodeRef<'a>> },
     Loop { body: NodeRef<'a> },
     While { cond: NodeRef<'a>, body: NodeRef<'a> },
     For { vari: NodeRef<'a>, iter: NodeRef<'a>, body: NodeRef<'a> },
     Use { path: NodeRef<'a> },
-    Parens(SmallVec<[NodeRef<'a>; 4]>),
+    Parens(Vec<NodeRef<'a>>),
     Block(Vec<NodeRef<'a>>),
     Pair { lhs: NodeRef<'a>, rhs: NodeRef<'a> },
     Unknown,

@@ -1,4 +1,7 @@
-use crate::{ast::symbol::Symbol, token::Token};
+use crate::{
+    ast::symbol::{Symbol, Symbolic},
+    token::Token,
+};
 
 #[derive(Debug, Copy, Clone)]
 pub enum BinOpKind {
@@ -31,9 +34,15 @@ impl BinOpKind {
             _ => None,
         }
     }
+
+    #[inline(always)]
+    pub fn to_sym(self) -> Symbol {
+        Symbol::BinOp(self)
+    }
 }
 
-impl Symbol for BinOpKind {
+impl Symbolic for BinOpKind {
+    #[inline(always)]
     fn name(&self) -> &str {
         use BinOpKind::*;
         match self {
@@ -50,6 +59,7 @@ impl Symbol for BinOpKind {
         }
     }
 
+    #[inline(always)]
     fn as_str(&self) -> &str {
         use BinOpKind::*;
         match self {

@@ -1,5 +1,7 @@
 # To do
 - Implement forced parens on operators
+- `mmap` large files and otherwise don't
+- Make error printer automatically wrap lines
 - Rewrite pretty like wtf
 - Multi-line comments
 - Add complexity to errors (contextual regions, like where borrows occur, the start and end of a function, etc)

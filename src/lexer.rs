@@ -31,19 +31,19 @@ impl TokenFilterMode {
     }
 }
 
-pub struct Lexer<'a, 'b> {
-    chars: iter::Peekable<str::Chars<'a>>,
-    diag: &'a mut Diagnostics<'b>,
+pub struct Lexer<'tok, 'src> {
+    chars: iter::Peekable<str::Chars<'tok>>,
+    diag: &'tok mut Diagnostics<'src>,
     idx: u32,
     interp_stack: SmallVec<[usize; 2]>,
     just_exited: bool,
     filter_mode: TokenFilterMode,
 }
 
-impl<'a, 'b> Lexer<'a, 'b> {
+impl<'tok, 'src> Lexer<'tok, 'src> {
     pub fn new_with_mode(
-        src: &'a str,
-        diag: &'a mut Diagnostics<'b>,
+        src: &'src str,
+        diag: &'tok mut Diagnostics<'src>,
         filter_mode: TokenFilterMode,
     ) -> Self {
         Self {
@@ -56,7 +56,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
         }
     }
 
-    pub fn new(src: &'a str, diag: &'a mut Diagnostics<'b>) -> Self {
+    pub fn new(src: &'src str, diag: &'tok mut Diagnostics<'src>) -> Self {
         Self::new_with_mode(src, diag, TokenFilterMode::WhitespaceAndComments)
     }
 
@@ -344,6 +344,7 @@ impl<'a, 'b> Lexer<'a, 'b> {
     }
 
     pub fn lex(mut self) -> Vec<Token> {
+        // TODO: Turn this back into an iterator, idk what I was thinking
         let mut tokens = Vec::new();
         while let (start, Some(ch)) = (self.idx, self.next()) {
             let kind = self.lex_token_kind(ch);

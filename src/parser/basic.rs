@@ -1,4 +1,4 @@
-use crate::{
+/*use crate::{
     ast,
     error::ErrorKind,
     parser::RDParser,
@@ -52,7 +52,7 @@ impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
                 let kind = match src {
                     "true" => ast::NodeKind::Bool(true),
                     "false" => ast::NodeKind::Bool(false),
-                    _ => ast::NodeKind::Ident(src.to_string()), // TODO: temporary str store
+                    _ => ast::NodeKind::Ident(src), // TODO: temporary str store
                 };
                 self.alloc(ast::Node::new(kind, span))
             }
@@ -85,3 +85,4 @@ impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
         }
     }
 }
+*/

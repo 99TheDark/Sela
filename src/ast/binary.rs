@@ -1,7 +1,13 @@
 use bumpalo::Bump;
 
 use crate::{
-    ast::{self, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind, symbol::Symbol},
+    ast::{
+        self,
+        binop::BinOpKind,
+        comp::CompKind,
+        kwbinop::KwBinOpKind,
+        symbol::{Symbol, Symbolic},
+    },
     token::{Token, keyword::Keyword},
 };
 
@@ -10,26 +16,6 @@ pub enum BinaryKind {
     BinOp(BinOpKind),
     KwBinOp(KwBinOpKind),
     Comp(CompKind),
-}
-
-impl Symbol for BinaryKind {
-    fn name(&self) -> &str {
-        use BinaryKind::*;
-        match self {
-            BinOp(kind) => kind.name(),
-            KwBinOp(kind) => kind.name(),
-            Comp(kind) => kind.name(),
-        }
-    }
-
-    fn as_str(&self) -> &str {
-        use BinaryKind::*;
-        match self {
-            BinOp(kind) => kind.as_str(),
-            KwBinOp(kind) => kind.as_str(),
-            Comp(kind) => kind.as_str(),
-        }
-    }
 }
 
 impl BinaryKind {
@@ -83,5 +69,36 @@ impl BinaryKind {
         };
 
         alloc.alloc(ast::Node::new(kind, span))
+    }
+
+    #[inline(always)]
+    pub fn to_sym(self) -> Symbol {
+        match self {
+            BinaryKind::BinOp(kind) => kind.to_sym(),
+            BinaryKind::KwBinOp(kind) => kind.to_sym(),
+            BinaryKind::Comp(kind) => kind.to_sym(),
+        }
+    }
+}
+
+impl Symbolic for BinaryKind {
+    #[inline(always)]
+    fn name(&self) -> &str {
+        use BinaryKind::*;
+        match self {
+            BinOp(kind) => kind.name(),
+            KwBinOp(kind) => kind.name(),
+            Comp(kind) => kind.name(),
+        }
+    }
+
+    #[inline(always)]
+    fn as_str(&self) -> &str {
+        use BinaryKind::*;
+        match self {
+            BinOp(kind) => kind.as_str(),
+            KwBinOp(kind) => kind.as_str(),
+            Comp(kind) => kind.as_str(),
+        }
     }
 }

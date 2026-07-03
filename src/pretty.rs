@@ -74,7 +74,10 @@ pub struct Formatter<B: io::Write> {
     theme: Theme,
 }
 
-impl<'a, B: io::Write> Formatter<B> {
+impl<'a, 'b, B: io::Write> Formatter<B>
+where
+    'a: 'b,
+{
     pub const fn new(buffer: B, theme: Theme) -> Self {
         Self { buffer, stack: Vec::new(), theme }
     }
@@ -236,3 +239,53 @@ pub fn print<'a>(src: &'a dyn Pretty<'a>) -> io::Result<()> {
 
     buffer.flush()
 }
+
+/*use std::fmt;
+
+use smallvec::SmallVec;
+
+use crate::pretty::color::AnsiColor;
+
+pub mod ast;
+pub mod color;
+pub mod theme;
+
+pub struct Node<'a> {
+    name: Option<&'static str>,
+    inner: &'a dyn Pretty<'a>,
+}
+
+pub type ChildNodes<'a> = SmallVec<[Node<'a>; 3]>;
+
+pub trait Pretty<'a> {
+    fn color(&self) -> Option<AnsiColor>;
+    fn fmt_title(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result;
+    fn children(&self) -> ChildNodes<'a>;
+}
+
+pub struct Builder<'a>(ChildNodes<'a>);
+
+impl<'a> Builder<'a> {
+    pub fn new() -> Self {
+        Self(SmallVec::new())
+    }
+
+    pub fn empty() -> ChildNodes<'a> {
+        SmallVec::new()
+    }
+
+    pub fn named(mut self, name: &'static str, inner: &'a dyn Pretty<'a>) -> Self {
+        self.0.push(Node { name: Some(name), inner });
+        self
+    }
+
+    pub fn unnamed(mut self, inner: &'a dyn Pretty<'a>) -> Self {
+        self.0.push(Node { name: None, inner });
+        self
+    }
+
+    pub fn finish(self) -> ChildNodes<'a> {
+        self.0
+    }
+}
+*/

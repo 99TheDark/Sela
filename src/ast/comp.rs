@@ -1,4 +1,4 @@
-use crate::ast::symbol::Symbol;
+use crate::ast::symbol::{Symbol, Symbolic};
 
 #[derive(Debug, Copy, Clone)]
 pub enum CompKind {
@@ -10,7 +10,15 @@ pub enum CompKind {
     GtEq,
 }
 
-impl Symbol for CompKind {
+impl CompKind {
+    #[inline(always)]
+    pub fn to_sym(self) -> Symbol {
+        Symbol::Comp(self)
+    }
+}
+
+impl Symbolic for CompKind {
+    #[inline(always)]
     fn name(&self) -> &str {
         use CompKind::*;
         match self {
@@ -23,6 +31,7 @@ impl Symbol for CompKind {
         }
     }
 
+    #[inline(always)]
     fn as_str(&self) -> &str {
         use CompKind::*;
         match self {

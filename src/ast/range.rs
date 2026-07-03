@@ -1,30 +1,13 @@
-use crate::{ast::symbol::Symbol, token::Token};
+use crate::{
+    ast::symbol::{Symbol, Symbolic},
+    token::Token,
+};
 
 #[derive(Debug, Copy, Clone)]
 pub enum RangeKind {
     Full,
     Excl,
     Incl,
-}
-
-impl Symbol for RangeKind {
-    fn name(&self) -> &str {
-        use RangeKind::*;
-        match self {
-            Full => "Full Range",
-            Excl => "Exclusive Range",
-            Incl => "Inclusive Range",
-        }
-    }
-
-    fn as_str(&self) -> &str {
-        use RangeKind::*;
-        match self {
-            Full => "..",
-            Excl => "..<",
-            Incl => "..=",
-        }
-    }
 }
 
 impl RangeKind {
@@ -37,5 +20,32 @@ impl RangeKind {
             _ => return None,
         };
         Some(kind)
+    }
+
+    #[inline(always)]
+    pub fn to_sym(self) -> Symbol {
+        Symbol::Range(self)
+    }
+}
+
+impl Symbolic for RangeKind {
+    #[inline(always)]
+    fn name(&self) -> &str {
+        use RangeKind::*;
+        match self {
+            Full => "Full Range",
+            Excl => "Exclusive Range",
+            Incl => "Inclusive Range",
+        }
+    }
+
+    #[inline(always)]
+    fn as_str(&self) -> &str {
+        use RangeKind::*;
+        match self {
+            Full => "..",
+            Excl => "..<",
+            Incl => "..=",
+        }
     }
 }

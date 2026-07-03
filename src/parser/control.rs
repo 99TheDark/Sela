@@ -1,4 +1,4 @@
-use crate::{ast, parser::RDParser, token::keyword::Keyword};
+/*use crate::{ast, parser::RDParser, token::keyword::Keyword};
 
 impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
     pub fn parse_if_else(&mut self) -> &'ast ast::Node<'ast> {
@@ -49,3 +49,4 @@ impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
         ))
     }
 }
+*/

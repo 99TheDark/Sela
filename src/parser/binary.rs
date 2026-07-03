@@ -1,4 +1,4 @@
-use crate::{
+/*use crate::{
     ast::{
         self, binary::BinaryKind, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind,
     },
@@ -74,3 +74,4 @@ impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
         left
     }
 }
+*/

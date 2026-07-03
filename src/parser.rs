@@ -11,17 +11,16 @@ use std::{borrow::Borrow, str::FromStr};
 use arrayvec::ArrayVec;
 use bumpalo::Bump;
 use regex::Regex;
-use smallvec::SmallVec;
 
 use crate::{
-    ast::{self, NodeRef, binary::BinaryKind, unop::UnOpKind},
+    ast::{self, binary::BinaryKind, unop::UnOpKind},
     core::span::Span,
     error::{Diagnostics, ErrorKind, natural::Natural},
     token::{Token, keyword::Keyword, kind::TokenKind},
 };
 use regex_macro::regex;
 
-pub struct RDParser<'ast, 'diag, 'src> {
+/*pub struct RDParser<'ast, 'diag, 'src> {
     src: &'src str,
     tokens: &'src [Token],
     idx: usize,
@@ -177,14 +176,14 @@ impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
         stmts
     }
 
-    pub fn parse(mut self) -> Vec<&'ast ast::Node<'ast>> {
+    pub fn parse(mut self) -> Vec<ast::NodeRef<'ast>> {
         self.parse_stmts(|_| false)
     }
-}
+}*/
 
-pub struct Parser<'ast, 'diag, 'src> {
+pub struct Parser<'tok, 'ast, 'diag, 'src> {
     src: &'src str,
-    tokens: &'src [Token],
+    tokens: &'tok [Token],
     idx: usize,
     diag: &'diag mut Diagnostics<'src>,
     arena: &'ast Bump,
@@ -192,12 +191,16 @@ pub struct Parser<'ast, 'diag, 'src> {
 }
 
 pub struct ParserError;
-pub type PResult<'ast> = Result<NodeRef<'ast>, ParserError>;
+pub type PResult<'ast> = Result<ast::NodeRef<'ast>, ParserError>;
 
-impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+impl<'tok, 'ast, 'diag, 'src> Parser<'tok, 'ast, 'diag, 'src>
+where
+    'src: 'ast,
+    'src: 'tok,
+{
     pub fn new(
         src: &'src str,
-        tokens: &'src [Token],
+        tokens: &'tok [Token],
         diag: &'diag mut Diagnostics<'src>,
         arena: &'ast Bump,
     ) -> Self {
@@ -263,7 +266,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         self.tokens.get(self.idx).map_or(0, |tok| tok.led_prec(self.src))
     }
 
-    pub fn parse_nud(&mut self, tok: Token) -> NodeRef<'ast> {
+    pub fn parse_nud(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         use TokenKind::*;
         match tok.kind {
             Ident => {
@@ -323,7 +326,11 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         }
     }
 
-    pub fn parse_led(&mut self, lhs: NodeRef<'ast>, tok: Token) -> NodeRef<'ast> {
+    pub fn parse_led(
+        &mut self,
+        lhs: ast::NodeRef<'ast>,
+        tok: Token,
+    ) -> ast::NodeRef<'ast> {
         use TokenKind::*;
         // Maybe make this a manual pattern?
         if let Some(op_kind) = BinaryKind::from_token(tok, self.src) {
@@ -357,7 +364,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         }
     }
 
-    pub fn parse_expr(&mut self, min_prec: u8) -> NodeRef<'ast> {
+    pub fn parse_expr(&mut self, min_prec: u8) -> ast::NodeRef<'ast> {
         let left_tok = self.next();
         let mut left = self.parse_nud(left_tok);
         while min_prec < self.peek_prec() {
@@ -367,11 +374,11 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         left
     }
 
-    pub fn parse_stmt(&mut self) -> NodeRef<'ast> {
+    pub fn parse_stmt(&mut self) -> ast::NodeRef<'ast> {
         self.parse_expr(0) // TODO: temporary
     }
 
-    pub fn parse_stmts<F>(&mut self, should_exit: F) -> Vec<&'ast ast::Node<'ast>>
+    pub fn parse_stmts<F>(&mut self, should_exit: F) -> Vec<ast::NodeRef<'ast>>
     where
         F: Fn(Token) -> bool,
     {
@@ -389,18 +396,22 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         stmts
     }
 
-    pub fn parse(mut self) -> Vec<NodeRef<'ast>> {
+    pub fn parse(mut self) -> Vec<ast::NodeRef<'ast>> {
         self.parse_stmts(|_| false)
     }
 }
 
-impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
+impl<'tok, 'ast, 'diag, 'src> Parser<'tok, 'ast, 'diag, 'src>
+where
+    'src: 'ast,
+    'src: 'tok,
+{
     fn parse_binary(
         &mut self,
-        lhs: NodeRef<'ast>,
+        lhs: ast::NodeRef<'ast>,
         tok: Token,
         bin_op: BinaryKind,
-    ) -> NodeRef<'ast> {
+    ) -> ast::NodeRef<'ast> {
         let rhs = self.parse_expr(tok.led_prec(self.src));
 
         use BinaryKind::*;
@@ -412,13 +423,13 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         self.alloc(ast::Node::new(kind, lhs.span.to(rhs.span)))
     }
 
-    fn parse_unop(&mut self, tok: Token, op: UnOpKind) -> NodeRef<'ast> {
+    fn parse_unop(&mut self, tok: Token, op: UnOpKind) -> ast::NodeRef<'ast> {
         let rhs = self.parse_expr(tok.nud_prec());
         let kind = ast::NodeKind::UnOp { op, rhs };
         self.alloc(ast::Node::new(kind, tok.span.to(rhs.span)))
     }
 
-    fn parse_bool(&mut self, tok: Token, val: bool) -> NodeRef<'ast> {
+    fn parse_bool(&mut self, tok: Token, val: bool) -> ast::NodeRef<'ast> {
         let kind = ast::NodeKind::Bool(val);
         self.alloc(ast::Node::new(kind, tok.span))
     }
@@ -435,7 +446,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         name: &'static str,
         underscore_checks: ArrayVec<(&R, &'static str), N>, // Maybe make ArrayVec<Check>?
         constructor: F,
-    ) -> NodeRef<'ast> {
+    ) -> ast::NodeRef<'ast> {
         let src = tok.src(self.src);
 
         let mut issues = ArrayVec::<&str, N>::new();
@@ -465,7 +476,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         }
     }
 
-    fn parse_int(&mut self, tok: Token) -> NodeRef<'ast> {
+    fn parse_int(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         self.parse_number(
             tok,
             "integer",
@@ -478,7 +489,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         )
     }
 
-    fn parse_float(&mut self, tok: Token) -> NodeRef<'ast> {
+    fn parse_float(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         self.parse_number(
             tok,
             "floating-point",
@@ -497,26 +508,25 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         )
     }
 
-    fn parse_char(&mut self, _tok: Token) -> NodeRef<'ast> {
+    fn parse_char(&mut self, _tok: Token) -> ast::NodeRef<'ast> {
         todo!()
     }
 
-    fn parse_string(&mut self, _tok: Token) -> NodeRef<'ast> {
+    fn parse_string(&mut self, _tok: Token) -> ast::NodeRef<'ast> {
         todo!()
     }
 
-    fn parse_range(&mut self, _tok: Token) -> NodeRef<'ast> {
+    fn parse_range(&mut self, _tok: Token) -> ast::NodeRef<'ast> {
         todo!()
     }
 
-    fn parse_ident(&mut self, tok: Token) -> NodeRef<'ast> {
-        // TODO: Remove cloning
-        let kind = ast::NodeKind::Ident(tok.src(self.src).to_string());
+    fn parse_ident(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let kind = ast::NodeKind::Ident(tok.src(self.src));
         self.alloc(ast::Node::new(kind, tok.span))
     }
 
     // Maybe return a Result or Option and propogate that up until it can be handled?
-    fn parse_decl(&mut self, tok: Token) -> NodeRef<'ast> {
+    fn parse_decl(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let pat = self.parse_expr(0);
         self.expect(TokenKind::Eq);
         let val = self.parse_expr(0);
@@ -526,7 +536,7 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         ))
     }
 
-    fn parse_pair(&mut self, lhs: NodeRef<'ast>, tok: Token) -> NodeRef<'ast> {
+    fn parse_pair(&mut self, lhs: ast::NodeRef<'ast>, tok: Token) -> ast::NodeRef<'ast> {
         let rhs = self.parse_expr(tok.nud_prec());
         self.alloc(ast::Node::new(
             ast::NodeKind::Pair { lhs, rhs },
@@ -534,7 +544,11 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         ))
     }
 
-    fn parse_invocation(&mut self, lhs: NodeRef<'ast>, tok: Token) -> NodeRef<'ast> {
+    fn parse_invocation(
+        &mut self,
+        lhs: ast::NodeRef<'ast>,
+        tok: Token,
+    ) -> ast::NodeRef<'ast> {
         let rhs = self.parse_parens(tok);
         self.alloc(ast::Node::new(
             ast::NodeKind::Invoc { callee: lhs, args: rhs },
@@ -542,8 +556,8 @@ impl<'ast, 'diag, 'src> Parser<'ast, 'diag, 'src> {
         ))
     }
 
-    fn parse_parens(&mut self, tok: Token) -> NodeRef<'ast> {
-        let mut elems = SmallVec::new();
+    fn parse_parens(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let mut elems = Vec::with_capacity(4);
         loop {
             elems.push(self.parse_expr(0));
 

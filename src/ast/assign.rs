@@ -1,4 +1,7 @@
-use crate::{ast::symbol::Symbol, token::Token};
+use crate::{
+    ast::symbol::{Symbol, Symbolic},
+    token::Token,
+};
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum AssignKind {
@@ -33,9 +36,14 @@ impl AssignKind {
             _ => None,
         }
     }
+
+    pub fn to_sym(self) -> Symbol {
+        Symbol::Assign(self)
+    }
 }
 
-impl Symbol for AssignKind {
+impl Symbolic for AssignKind {
+    #[inline(always)]
     fn name(&self) -> &str {
         use AssignKind::*;
         match self {
@@ -53,6 +61,7 @@ impl Symbol for AssignKind {
         }
     }
 
+    #[inline(always)]
     fn as_str(&self) -> &str {
         use AssignKind::*;
         match self {

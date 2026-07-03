@@ -1,4 +1,4 @@
-use crate::{ast, parser::RDParser};
+/*use crate::{ast, parser::RDParser};
 
 impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
     pub fn parse_use(&mut self) -> &'ast ast::Node<'ast> {
@@ -7,3 +7,4 @@ impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
         self.alloc(ast::Node::new(ast::NodeKind::Use { path }, start.span.to(path.span)))
     }
 }
+*/

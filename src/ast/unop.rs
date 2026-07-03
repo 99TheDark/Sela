@@ -1,4 +1,4 @@
-use crate::ast::symbol::Symbol;
+use crate::ast::symbol::{Symbol, Symbolic};
 
 #[derive(Debug, Copy, Clone)]
 pub enum UnOpKind {
@@ -8,7 +8,15 @@ pub enum UnOpKind {
     Deref,
 }
 
-impl Symbol for UnOpKind {
+impl UnOpKind {
+    #[inline(always)]
+    pub fn to_sym(self) -> Symbol {
+        Symbol::UnOp(self)
+    }
+}
+
+impl Symbolic for UnOpKind {
+    #[inline(always)]
     fn name(&self) -> &str {
         use UnOpKind::*;
         match self {
@@ -19,6 +27,7 @@ impl Symbol for UnOpKind {
         }
     }
 
+    #[inline(always)]
     fn as_str(&self) -> &str {
         use UnOpKind::*;
         match self {

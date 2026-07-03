@@ -68,6 +68,9 @@ pub enum TokenKind {
     Idea,  //\\ idea
     Func,  //\\ func
     Mod,   //\\ mod
+    Pub,   //\\ pub
+    Inn,   //\\ inn
+    Pri,   //\\ pri
     If,    //\\ if
     Else,  //\\ else
     Loop,  //\\ loop

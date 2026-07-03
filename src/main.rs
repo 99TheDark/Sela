@@ -57,8 +57,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     watch.split("Lexing");
 
+    let ast_arena = Bump::new();
+
     let ast = {
-        let ast = Parser::new(&src, &tokens, &mut diag, &arena).parse();
+        // Maybe create a new arena, or even two (NodeKind and Span)?
+        let ast = Parser::new(&src, &tokens, &mut diag, &ast_arena).parse();
 
         // For debugging
         if is_debug {
@@ -74,9 +77,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     watch.split("Parsing");
 
     drop(tokens);
+    drop(arena);
     watch.split("Token Stream Deallocation");
 
     drop(ast); // temporarily
+    drop(ast_arena);
     watch.split("AST Deallocation");
 
     let total_time = watch.dump();

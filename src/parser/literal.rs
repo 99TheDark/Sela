@@ -1,4 +1,4 @@
-use crate::{ast, parser::RDParser, token::Token};
+/*use crate::{ast, parser::RDParser, token::Token};
 
 impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
     pub fn try_parse_int(&mut self, tok: Token) -> &'ast ast::Node<'ast> {
@@ -13,3 +13,4 @@ impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
         self.alloc(ast::Node::new(ast::NodeKind::Int(val), span))
     }
 }
+*/

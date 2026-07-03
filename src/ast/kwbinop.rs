@@ -1,4 +1,4 @@
-use crate::ast::symbol::Symbol;
+use crate::ast::symbol::{Symbol, Symbolic};
 
 #[derive(Debug, Copy, Clone)]
 pub enum KwBinOpKind {
@@ -6,7 +6,15 @@ pub enum KwBinOpKind {
     Or,
 }
 
-impl Symbol for KwBinOpKind {
+impl KwBinOpKind {
+    #[inline(always)]
+    pub fn to_sym(self) -> Symbol {
+        Symbol::KwBinOp(self)
+    }
+}
+
+impl Symbolic for KwBinOpKind {
+    #[inline(always)]
     fn name(&self) -> &str {
         use KwBinOpKind::*;
         match self {
@@ -15,6 +23,7 @@ impl Symbol for KwBinOpKind {
         }
     }
 
+    #[inline(always)]
     fn as_str(&self) -> &str {
         use KwBinOpKind::*;
         match self {
