@@ -16,7 +16,7 @@ use crate::{
     ast::{self, binary::BinaryKind, unop::UnOpKind},
     core::span::Span,
     error::{Diagnostics, ErrorKind, natural::Natural},
-    token::{Token, keyword::Keyword, kind::TokenKind},
+    token::{Token, kind::TokenKind},
 };
 use regex_macro::regex;
 
@@ -263,45 +263,13 @@ where
     }
 
     pub fn peek_prec(&self) -> u8 {
-        self.tokens.get(self.idx).map_or(0, |tok| tok.led_prec(self.src))
+        self.tokens.get(self.idx).map_or(0, |tok| tok.led_prec())
     }
 
     pub fn parse_nud(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         use TokenKind::*;
         match tok.kind {
-            Ident => {
-                use Keyword::*;
-                match tok.to_keyword(self.src) {
-                    Let => self.parse_decl(tok),
-                    Const => todo!(),
-                    Mut => todo!(),
-                    Type => todo!(),
-                    Enum => todo!(),
-                    Class => todo!(),
-                    Idea => todo!(),
-                    Func => todo!(),
-                    Mod => todo!(),
-                    If => todo!(),
-                    Loop => todo!(),
-                    While => todo!(),
-                    For => todo!(),
-                    Match => todo!(),
-                    Break => todo!(),
-                    Cont => todo!(),
-                    Ret => todo!(),
-                    LSelf => todo!(),
-                    BSelf => todo!(),
-                    Macro => todo!(),
-                    Use => todo!(),
-                    Charm => todo!(),
-                    True => self.parse_bool(tok, true),
-                    False => self.parse_bool(tok, false),
-                    NotReserved => self.parse_ident(tok),
-                    Else | As | In | And | Or => {
-                        panic!("no no that's not how you are supposed to write that")
-                    } // TODO: Make a real error
-                }
-            }
+            Ident => self.parse_ident(tok),
             Int => self.parse_int(tok),
             Float => self.parse_float(tok),
             Char => self.parse_char(tok),
@@ -311,18 +279,31 @@ where
             Star => self.parse_unop(tok, UnOpKind::Deref),
             Amp => self.parse_unop(tok, UnOpKind::Ref),
             Not => self.parse_unop(tok, UnOpKind::Not),
-            LParen => todo!(),
+            LParen => self.parse_delimited(
+                tok,
+                TokenKind::Comma,
+                TokenKind::RParen,
+                ast::NodeKind::Parens,
+            ),
             LBrack => todo!(),
-            LBrace => todo!(),
+            LBrace => self.parse_delimited(
+                tok,
+                TokenKind::NewLine,
+                TokenKind::RBrace,
+                ast::NodeKind::Block,
+            ),
             DotDot | DotDotLt | DotDotEq => self.parse_range(tok),
             Dollar => todo!(),
             Tick => todo!(),
+            Let => self.parse_decl(tok),
+            True => self.parse_bool(tok, true),
+            False => self.parse_bool(tok, false),
             NoChar => todo!(),
             UntermQuot => todo!(),
             UntermQuotEsc => todo!(),
             UntermStr => todo!(),
             Unknown => self.alloc(ast::Node::new(ast::NodeKind::Unknown, tok.span)),
-            _ => panic!("{:#?}", tok), // TODO: Rich error messages
+            _ => panic!("Illegal or not implemented: {:#?}", tok), // TODO: Rich error messages
         }
     }
 
@@ -333,7 +314,7 @@ where
     ) -> ast::NodeRef<'ast> {
         use TokenKind::*;
         // Maybe make this a manual pattern?
-        if let Some(op_kind) = BinaryKind::from_token(tok, self.src) {
+        if let Some(op_kind) = BinaryKind::from_token(tok) {
             self.parse_binary(lhs, tok, op_kind)
         } else if matches!(
             tok.kind,
@@ -348,7 +329,13 @@ where
                 | AmpEq
                 | BarEq
         ) {
-            todo!()
+            // todo!()
+            self.diag.fail(
+                ErrorKind::Syntax,
+                "This is some equal stuff not yet made".to_string(),
+                tok.span,
+                self.arena,
+            )
         } else {
             match tok.kind {
                 LParen => self.parse_invocation(lhs, tok), // Maybe broaden to ( / [ / {
@@ -357,7 +344,6 @@ where
                 At => todo!(),
                 Colon => self.parse_pair(lhs, tok), // There is a better way for sure than to pass in tok
                 Comma => todo!(),
-                Dot => todo!(),
                 Arrow => todo!(),
                 _ => panic!(),
             }
@@ -374,10 +360,6 @@ where
         left
     }
 
-    pub fn parse_stmt(&mut self) -> ast::NodeRef<'ast> {
-        self.parse_expr(0) // TODO: temporary
-    }
-
     pub fn parse_stmts<F>(&mut self, should_exit: F) -> Vec<ast::NodeRef<'ast>>
     where
         F: Fn(Token) -> bool,
@@ -390,7 +372,7 @@ where
                 break;
             }
 
-            let stmt = self.parse_stmt();
+            let stmt = self.parse_expr(0);
             stmts.push(stmt);
         }
         stmts
@@ -412,15 +394,8 @@ where
         tok: Token,
         bin_op: BinaryKind,
     ) -> ast::NodeRef<'ast> {
-        let rhs = self.parse_expr(tok.led_prec(self.src));
-
-        use BinaryKind::*;
-        let kind = match bin_op {
-            BinOp(op) => ast::NodeKind::BinOp { lhs, op, rhs },
-            KwBinOp(op) => ast::NodeKind::KwBinOp { lhs, op, rhs },
-            Comp(comp) => ast::NodeKind::Comp { lhs, comp, rhs },
-        };
-        self.alloc(ast::Node::new(kind, lhs.span.to(rhs.span)))
+        let rhs = self.parse_expr(tok.led_prec());
+        bin_op.make_node(lhs, rhs, self.arena)
     }
 
     fn parse_unop(&mut self, tok: Token, op: UnOpKind) -> ast::NodeRef<'ast> {
@@ -485,7 +460,7 @@ where
                 (regex!(r"^_"), "at the start of a number"),
                 (regex!(r"_$"), "at the end of a number"),
             ]),
-            |val| ast::NodeKind::Int(val),
+            ast::NodeKind::Int,
         )
     }
 
@@ -504,7 +479,7 @@ where
                 (regex!(r"_[+-]"), "before an exponential sign"),
                 (regex!(r"[+-]_"), "after an exponential sign"),
             ]),
-            |val| ast::NodeKind::Float(val),
+            ast::NodeKind::Float,
         )
     }
 
@@ -523,6 +498,28 @@ where
     fn parse_ident(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let kind = ast::NodeKind::Ident(tok.src(self.src));
         self.alloc(ast::Node::new(kind, tok.span))
+    }
+
+    fn parse_delimited<F: FnOnce(Vec<ast::NodeRef<'ast>>) -> ast::NodeKind<'ast>>(
+        &mut self,
+        tok: Token,
+        delim: TokenKind,
+        end: TokenKind,
+        constructor: F,
+    ) -> ast::NodeRef<'ast> {
+        let mut elems = Vec::new();
+        while !self.current().is(end) {
+            elems.push(self.parse_expr(0));
+            self.eat_nls(); // TODO: Also arbitrary AF
+
+            if self.current().is(end) {
+                break;
+            } else {
+                self.expect(delim);
+            }
+        }
+        let end = self.next();
+        self.alloc(ast::Node::new(constructor(elems), tok.span.to(end.span)))
     }
 
     // Maybe return a Result or Option and propogate that up until it can be handled?

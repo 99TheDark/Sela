@@ -1,4 +1,4 @@
-use std::{iter, str};
+use std::str;
 
 use smallvec::SmallVec;
 
@@ -32,7 +32,7 @@ impl TokenFilterMode {
 }
 
 pub struct Lexer<'tok, 'src> {
-    chars: iter::Peekable<str::Chars<'tok>>,
+    src: &'src str,
     diag: &'tok mut Diagnostics<'src>,
     idx: u32,
     interp_stack: SmallVec<[usize; 2]>,
@@ -47,7 +47,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         filter_mode: TokenFilterMode,
     ) -> Self {
         Self {
-            chars: src.chars().peekable(),
+            src,
             diag,
             idx: 0,
             interp_stack: SmallVec::new(),
@@ -61,13 +61,15 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     }
 
     pub fn next(&mut self) -> Option<char> {
-        let ch = self.chars.next()?;
+        // TODO: Use a fast implementation or a custom structure like Cursor<'a>
+        let ch = self.src[self.idx as usize..].chars().next()?;
         self.idx += ch.len_utf8() as u32;
         Some(ch)
     }
 
     pub fn peek(&mut self) -> Option<char> {
-        self.chars.peek().copied()
+        // TODO: Use a fast implementation or a custom structure like Cursor<'a>
+        self.src[self.idx as usize..].chars().next()
     }
 
     pub fn fork(&mut self, cur: TokenKind, next: char, new: TokenKind) -> TokenKind {
@@ -100,6 +102,20 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         }
     }
 
+    pub fn eat_while_and_collect<F>(&mut self, valid: F) -> &'src str
+    where
+        F: Fn(char) -> bool,
+    {
+        let start = self.idx;
+        while let Some(ch) = self.peek() {
+            if !valid(ch) {
+                break;
+            }
+            self.next();
+        }
+        &self.src[start as usize..self.idx as usize]
+    }
+
     pub fn eat_while_mut<F>(&mut self, mut valid: F)
     where
         F: FnMut(char) -> bool,
@@ -109,6 +125,49 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 break;
             }
             self.next();
+        }
+    }
+
+    fn ident_or_keyword(&mut self) -> TokenKind {
+        let ident = self.eat_while_and_collect(
+            |ch| matches!(ch, 'a'..='z' | 'A'..='Z' | '_' | '0'..='9'),
+        );
+
+        use TokenKind::*;
+        match ident {
+            "let" => Let,
+            "const" => Const,
+            "mut" => Mut,
+            "type" => Type,
+            "enum" => Enum,
+            "class" => Class,
+            "idea" => Idea,
+            "func" => Func,
+            "mod" => Mod,
+            "pub" => Pub,
+            "inn" => Inn,
+            "pri" => Pri,
+            "if" => If,
+            "else" => Else,
+            "loop" => Loop,
+            "while" => While,
+            "for" => For,
+            "match" => Match,
+            "break" => Break,
+            "continue" => Cont,
+            "return" => Ret,
+            "self" => LSelf,
+            "Self" => BSelf,
+            "macro" => Macro,
+            "use" => Use,
+            "charm" => Charm,
+            "as" => As,
+            "true" => True,
+            "false" => False,
+            "in" => In,
+            "and" => And,
+            "or" => Or,
+            _ => Ident,
         }
     }
 
@@ -235,12 +294,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             c if c.is_whitespace() => Whitespace,
             // Single-line comment: TBD
             // Multi-line comment: TBD
-            'a'..='z' | 'A'..='Z' | '_' => {
-                self.eat_while(
-                    |ch| matches!(ch, 'a'..='z' | 'A'..='Z' | '_' | '0'..='9'),
-                );
-                Ident
-            }
+            'a'..='z' | 'A'..='Z' | '_' => self.ident_or_keyword(),
             // TODO: Implement literally every other numeric representation
             '0' => TokenKind::Int,
             '0'..='9' => self.number(),

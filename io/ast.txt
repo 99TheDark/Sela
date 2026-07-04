@@ -1,8 +1,118 @@
 List
-└─ Binary Operation
-   ├─ Left-hand Side: Binary Operation
-   │  ├─ Left-hand Side: Identifier (ab)
-   │  ├─ Operator: Add (+)
-   │  └─ Right-hand Side: Boolean (true)
-   ├─ Operator: Subtract (-)
-   └─ Right-hand Side: <! Unknown !>
+├─ Binary Operation
+│  ├─ Left-hand Side: Binary Operation
+│  │  ├─ Left-hand Side: [36mIdentifier (ab)[0m
+│  │  ├─ Operator: Add (+)
+│  │  └─ Right-hand Side: [36mIdentifier (true)[0m
+│  ├─ Operator: Subtract (-)
+│  └─ Right-hand Side: [31m<! Unknown !>[0m
+├─ [36mIdentifier (let)[0m
+├─ [36mIdentifier (function)[0m
+├─ [31m<! Unknown !>[0m
+├─ Invocation
+│  ├─ Callee: [31m<! Unknown !>[0m
+│  └─ Arguments: Parentheses
+│     └─ Unary Operation
+│        ├─ Operator: Reference (&)
+│        └─ Right-hand Side: [36mIdentifier (v)[0m
+├─ [36mIdentifier (dx)[0m
+├─ [36mIdentifier (let)[0m
+├─ Pair
+│  ├─ Left: [36mIdentifier (k)[0m
+│  └─ Right: [31m<! Unknown !>[0m
+├─ Binary Operation
+│  ├─ Left-hand Side: Binary Operation
+│  │  ├─ Left-hand Side: Integer (3)
+│  │  ├─ Operator: Subtract (-)
+│  │  └─ Right-hand Side: Integer (2)
+│  ├─ Operator: Add (+)
+│  └─ Right-hand Side: Binary Operation
+│     ├─ Left-hand Side: Integer (7)
+│     ├─ Operator: Multiply (*)
+│     └─ Right-hand Side: Integer (8)
+├─ Unary Operation
+│  ├─ Operator: Negate (-)
+│  └─ Right-hand Side: Integer (2)
+├─ [36mIdentifier (let)[0m
+├─ Binary Operation
+│  ├─ Left-hand Side: Binary Operation
+│  │  ├─ Left-hand Side: Binary Operation
+│  │  │  ├─ Left-hand Side: Binary Operation
+│  │  │  │  ├─ Left-hand Side: Binary Operation
+│  │  │  │  │  ├─ Left-hand Side: Binary Operation
+│  │  │  │  │  │  ├─ Left-hand Side: Invocation
+│  │  │  │  │  │  │  ├─ Callee: [31m<! Unknown !>[0m
+│  │  │  │  │  │  │  └─ Arguments: Parentheses
+│  │  │  │  │  │  │     └─ Binary Operation
+│  │  │  │  │  │  │        ├─ Left-hand Side: Binary Operation
+│  │  │  │  │  │  │        │  ├─ Left-hand Side: Binary Operation
+│  │  │  │  │  │  │        │  │  ├─ Left-hand Side: Parentheses
+│  │  │  │  │  │  │        │  │  │  └─ Binary Operation
+│  │  │  │  │  │  │        │  │  │     ├─ Left-hand Side: Integer (0)
+│  │  │  │  │  │  │        │  │  │     ├─ Operator: Subtract (-)
+│  │  │  │  │  │  │        │  │  │     └─ Right-hand Side: Integer (1)
+│  │  │  │  │  │  │        │  │  ├─ Operator: Multiply (*)
+│  │  │  │  │  │  │        │  │  └─ Right-hand Side: Integer (2)
+│  │  │  │  │  │  │        │  ├─ Operator: Add (+)
+│  │  │  │  │  │  │        │  └─ Right-hand Side: Binary Operation
+│  │  │  │  │  │  │        │     ├─ Left-hand Side: Integer (5)
+│  │  │  │  │  │  │        │     ├─ Operator: Divide (/)
+│  │  │  │  │  │  │        │     └─ Right-hand Side: Integer (6)
+│  │  │  │  │  │  │        ├─ Operator: Add (+)
+│  │  │  │  │  │  │        └─ Right-hand Side: Integer (0)
+│  │  │  │  │  │  ├─ Operator: Multiply (*)
+│  │  │  │  │  │  └─ Right-hand Side: Parentheses
+│  │  │  │  │  │     └─ Binary Operation
+│  │  │  │  │  │        ├─ Left-hand Side: Integer (3)
+│  │  │  │  │  │        ├─ Operator: Add (+)
+│  │  │  │  │  │        └─ Right-hand Side: Integer (4)
+│  │  │  │  │  ├─ Operator: Divide (/)
+│  │  │  │  │  └─ Right-hand Side: Integer (8)
+│  │  │  │  ├─ Operator: Add (+)
+│  │  │  │  └─ Right-hand Side: Integer (4)
+│  │  │  ├─ Operator: Subtract (-)
+│  │  │  └─ Right-hand Side: Binary Operation
+│  │  │     ├─ Left-hand Side: Integer (7)
+│  │  │     ├─ Operator: Multiply (*)
+│  │  │     └─ Right-hand Side: Integer (8)
+│  │  ├─ Operator: Subtract (-)
+│  │  └─ Right-hand Side: Integer (1)
+│  ├─ Operator: Add (+)
+│  └─ Right-hand Side: Binary Operation
+│     ├─ Left-hand Side: Binary Operation
+│     │  ├─ Left-hand Side: Integer (94)
+│     │  ├─ Operator: Multiply (*)
+│     │  └─ Right-hand Side: Integer (14087)
+│     ├─ Operator: Divide (/)
+│     └─ Right-hand Side: Parentheses
+│        └─ Binary Operation
+│           ├─ Left-hand Side: Binary Operation
+│           │  ├─ Left-hand Side: Integer (6)
+│           │  ├─ Operator: Add (+)
+│           │  └─ Right-hand Side: Integer (88)
+│           ├─ Operator: Subtract (-)
+│           └─ Right-hand Side: Integer (1)
+├─ [36mIdentifier (let)[0m
+├─ [31m<! Unknown !>[0m
+├─ Binary Operation
+│  ├─ Left-hand Side: Integer (5)
+│  ├─ Operator: Exclusive Or (^)
+│  └─ Right-hand Side: Binary Operation
+│     ├─ Left-hand Side: Integer (2)
+│     ├─ Operator: Subtract (-)
+│     └─ Right-hand Side: Integer (1)
+├─ [36mIdentifier (let)[0m
+├─ [31m<! Unknown !>[0m
+├─ Comparison
+│  ├─ Left-hand Side: Integer (3)
+│  ├─ Comparator: Equal (==)
+│  └─ Right-hand Side: Integer (2)
+├─ [36mIdentifier (and)[0m
+├─ Comparison
+│  ├─ Left-hand Side: [36mIdentifier (y)[0m
+│  ├─ Comparator: Greater Than (>)
+│  └─ Right-hand Side: Integer (5)
+├─ [36mIdentifier (or)[0m
+└─ Unary Operation
+   ├─ Operator: Not (!)
+   └─ Right-hand Side: [36mIdentifier (a1)[0m

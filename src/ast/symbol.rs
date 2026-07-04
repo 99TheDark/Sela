@@ -19,6 +19,7 @@ pub enum Symbol {
     Range(RangeKind),
     UnOp(UnOpKind),
     Assign(AssignKind),
+    Dot,
 }
 
 impl Symbolic for Symbol {
@@ -32,6 +33,7 @@ impl Symbolic for Symbol {
             Range(kind) => kind.name(),
             UnOp(kind) => kind.name(),
             Assign(kind) => kind.name(),
+            Dot => "Member Access",
         }
     }
 
@@ -45,6 +47,7 @@ impl Symbolic for Symbol {
             Range(kind) => kind.as_str(),
             UnOp(kind) => kind.as_str(),
             Assign(kind) => kind.as_str(),
+            Dot => ".",
         }
     }
 }

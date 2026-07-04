@@ -1,14 +1,8 @@
 use bumpalo::Bump;
 
 use crate::{
-    ast::{
-        self,
-        binop::BinOpKind,
-        comp::CompKind,
-        kwbinop::KwBinOpKind,
-        symbol::{Symbol, Symbolic},
-    },
-    token::{Token, keyword::Keyword},
+    ast::{self, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind, symbol::Symbol},
+    token::Token,
 };
 
 #[derive(Debug, Copy, Clone)]
@@ -16,21 +10,14 @@ pub enum BinaryKind {
     BinOp(BinOpKind),
     KwBinOp(KwBinOpKind),
     Comp(CompKind),
+    Dot,
 }
 
 impl BinaryKind {
-    pub fn from_token(token: Token, src: &str) -> Option<Self> {
+    pub fn from_token(token: Token) -> Option<Self> {
         use crate::TokenKind::*;
 
         let kind = match token.kind {
-            Ident => {
-                use Keyword::*;
-                match token.to_keyword(src) {
-                    And => Self::KwBinOp(KwBinOpKind::And),
-                    Or => Self::KwBinOp(KwBinOpKind::Or),
-                    _ => return None,
-                }
-            }
             Plus => Self::BinOp(BinOpKind::Add),
             Dash => Self::BinOp(BinOpKind::Sub),
             Star => Self::BinOp(BinOpKind::Mul),
@@ -47,6 +34,9 @@ impl BinaryKind {
             Caret => Self::BinOp(BinOpKind::Xor),
             Amp => Self::BinOp(BinOpKind::And),
             Bar => Self::BinOp(BinOpKind::Or),
+            And => Self::KwBinOp(KwBinOpKind::And),
+            Or => Self::KwBinOp(KwBinOpKind::Or),
+            Dot => Self::Dot,
             _ => return None,
         };
 
@@ -66,6 +56,7 @@ impl BinaryKind {
             BinOp(op) => ast::NodeKind::BinOp { lhs, op: *op, rhs },
             KwBinOp(op) => ast::NodeKind::KwBinOp { lhs, op: *op, rhs },
             Comp(comp) => ast::NodeKind::Comp { lhs, comp: *comp, rhs },
+            Dot => ast::NodeKind::Access { parent: lhs, child: rhs },
         };
 
         alloc.alloc(ast::Node::new(kind, span))
@@ -73,32 +64,12 @@ impl BinaryKind {
 
     #[inline(always)]
     pub fn to_sym(self) -> Symbol {
-        match self {
-            BinaryKind::BinOp(kind) => kind.to_sym(),
-            BinaryKind::KwBinOp(kind) => kind.to_sym(),
-            BinaryKind::Comp(kind) => kind.to_sym(),
-        }
-    }
-}
-
-impl Symbolic for BinaryKind {
-    #[inline(always)]
-    fn name(&self) -> &str {
         use BinaryKind::*;
         match self {
-            BinOp(kind) => kind.name(),
-            KwBinOp(kind) => kind.name(),
-            Comp(kind) => kind.name(),
-        }
-    }
-
-    #[inline(always)]
-    fn as_str(&self) -> &str {
-        use BinaryKind::*;
-        match self {
-            BinOp(kind) => kind.as_str(),
-            KwBinOp(kind) => kind.as_str(),
-            Comp(kind) => kind.as_str(),
+            BinOp(kind) => kind.to_sym(),
+            KwBinOp(kind) => kind.to_sym(),
+            Comp(kind) => kind.to_sym(),
+            Dot => Symbol::Dot,
         }
     }
 }

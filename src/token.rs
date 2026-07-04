@@ -1,9 +1,5 @@
-use crate::{
-    core::span::Span,
-    token::{keyword::Keyword, kind::TokenKind},
-};
+use crate::{core::span::Span, token::kind::TokenKind};
 
-pub mod keyword;
 pub mod kind;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
@@ -46,9 +42,9 @@ impl Token {
         self.kind == kind
     }
 
-    pub fn to_keyword(self, src: &str) -> Keyword {
+    /*pub fn to_keyword(self, src: &str) -> Keyword {
         Keyword::from_token(self, src)
-    }
+    }*/
 
     pub fn nud_prec(&self) -> u8 {
         use TokenKind::*;
@@ -59,7 +55,7 @@ impl Token {
         }
     }
 
-    pub fn led_prec(&self, src: &str) -> u8 {
+    pub fn led_prec(&self) -> u8 {
         use TokenKind::*;
         match self.kind {
             Comma => 1,
@@ -69,10 +65,8 @@ impl Token {
             | CaretEq | AmpEq | BarEq => 2,
 
             DotDotLt | DotDotEq => 3,
-
-            Ident if self.to_keyword(src) == Keyword::Or => 4,
-            Ident if self.to_keyword(src) == Keyword::And => 5,
-
+            Or => 4,
+            And => 5,
             EqEq | NotEq => 6,
             Gt | Lt | GtEq | LtEq => 7,
             Bar => 8,
@@ -81,9 +75,7 @@ impl Token {
             GtGt | LtLt => 11,
             Plus | Dash => 12,
             Star | Slash | Pct => 13,
-
-            Ident if self.to_keyword(src) == Keyword::As => 14,
-
+            As => 14,
             At => 16,
             Colon => 17,
             Dot | LParen | LBrack => 18,
