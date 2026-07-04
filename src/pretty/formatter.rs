@@ -55,7 +55,9 @@ where
             write!(self.buffer, "{}: ", name)?;
         }
 
-        if let Some(color) = node.color() {
+        if let Some(color) = node.color()
+            && self.theme.coloring == Coloring::Colorful
+        {
             self.write(color.start())?;
             node.fmt_title(self)?;
             self.writeln(color.end())?;

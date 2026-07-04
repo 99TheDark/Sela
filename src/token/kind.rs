@@ -10,27 +10,45 @@ pub enum TokenKind {
     Char,
     String,
     Annot,
-    Eq,       //\\ =
-    Plus,     //\\ +
-    PlusEq,   //\\ +=
-    Dash,     //\\ -
-    DashEq,   //\\ -=
-    Star,     //\\ *
-    StarEq,   //\\ *=
-    Slash,    //\\ /
-    SlashEq,  //\\ /=
-    Pct,      //\\ %
-    PctEq,    //\\ %=
-    Gt,       //\\ >
-    Lt,       //\\ <
-    EqEq,     //\\ ==
-    NotEq,    //\\ !=
-    GtEq,     //\\ >=
-    LtEq,     //\\ <=
-    GtGt,     //\\ >>
-    GtGtEq,   //\\ >>=
-    LtLt,     //\\ <<
-    LtLtEq,   //\\ <<=
+    Eq,     //\\ =
+    Plus,   //\\ +
+    PlusEq, //\\ +=
+    // PlusBar,   //\\ +|
+    // PlusBarEq, //\\ +|=
+    // PlusPct,   //\\ +%
+    // PlusPctEq, //\\ +%=
+    Dash,   //\\ -
+    DashEq, //\\ -=
+    // DashBar,   //\\ -|
+    // DashBarEq, //\\ -|=
+    // DashPct,   //\\ -%
+    // DashPctEq, //\\ -%=
+    Star,   //\\ *
+    StarEq, //\\ *=
+    // StarBar,   //\\ *|
+    // StarBarEq, //\\ *|=
+    // StarPct,   //\\ *%
+    // StarPctEq, //\\ *%=
+    Slash,   //\\ /
+    SlashEq, //\\ /=
+    Pct,     //\\ %
+    PctEq,   //\\ %=
+    Gt,      //\\ >
+    Lt,      //\\ <
+    EqEq,    //\\ ==
+    NotEq,   //\\ !=
+    GtEq,    //\\ >=
+    LtEq,    //\\ <=
+    GtGt,    //\\ >>
+    GtGtEq,  //\\ >>=
+    // GtGtPct,   //\\ >>%
+    // GtGtPctEq, //\\ >>%=
+    LtLt,   //\\ <<
+    LtLtEq, //\\ <<=
+    // LtLtBar,   //\\ <<|
+    // LtLtBarEq, //\\ <<|=
+    // LtLtPct,   //\\ <<%
+    // LtLtPctEq, //\\ <<%=
     Caret,    //\\ ^
     CaretEq,  //\\ ^=
     Amp,      //\\ &
@@ -58,7 +76,6 @@ pub enum TokenKind {
     Hash,     //\\ #
     Arrow,    //\\ ->
 
-    //? Maybe will use/add/replace with
     Let,   //\\ let
     Const, //\\ const
     Mut,   //\\ mut
@@ -106,6 +123,8 @@ pub enum TokenKind {
     PsnNullishEq,  //\\ ??=
     PsnGtGtGt,     //\\ >>>
     PsnGtGtGtEq,   //\\ >>>=
+    PsnGtGtBar,    //\\ >>|
+    PsnGtGtBarEq,  //\\ >>|=
     PsnLtGt,       //\\ <>
     PsnStarStar,   //\\ ** //! x * *y -> maybe remove?
     PsnStarStarEq, //\\ **=

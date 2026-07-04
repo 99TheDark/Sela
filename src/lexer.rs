@@ -72,6 +72,10 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         self.src[self.idx as usize..].chars().next()
     }
 
+    pub fn peek_n(&mut self, n: usize) -> &'src str {
+        &self.src[self.idx as usize..usize::min(self.idx as usize + n, self.src.len())]
+    }
+
     pub fn fork(&mut self, cur: TokenKind, next: char, new: TokenKind) -> TokenKind {
         if self.peek() == Some(next) {
             self.next();
@@ -106,7 +110,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     where
         F: Fn(char) -> bool,
     {
-        let start = self.idx;
+        let start = self.idx - 1;
         while let Some(ch) = self.peek() {
             if !valid(ch) {
                 break;
@@ -132,6 +136,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         let ident = self.eat_while_and_collect(
             |ch| matches!(ch, 'a'..='z' | 'A'..='Z' | '_' | '0'..='9'),
         );
+        println!("Ident - {}", ident);
 
         use TokenKind::*;
         match ident {
@@ -250,13 +255,19 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     }
 
     fn string(&mut self) -> TokenKind {
+        // TODO: There is 100% a way to write this better
+        if self.peek_n(2) == "$(" {
+            self.interp_stack.push(0);
+            return TokenKind::String;
+        }
+
         while let Some(ch) = self.next() {
             match ch {
                 '\"' => break,
                 '\\' => {
                     self.next();
                 }
-                '$' if self.peek() == Some('(') => {
+                _ if self.peek_n(2) == "$(" => {
                     self.interp_stack.push(0);
                     break;
                 }
@@ -409,7 +420,11 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             if self.just_exited {
                 let start = self.idx;
                 self.just_exited = false;
-                tokens.push(Token::new(self.string(), Span::new(start, self.idx)));
+
+                // TODO: This shouldn't be a magic number... well in this case magic string
+                if self.peek_n(2) != "$(" {
+                    tokens.push(Token::new(self.string(), Span::new(start, self.idx)));
+                }
             }
         }
         tokens

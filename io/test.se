@@ -25,6 +25,7 @@ if x > 5 {
     io.print("u = 5 ^ (2 - 1) = $(u).")
 } else {
     io.print("Oh no...")
+    io.print("$(test) $(othertest)$(finaltest)")
 }
 
 let x = ship.Ship(row: 6, column: 3, direction: ship.Direction.Horizontal)

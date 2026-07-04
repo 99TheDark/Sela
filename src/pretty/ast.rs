@@ -20,6 +20,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Int(val) => f.write(format!("Integer ({})", val)),
             Float(val) => f.write(format!("Floating-Point Number ({})", val)),
             Bool(val) => f.write(format!("Boolean ({})", val)),
+            Char(val) => f.write(format!("Character ({})", val.escape_debug())),
+            String(_) => f.write("String"),
             Decl { .. } => f.write("Declaration"),
             Assign { .. } => f.write("Assignment"),
             If { .. } => f.write("If Statement"),
@@ -117,7 +119,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Pair { lhs, rhs } => {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
             }
-            Ident(..) | Int(..) | Float(..) | Bool(..) | Unknown => {
+            // TODO: Move String(_) to a real pretty printer
+            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | String(_) | Unknown => {
                 pretty::Builder::empty()
             }
         }

@@ -14,6 +14,7 @@ pub mod binop;
 pub mod comp;
 pub mod kwbinop;
 pub mod range;
+pub mod string;
 pub mod symbol;
 pub mod unop;
 
@@ -59,6 +60,8 @@ pub enum NodeKind<'a> {
     Int(i64),
     Float(f64),
     Bool(bool),
+    Char(char),
+    String(Vec<string::Fragment<'a>>),
     Decl { pat: NodeRef<'a>, val: NodeRef<'a> },
     Assign { pat: NodeRef<'a>, assign: AssignKind, val: NodeRef<'a> },
     If { cond: NodeRef<'a>, body: NodeRef<'a>, fallback: Option<NodeRef<'a>> },
@@ -69,5 +72,10 @@ pub enum NodeKind<'a> {
     Parens(Vec<NodeRef<'a>>),
     Block(Vec<NodeRef<'a>>),
     Pair { lhs: NodeRef<'a>, rhs: NodeRef<'a> },
+
     Unknown,
+    // UnknownInt,
+    // UnknownFloat,
+    // UnknownChar,
+    // UnknownString,
 }

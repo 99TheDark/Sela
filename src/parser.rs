@@ -20,167 +20,6 @@ use crate::{
 };
 use regex_macro::regex;
 
-/*pub struct RDParser<'ast, 'diag, 'src> {
-    src: &'src str,
-    tokens: &'src [Token],
-    idx: usize,
-    in_recovery: bool,
-    diag: &'diag mut Diagnostics<'src>,
-    eof_token: Token,
-    arena: &'ast Bump,
-}
-
-impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
-    pub fn new(
-        src: &'src str,
-        tokens: &'src [Token],
-        diag: &'diag mut Diagnostics<'src>,
-        arena: &'ast Bump,
-    ) -> Self {
-        let eof_loc = tokens.last().map_or(0, |tok| tok.span.end);
-
-        Self {
-            src,
-            tokens,
-            idx: 0,
-            in_recovery: false,
-            diag,
-            eof_token: Token::new(TokenKind::EOF, Span::single(eof_loc)),
-            arena,
-        }
-    }
-
-    pub fn advance(&mut self) {
-        // Is this even needed?
-        if self.idx < self.tokens.len() {
-            self.idx += 1;
-        }
-    }
-
-    pub fn next(&mut self) -> Token {
-        self.eat_nls();
-        if self.idx < self.tokens.len() {
-            let tok = self.tokens[self.idx];
-            self.idx += 1;
-            tok
-        } else {
-            self.eof_token
-        }
-    }
-
-    pub fn eat_until<F>(&mut self, cond: F)
-    where
-        F: Fn(Token) -> bool,
-    {
-        while self.idx < self.tokens.len() && cond(self.tokens[self.idx]) {
-            self.idx += 1;
-        }
-    }
-
-    pub fn eat_nls(&mut self) {
-        self.eat_until(|tok| tok.is_nl());
-    }
-
-    pub fn eat_line(&mut self) {
-        self.eat_until(|tok| !tok.is_nl());
-    }
-
-    pub fn current(&self) -> Token {
-        if self.idx < self.tokens.len() { self.tokens[self.idx] } else { self.eof_token }
-    }
-
-    pub fn peek(&self) -> Token {
-        if self.idx + 1 < self.tokens.len() {
-            self.tokens[self.idx + 1]
-        } else {
-            self.eof_token
-        }
-    }
-
-    pub fn expect(&mut self, expected: TokenKind) -> Token {
-        let tok = self.next();
-        if tok.kind != expected {
-            self.diag.emit(
-                ErrorKind::Syntax,
-                format!(
-                    "Expected {:?} token, found {:?} token instead",
-                    expected, tok.kind
-                ),
-                tok.span,
-            );
-        }
-        tok
-    }
-
-    pub fn expect_keyword(&mut self, expected: Keyword) -> Token {
-        let tok = self.next();
-
-        let kw = tok.to_keyword(self.src);
-        if kw != expected {
-            if kw == Keyword::NotReserved {
-                self.diag.emit(
-                    ErrorKind::Syntax,
-                    format!(
-                        "Expected {:?} keyword, found {:?} token instead",
-                        expected, tok.kind
-                    ),
-                    tok.span,
-                );
-            } else {
-                self.diag.emit(
-                    ErrorKind::Syntax,
-                    format!(
-                        "Expected {:?} keyword, found {:?} keyword instead",
-                        expected, kw
-                    ),
-                    tok.span,
-                );
-            }
-        }
-
-        tok
-    }
-
-    pub fn at_keyword(&self, kw: Keyword) -> bool {
-        self.current().to_keyword(self.src) == kw
-    }
-
-    pub fn at_and_eat(&mut self, kind: TokenKind) -> bool {
-        if self.current().kind == kind {
-            self.advance();
-            true
-        } else {
-            false
-        }
-    }
-
-    pub fn alloc<T>(&mut self, elem: T) -> &'ast T {
-        self.arena.alloc(elem)
-    }
-
-    pub fn parse_stmts<F>(&mut self, should_exit: F) -> Vec<&'ast ast::Node<'ast>>
-    where
-        F: Fn(Token) -> bool,
-    {
-        let mut stmts = Vec::new();
-        loop {
-            self.eat_nls();
-
-            if self.current().is_eof() || should_exit(self.current()) {
-                break;
-            }
-
-            let stmt = self.parse_stmt();
-            stmts.push(stmt);
-        }
-        stmts
-    }
-
-    pub fn parse(mut self) -> Vec<ast::NodeRef<'ast>> {
-        self.parse_stmts(|_| false)
-    }
-}*/
-
 pub struct Parser<'tok, 'ast, 'diag, 'src> {
     src: &'src str,
     tokens: &'tok [Token],
@@ -303,7 +142,8 @@ where
             UntermQuotEsc => todo!(),
             UntermStr => todo!(),
             Unknown => self.alloc(ast::Node::new(ast::NodeKind::Unknown, tok.span)),
-            _ => panic!("Illegal or not implemented: {:#?}", tok), // TODO: Rich error messages
+            // _ => panic!("Illegal or not implemented: {:#?}", tok), // TODO: Rich error messages
+            _ => self.alloc(ast::Node::new(ast::NodeKind::Unknown, tok.span)),
         }
     }
 
@@ -487,8 +327,33 @@ where
         todo!()
     }
 
-    fn parse_string(&mut self, _tok: Token) -> ast::NodeRef<'ast> {
-        todo!()
+    fn parse_string(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        // TODO: Unescape
+        let mut frags =
+            vec![ast::string::Fragment::String(tok.src(self.src).to_string())];
+        let mut end = tok.span;
+        while self.current().eof_is(TokenKind::Dollar) {
+            self.next();
+            self.expect(TokenKind::LParen);
+            let interp = self.parse_expr(0);
+            let rparen = self.expect(TokenKind::RParen);
+
+            frags.push(ast::string::Fragment::Expr(interp));
+
+            if self.current().is(TokenKind::String) {
+                // TODO: Same deal here
+                let str_tok = self.next();
+                frags.push(ast::string::Fragment::String(
+                    str_tok.src(self.src).to_string(),
+                ));
+
+                end = str_tok.span;
+            } else {
+                end = rparen.span;
+            }
+        }
+
+        self.alloc(ast::Node::new(ast::NodeKind::String(frags), tok.span.to(end)))
     }
 
     fn parse_range(&mut self, _tok: Token) -> ast::NodeRef<'ast> {
@@ -507,14 +372,22 @@ where
         end: TokenKind,
         constructor: F,
     ) -> ast::NodeRef<'ast> {
+        // TODO: Fix. This function is physically painful to look at. Burn it with fire.
         let mut elems = Vec::new();
-        while !self.current().is(end) {
-            elems.push(self.parse_expr(0));
+        self.eat_nls(); // TODO: Arbitrary AF
+        while self.current().eof_not_is(end) {
             self.eat_nls(); // TODO: Also arbitrary AF
+            elems.push(self.parse_expr(0));
 
             if self.current().is(end) {
                 break;
+            } else if self.current().is(delim) {
+                self.next();
             } else {
+                self.eat_nls(); // TODO: Bro.
+                if self.current().is(end) {
+                    break;
+                }
                 self.expect(delim);
             }
         }

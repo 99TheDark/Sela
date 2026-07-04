@@ -2,7 +2,7 @@ use crate::{core::span::Span, token::kind::TokenKind};
 
 pub mod kind;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone)]
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
@@ -39,12 +39,18 @@ impl Token {
 
     #[inline(always)]
     pub fn is(self, kind: TokenKind) -> bool {
-        self.kind == kind
+        self.kind == kind && self.kind != TokenKind::EOF
     }
 
-    /*pub fn to_keyword(self, src: &str) -> Keyword {
-        Keyword::from_token(self, src)
-    }*/
+    #[inline(always)]
+    pub fn eof_is(self, kind: TokenKind) -> bool {
+        self.kind == kind && self.kind != TokenKind::EOF
+    }
+
+    #[inline(always)]
+    pub fn eof_not_is(self, kind: TokenKind) -> bool {
+        self.kind != kind && self.kind != TokenKind::EOF
+    }
 
     pub fn nud_prec(&self) -> u8 {
         use TokenKind::*;
