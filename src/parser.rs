@@ -16,7 +16,7 @@ use crate::{
     ast::{self, binary::BinaryKind, unop::UnOpKind},
     core::span::Span,
     error::{Diagnostics, ErrorKind, natural::Natural},
-    token::{Token, kind::TokenKind},
+    token::{Token, kind::TokenKind, precedence::Precedence},
 };
 use regex_macro::regex;
 
@@ -70,13 +70,17 @@ where
         self.eat_until(|tok| !tok.is_nl());
     }
 
-    pub fn current(&self) -> Token {
+    pub fn peek(&self) -> Token {
         // Is this check even needed? Could we make this something else?
         if self.idx < self.tokens.len() { self.tokens[self.idx] } else { self.eof_token }
     }
 
     pub fn next(&mut self) -> Token {
         self.eat_nls();
+        self.true_next()
+    }
+
+    pub fn true_next(&mut self) -> Token {
         if self.idx < self.tokens.len() {
             let tok = self.tokens[self.idx];
             self.idx += 1;
@@ -101,8 +105,8 @@ where
         tok
     }
 
-    pub fn peek_prec(&self) -> u8 {
-        self.tokens.get(self.idx).map_or(0, |tok| tok.led_prec())
+    pub fn peek_prec(&self) -> Precedence {
+        self.tokens.get(self.idx).map_or(Precedence::None, |tok| tok.led_prec())
     }
 
     pub fn parse_nud(&mut self, tok: Token) -> ast::NodeRef<'ast> {
@@ -118,6 +122,7 @@ where
             Star => self.parse_unop(tok, UnOpKind::Deref),
             Amp => self.parse_unop(tok, UnOpKind::Ref),
             Not => self.parse_unop(tok, UnOpKind::Not),
+            // Maybe make these use both parse_stmts() and parse_delimited()?
             LParen => self.parse_delimited(
                 tok,
                 TokenKind::Comma,
@@ -125,12 +130,7 @@ where
                 ast::NodeKind::Parens,
             ),
             LBrack => todo!(),
-            LBrace => self.parse_delimited(
-                tok,
-                TokenKind::NewLine,
-                TokenKind::RBrace,
-                ast::NodeKind::Block,
-            ),
+            LBrace => self.parse_block(tok),
             DotDot | DotDotLt | DotDotEq => self.parse_range(tok),
             Dollar => todo!(),
             Tick => todo!(),
@@ -148,6 +148,7 @@ where
     }
 
     pub fn parse_led(
+        // TODO: Use precedence, duh
         &mut self,
         lhs: ast::NodeRef<'ast>,
         tok: Token,
@@ -156,26 +157,6 @@ where
         // Maybe make this a manual pattern?
         if let Some(op_kind) = BinaryKind::from_token(tok) {
             self.parse_binary(lhs, tok, op_kind)
-        } else if matches!(
-            tok.kind,
-            Eq | PlusEq
-                | DashEq
-                | StarEq
-                | SlashEq
-                | PctEq
-                | GtGtEq
-                | LtLtEq
-                | CaretEq
-                | AmpEq
-                | BarEq
-        ) {
-            // todo!()
-            self.diag.fail(
-                ErrorKind::Syntax,
-                "This is some equal stuff not yet made".to_string(),
-                tok.span,
-                self.arena,
-            )
         } else {
             match tok.kind {
                 LParen => self.parse_invocation(lhs, tok), // Maybe broaden to ( / [ / {
@@ -183,14 +164,14 @@ where
                 LBrace => todo!(),
                 At => todo!(),
                 Colon => self.parse_pair(lhs, tok), // There is a better way for sure than to pass in tok
-                Comma => todo!(),
+                Comma => self.alloc(ast::Node::new(ast::NodeKind::Unknown, tok.span)),
                 Arrow => todo!(),
                 _ => panic!(),
             }
         }
     }
 
-    pub fn parse_expr(&mut self, min_prec: u8) -> ast::NodeRef<'ast> {
+    pub fn parse_expr(&mut self, min_prec: Precedence) -> ast::NodeRef<'ast> {
         let left_tok = self.next();
         let mut left = self.parse_nud(left_tok);
         while min_prec < self.peek_prec() {
@@ -207,12 +188,11 @@ where
         let mut stmts = Vec::new();
         loop {
             self.eat_nls();
-
-            if self.current().is_eof() || should_exit(self.current()) {
+            if self.peek().is_eof() || should_exit(self.peek()) {
                 break;
             }
 
-            let stmt = self.parse_expr(0);
+            let stmt = self.parse_expr(Precedence::None);
             stmts.push(stmt);
         }
         stmts
@@ -232,10 +212,10 @@ where
         &mut self,
         lhs: ast::NodeRef<'ast>,
         tok: Token,
-        bin_op: BinaryKind,
+        binary: BinaryKind,
     ) -> ast::NodeRef<'ast> {
         let rhs = self.parse_expr(tok.led_prec());
-        bin_op.make_node(lhs, rhs, self.arena)
+        binary.make_node(lhs, rhs, self.arena)
     }
 
     fn parse_unop(&mut self, tok: Token, op: UnOpKind) -> ast::NodeRef<'ast> {
@@ -332,15 +312,15 @@ where
         let mut frags =
             vec![ast::string::Fragment::String(tok.src(self.src).to_string())];
         let mut end = tok.span;
-        while self.current().eof_is(TokenKind::Dollar) {
+        while self.peek().eof_is(TokenKind::Dollar) {
             self.next();
             self.expect(TokenKind::LParen);
-            let interp = self.parse_expr(0);
+            let interp = self.parse_expr(Precedence::None);
             let rparen = self.expect(TokenKind::RParen);
 
             frags.push(ast::string::Fragment::Expr(interp));
 
-            if self.current().is(TokenKind::String) {
+            if self.peek().is(TokenKind::String) {
                 // TODO: Same deal here
                 let str_tok = self.next();
                 frags.push(ast::string::Fragment::String(
@@ -353,7 +333,8 @@ where
             }
         }
 
-        self.alloc(ast::Node::new(ast::NodeKind::String(frags), tok.span.to(end)))
+        let frags = self.alloc(frags);
+        self.alloc(ast::Node::new(ast::NodeKind::String(&frags), tok.span.to(end)))
     }
 
     fn parse_range(&mut self, _tok: Token) -> ast::NodeRef<'ast> {
@@ -365,49 +346,51 @@ where
         self.alloc(ast::Node::new(kind, tok.span))
     }
 
-    fn parse_delimited<F: FnOnce(Vec<ast::NodeRef<'ast>>) -> ast::NodeKind<'ast>>(
+    fn parse_delimited<F: FnOnce(&'ast [ast::NodeRef<'ast>]) -> ast::NodeKind<'ast>>(
         &mut self,
         tok: Token,
         delim: TokenKind,
         end: TokenKind,
         constructor: F,
     ) -> ast::NodeRef<'ast> {
-        // TODO: Fix. This function is physically painful to look at. Burn it with fire.
         let mut elems = Vec::new();
-        self.eat_nls(); // TODO: Arbitrary AF
-        while self.current().eof_not_is(end) {
-            self.eat_nls(); // TODO: Also arbitrary AF
-            elems.push(self.parse_expr(0));
+        while self.peek().eof_not_is(end) {
+            elems.push(self.parse_expr(Precedence::None));
 
-            if self.current().is(end) {
+            if self.peek().kind == end {
                 break;
-            } else if self.current().is(delim) {
-                self.next();
             } else {
-                self.eat_nls(); // TODO: Bro.
-                if self.current().is(end) {
-                    break;
-                }
                 self.expect(delim);
             }
         }
         let end = self.next();
-        self.alloc(ast::Node::new(constructor(elems), tok.span.to(end.span)))
+
+        let elems = self.alloc(elems);
+        let kind = constructor(&elems);
+        self.alloc(ast::Node::new(kind, tok.span.to(end.span)))
     }
 
     // Maybe return a Result or Option and propogate that up until it can be handled?
     fn parse_decl(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        let pat = self.parse_expr(0);
+        let pat = self.parse_expr(Precedence::Assign);
         self.expect(TokenKind::Eq);
-        let val = self.parse_expr(0);
+        let val = self.parse_expr(Precedence::Assign);
         self.alloc(ast::Node::new(
             ast::NodeKind::Decl { pat, val },
             tok.span.to(val.span),
         ))
     }
 
+    fn parse_block(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        // TODO: In the morning - this creates an infinite loop, idk why
+        let elems = self.parse_stmts(|tok| tok.is(TokenKind::RBrace));
+        let elems = self.alloc(elems);
+        let end = elems.last().map_or(tok.span, |last| last.span);
+        self.alloc(ast::Node::new(ast::NodeKind::Block(elems), tok.span.to(end)))
+    }
+
     fn parse_pair(&mut self, lhs: ast::NodeRef<'ast>, tok: Token) -> ast::NodeRef<'ast> {
-        let rhs = self.parse_expr(tok.nud_prec());
+        let rhs = self.parse_expr(tok.led_prec());
         self.alloc(ast::Node::new(
             ast::NodeKind::Pair { lhs, rhs },
             lhs.span.to(rhs.span),
@@ -429,22 +412,22 @@ where
     fn parse_parens(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let mut elems = Vec::with_capacity(4);
         loop {
-            elems.push(self.parse_expr(0));
+            elems.push(self.parse_expr(Precedence::None));
 
             self.eat_nls(); // Feels kind of random. I feel like I could streamline this
-            if self.current().is(TokenKind::RParen) {
+            if self.peek().is(TokenKind::RParen) {
                 break;
             }
 
             self.expect(TokenKind::Comma);
-            self.eat_nls(); // Same
-            if self.current().is(TokenKind::RParen) {
+            if self.peek().is(TokenKind::RParen) {
                 break;
             }
         }
 
         let end = self.next();
 
+        let elems = self.alloc(elems);
         self.alloc(ast::Node::new(ast::NodeKind::Parens(elems), tok.span.to(end.span)))
     }
 }

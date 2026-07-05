@@ -18,6 +18,7 @@ pub mod string;
 pub mod symbol;
 pub mod unop;
 
+// Maybe also split up Span, with a structure with two arenas just for that
 pub struct Node<'a> {
     pub kind: NodeKind<'a>,
     pub span: Span,
@@ -61,7 +62,7 @@ pub enum NodeKind<'a> {
     Float(f64),
     Bool(bool),
     Char(char),
-    String(Vec<string::Fragment<'a>>),
+    String(&'a [string::Fragment<'a>]),
     Decl { pat: NodeRef<'a>, val: NodeRef<'a> },
     Assign { pat: NodeRef<'a>, assign: AssignKind, val: NodeRef<'a> },
     If { cond: NodeRef<'a>, body: NodeRef<'a>, fallback: Option<NodeRef<'a>> },
@@ -69,8 +70,8 @@ pub enum NodeKind<'a> {
     While { cond: NodeRef<'a>, body: NodeRef<'a> },
     For { vari: NodeRef<'a>, iter: NodeRef<'a>, body: NodeRef<'a> },
     Use { path: NodeRef<'a> },
-    Parens(Vec<NodeRef<'a>>),
-    Block(Vec<NodeRef<'a>>),
+    Parens(&'a [NodeRef<'a>]),
+    Block(&'a [NodeRef<'a>]),
     Pair { lhs: NodeRef<'a>, rhs: NodeRef<'a> },
 
     Unknown,

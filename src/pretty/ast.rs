@@ -155,6 +155,20 @@ impl<'a, B: io::Write> Pretty<'a, B> for Vec<NodeRef<'a>> {
     }
 }
 
+impl<'a, B: io::Write> Pretty<'a, B> for &'a [ast::NodeRef<'a>] {
+    fn fmt_title<'w>(&self, f: &mut pretty::Formatter<'w, B>) -> pretty::Result {
+        f.write(if self.is_empty() { "Empty List" } else { "List" })
+    }
+
+    fn color(&self) -> Option<AnsiColor> {
+        if self.is_empty() { Some(AnsiColor::Gray) } else { None }
+    }
+
+    fn children(&self) -> pretty::ChildNodes<'a, B> {
+        self.iter().map(|node| pretty::Node::unnamed(*node)).collect()
+    }
+}
+
 impl<'a, B: io::Write> Pretty<'a, B> for Option<NodeRef<'a>> {
     fn fmt_title<'w>(&self, f: &mut pretty::Formatter<'w, B>) -> pretty::Result {
         match self {

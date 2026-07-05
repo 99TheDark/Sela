@@ -14,3 +14,4 @@
 - Decouple ast nodes and ast node data to preserve space
 - What happes if I insert non-UTF-8 characters into my source code?
 - Maybe try out on-demand lexing/file reading
+- Split up lexer into multiple files

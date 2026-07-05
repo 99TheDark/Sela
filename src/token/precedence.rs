@@ -1,0 +1,22 @@
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum Precedence {
+    None = 0,
+    Assign = 1,
+    List = 2,
+    Range = 3,
+    ShortOr = 4,
+    ShortAnd = 5,
+    Equal = 6,
+    Inequal = 7,
+    EagerOr = 8,
+    EagerXor = 9,
+    EagerAnd = 10,
+    Shift = 11,
+    Addive = 12,
+    Mulive = 13,
+    Cast = 14,
+    Unary = 15,
+    Bind = 16,
+    Pair = 17,
+    Prop = 18,
+}

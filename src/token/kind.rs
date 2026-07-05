@@ -1,3 +1,5 @@
+use crate::token::precedence::Precedence;
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum TokenKind {
     Whitespace,
@@ -151,7 +153,7 @@ impl TokenKind {
         self == Self::Unknown
     }
 
-    pub fn is_invalid(&self) -> bool {
+    pub const fn is_invalid(&self) -> bool {
         use TokenKind::*;
         matches!(
             self,
@@ -165,8 +167,45 @@ impl TokenKind {
         )
     }
 
-    pub fn is_recovery_terminator(&self) -> bool {
+    pub const fn is_recovery_terminator(&self) -> bool {
         use TokenKind::*;
         matches!(self, RParen | RBrack | RBrace | NewLine | Comma | Eq | EOF)
+    }
+
+    pub const fn nud_prec(&self) -> Precedence {
+        use TokenKind::*;
+        match self {
+            DotDotLt | DotDotEq => Precedence::Range,
+            Dash | Star | Amp | Not => Precedence::Unary,
+            _ => Precedence::None,
+        }
+    }
+
+    pub const fn led_prec(&self) -> Precedence {
+        use TokenKind::*;
+        match self {
+            Eq | PlusEq | DashEq | StarEq | SlashEq | PctEq | GtGtEq | LtLtEq
+            | CaretEq | AmpEq | BarEq => Precedence::Assign,
+
+            Comma => Precedence::List,
+
+            DotDotLt | DotDotEq => Precedence::Range,
+            Or => Precedence::ShortOr,
+            And => Precedence::ShortAnd,
+            EqEq | NotEq => Precedence::Equal,
+            Gt | Lt | GtEq | LtEq => Precedence::Inequal,
+            Bar => Precedence::EagerOr,
+            Caret => Precedence::EagerXor,
+            Amp => Precedence::EagerAnd,
+            GtGt | LtLt => Precedence::Shift,
+            Plus | Dash => Precedence::Addive,
+            Star | Slash | Pct => Precedence::Mulive,
+            As => Precedence::Cast,
+            At => Precedence::Bind,
+            Colon => Precedence::Pair,
+            Dot | LParen | LBrack => Precedence::Prop,
+
+            _ => Precedence::None,
+        }
     }
 }

@@ -72,8 +72,9 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         self.src[self.idx as usize..].chars().next()
     }
 
-    pub fn peek_n(&mut self, n: usize) -> &'src str {
-        &self.src[self.idx as usize..usize::min(self.idx as usize + n, self.src.len())]
+    pub fn peek_n(&mut self, n: usize) -> &'src [u8] {
+        let end = usize::min(self.idx as usize + n, self.src.len());
+        &self.src.as_bytes()[self.idx as usize..end]
     }
 
     pub fn fork(&mut self, cur: TokenKind, next: char, new: TokenKind) -> TokenKind {
@@ -136,7 +137,6 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         let ident = self.eat_while_and_collect(
             |ch| matches!(ch, 'a'..='z' | 'A'..='Z' | '_' | '0'..='9'),
         );
-        println!("Ident - {}", ident);
 
         use TokenKind::*;
         match ident {
@@ -256,7 +256,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
 
     fn string(&mut self) -> TokenKind {
         // TODO: There is 100% a way to write this better
-        if self.peek_n(2) == "$(" {
+        if self.peek_n(2) == b"$(" {
             self.interp_stack.push(0);
             return TokenKind::String;
         }
@@ -267,7 +267,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 '\\' => {
                     self.next();
                 }
-                _ if self.peek_n(2) == "$(" => {
+                _ if self.peek_n(2) == b"$(" => {
                     self.interp_stack.push(0);
                     break;
                 }
@@ -276,6 +276,39 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         }
 
         TokenKind::String
+    }
+
+    fn block_comment(&mut self) -> bool {
+        let mut depth = 1;
+        loop {
+            let depth_changed = match self.peek_n(2) {
+                b"/*" => {
+                    depth += 1;
+                    true
+                }
+                b"*/" => {
+                    depth -= 1;
+                    true
+                }
+                _ => false,
+            };
+
+            let ch = if depth_changed {
+                self.next();
+                self.next()
+            } else {
+                self.next()
+            };
+
+            // I could make this `if depth == 0 || self.next().is_none()` but that's gross
+            if depth == 0 {
+                return true;
+            }
+
+            if ch.is_none() {
+                return false;
+            }
+        }
     }
 
     fn push_interp_stack(&mut self) {
@@ -321,6 +354,12 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 Some('/') => {
                     self.eat_while(|ch| ch != '\n');
                     LineComment
+                }
+                Some('*') => {
+                    self.next();
+                    let terminated = self.block_comment();
+
+                    if terminated { BlockComment } else { UntermComment }
                 }
                 Some('=') => {
                     self.next();
@@ -394,13 +433,14 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     }
 
     fn should_be_filtered(&self, kind: TokenKind) -> bool {
-        use TokenKind::{BlockComment, LineComment, Whitespace};
+        use TokenKind::*;
 
         if self.filter_mode.ignores_whitespace() && kind == Whitespace {
             return true;
         }
+
         if self.filter_mode.ignores_comments()
-            && matches!(kind, LineComment | BlockComment)
+            && matches!(kind, LineComment | BlockComment | UntermComment)
         {
             return true;
         }
@@ -410,6 +450,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
 
     pub fn lex(mut self) -> Vec<Token> {
         // TODO: Turn this back into an iterator, idk what I was thinking
+        // TODO: Then again, what about all the context switching??
         let mut tokens = Vec::new();
         while let (start, Some(ch)) = (self.idx, self.next()) {
             let kind = self.lex_token_kind(ch);
@@ -420,11 +461,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             if self.just_exited {
                 let start = self.idx;
                 self.just_exited = false;
-
-                // TODO: This shouldn't be a magic number... well in this case magic string
-                if self.peek_n(2) != "$(" {
-                    tokens.push(Token::new(self.string(), Span::new(start, self.idx)));
-                }
+                tokens.push(Token::new(self.string(), Span::new(start, self.idx)));
             }
         }
         tokens
