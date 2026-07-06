@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::{
     core::span::Span,
     token::{kind::TokenKind, precedence::Precedence},
@@ -6,7 +8,7 @@ use crate::{
 pub mod kind;
 pub mod precedence;
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Copy, Clone)]
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,
@@ -64,5 +66,11 @@ impl Token {
     #[inline(always)]
     pub fn led_prec(&self) -> Precedence {
         self.kind.led_prec()
+    }
+}
+
+impl fmt::Debug for Token {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Token ({:?} {:?})", self.kind, self.span)
     }
 }

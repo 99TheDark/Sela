@@ -32,184 +32,217 @@ List
 ├─ Unary Operation
 │  ├─ Operator: Negate (-)
 │  └─ Right-hand Side: Integer (2)
-└─ Declaration
-   ├─ Pattern: Identifier (a1)
-   └─ Value: Binary Operation
-      ├─ Left-hand Side: Binary Operation
-      │  ├─ Left-hand Side: Binary Operation
-      │  │  ├─ Left-hand Side: Binary Operation
-      │  │  │  ├─ Left-hand Side: Binary Operation
-      │  │  │  │  ├─ Left-hand Side: Binary Operation
-      │  │  │  │  │  ├─ Left-hand Side: Parentheses
-      │  │  │  │  │  │  └─ Binary Operation
-      │  │  │  │  │  │     ├─ Left-hand Side: Binary Operation
-      │  │  │  │  │  │     │  ├─ Left-hand Side: Binary Operation
-      │  │  │  │  │  │     │  │  ├─ Left-hand Side: Parentheses
-      │  │  │  │  │  │     │  │  │  └─ Binary Operation
-      │  │  │  │  │  │     │  │  │     ├─ Left-hand Side: Integer (0)
-      │  │  │  │  │  │     │  │  │     ├─ Operator: Subtract (-)
-      │  │  │  │  │  │     │  │  │     └─ Right-hand Side: Integer (1)
-      │  │  │  │  │  │     │  │  ├─ Operator: Multiply (*)
-      │  │  │  │  │  │     │  │  └─ Right-hand Side: Integer (2)
-      │  │  │  │  │  │     │  ├─ Operator: Add (+)
-      │  │  │  │  │  │     │  └─ Right-hand Side: Binary Operation
-      │  │  │  │  │  │     │     ├─ Left-hand Side: Integer (5)
-      │  │  │  │  │  │     │     ├─ Operator: Divide (/)
-      │  │  │  │  │  │     │     └─ Right-hand Side: Integer (6)
-      │  │  │  │  │  │     ├─ Operator: Add (+)
-      │  │  │  │  │  │     └─ Right-hand Side: Integer (0)
-      │  │  │  │  │  ├─ Operator: Multiply (*)
-      │  │  │  │  │  └─ Right-hand Side: Parentheses
-      │  │  │  │  │     └─ Binary Operation
-      │  │  │  │  │        ├─ Left-hand Side: Integer (3)
-      │  │  │  │  │        ├─ Operator: Add (+)
-      │  │  │  │  │        └─ Right-hand Side: Integer (4)
-      │  │  │  │  ├─ Operator: Divide (/)
-      │  │  │  │  └─ Right-hand Side: Integer (8)
-      │  │  │  ├─ Operator: Add (+)
-      │  │  │  └─ Right-hand Side: Integer (4)
-      │  │  ├─ Operator: Subtract (-)
-      │  │  └─ Right-hand Side: Binary Operation
-      │  │     ├─ Left-hand Side: Integer (7)
-      │  │     ├─ Operator: Multiply (*)
-      │  │     └─ Right-hand Side: Integer (8)
-      │  ├─ Operator: Subtract (-)
-      │  └─ Right-hand Side: Integer (1)
-      ├─ Operator: Add (+)
-      └─ Right-hand Side: Binary Operation
-         ├─ Left-hand Side: Binary Operation
-         │  ├─ Left-hand Side: Integer (94)
-         │  ├─ Operator: Multiply (*)
-         │  └─ Right-hand Side: Integer (14087)
-         ├─ Operator: Divide (/)
-         └─ Right-hand Side: Parentheses
-            ├─ Binary Operation
-            │  ├─ Left-hand Side: Binary Operation
-            │  │  ├─ Left-hand Side: Integer (6)
-            │  │  ├─ Operator: Add (+)
-            │  │  └─ Right-hand Side: Integer (88)
-            │  ├─ Operator: Subtract (-)
-            │  └─ Right-hand Side: Integer (1)
-            ├─ Declaration
-            │  ├─ Pattern: Identifier (u)
-            │  └─ Value: Binary Operation
-            │     ├─ Left-hand Side: Integer (5)
-            │     ├─ Operator: Exclusive Or (^)
-            │     └─ Right-hand Side: Binary Operation
-            │        ├─ Left-hand Side: Integer (2)
-            │        ├─ Operator: Subtract (-)
-            │        └─ Right-hand Side: Integer (1)
-            ├─ Assignment
-            │  ├─ Pattern: Identifier (v)
-            │  ├─ Assigner: Assignment (=)
-            │  └─ Value: Binary Keyword Operation
-            │     ├─ Left-hand Side: Binary Keyword Operation
-            │     │  ├─ Left-hand Side: Comparison
-            │     │  │  ├─ Left-hand Side: Integer (3)
-            │     │  │  ├─ Comparator: Equal (==)
-            │     │  │  └─ Right-hand Side: Integer (2)
-            │     │  ├─ Operator: And (and)
-            │     │  └─ Right-hand Side: Comparison
-            │     │     ├─ Left-hand Side: Identifier (y)
-            │     │     ├─ Comparator: Greater Than (>)
-            │     │     └─ Right-hand Side: Integer (5)
-            │     ├─ Operator: Or (or)
-            │     └─ Right-hand Side: Unary Operation
-            │        ├─ Operator: Not (!)
-            │        └─ Right-hand Side: Identifier (a1)
-            ├─ Member Access
-            │  ├─ Parent: Identifier (std)
-            │  └─ Child: Identifier (io)
-            ├─ Member Access
-            │  ├─ Parent: <! Unknown !>
-            │  └─ Child: Identifier (ship)
-            ├─ Comparison
-            │  ├─ Left-hand Side: Identifier (x)
-            │  ├─ Comparator: Greater Than (>)
-            │  └─ Right-hand Side: Integer (5)
-            ├─ Invocation
-            │  ├─ Callee: Member Access
-            │  │  ├─ Parent: Identifier (io)
-            │  │  └─ Child: Identifier (print)
-            │  └─ Arguments: Parentheses
-            │     └─ String
-            ├─ <! Unknown !>
-            ├─ Parentheses
-            │  └─ String
-            ├─ <! Unknown !>
-            ├─ Invocation
-            │  ├─ Callee: Member Access
-            │  │  ├─ Parent: Identifier (io)
-            │  │  └─ Child: Identifier (print)
-            │  └─ Arguments: Parentheses
-            │     └─ String
-            ├─ <! Unknown !>
-            ├─ Parentheses
-            │  └─ String
-            ├─ Declaration
-            │  ├─ Pattern: Identifier (x)
-            │  └─ Value: Invocation
-            │     ├─ Callee: Member Access
-            │     │  ├─ Parent: Identifier (ship)
-            │     │  └─ Child: Identifier (Ship)
-            │     └─ Arguments: Parentheses
-            │        ├─ <! Unknown !>
-            │        ├─ <! Unknown !>
-            │        ├─ <! Unknown !>
-            │        ├─ <! Unknown !>
-            │        ├─ <! Unknown !>
-            │        └─ <! Unknown !>
-            ├─ Unary Operation
-            │  ├─ Operator: Not (!)
-            │  └─ Right-hand Side: Unary Operation
-            │     ├─ Operator: Not (!)
-            │     └─ Right-hand Side: Unary Operation
-            │        ├─ Operator: Not (!)
-            │        └─ Right-hand Side: Boolean (true)
-            ├─ <! Unknown !>
-            ├─ <! Unknown !>
-            ├─ Comparison
-            │  ├─ Left-hand Side: Identifier (x)
-            │  ├─ Comparator: Greater Than or Equal (>=)
-            │  └─ Right-hand Side: Integer (5)
-            ├─ Binary Operation
-            │  ├─ Left-hand Side: Integer (3)
-            │  ├─ Operator: Left Shift (<<)
-            │  └─ Right-hand Side: Integer (2)
-            ├─ <! Unknown !>
-            ├─ Binary Operation
-            │  ├─ Left-hand Side: Identifier (n)
-            │  ├─ Operator: Subtract (-)
-            │  └─ Right-hand Side: Integer (1)
-            ├─ <! Unknown !>
-            ├─ <! Unknown !>
-            ├─ Assignment
-            │  ├─ Pattern: <! Unknown !>
-            │  ├─ Assigner: Assignment (=)
-            │  └─ Value: Integer (5)
-            ├─ Invocation
-            │  ├─ Callee: Member Access
-            │  │  ├─ Parent: Identifier (io)
-            │  │  └─ Child: Identifier (print)
-            │  └─ Arguments: Parentheses
-            │     └─ Identifier (num)
-            ├─ Assignment
-            │  ├─ Pattern: Identifier (v)
-            │  ├─ Assigner: Assignment (=)
-            │  └─ Value: Binary Operation
-            │     ├─ Left-hand Side: Integer (1)
-            │     ├─ Operator: Subtract (-)
-            │     └─ Right-hand Side: Identifier (v)
-            ├─ Block
-            │  ├─ <! Unknown !>
-            │  ├─ Comparison
-            │  │  ├─ Left-hand Side: Identifier (x)
-            │  │  ├─ Comparator: Greater Than (>)
-            │  │  └─ Right-hand Side: Integer (5)
-            │  └─ Block
-            │     ├─ Assignment
-            │     │  ├─ Pattern: Identifier (x)
-            │     │  ├─ Assigner: Subtraction Assignment (-=)
-            │     │  └─ Value: <! Unknown !>
-            │     └─ Integer (1)
-            └─ <! Unknown !>
+├─ Declaration
+│  ├─ Pattern: Identifier (a1)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Binary Operation
+│     │  ├─ Left-hand Side: Binary Operation
+│     │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  ├─ Left-hand Side: Parentheses
+│     │  │  │  │  │  │  └─ Binary Operation
+│     │  │  │  │  │  │     ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │     │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │     │  │  ├─ Left-hand Side: Parentheses
+│     │  │  │  │  │  │     │  │  │  └─ Binary Operation
+│     │  │  │  │  │  │     │  │  │     ├─ Left-hand Side: Integer (0)
+│     │  │  │  │  │  │     │  │  │     ├─ Operator: Subtract (-)
+│     │  │  │  │  │  │     │  │  │     └─ Right-hand Side: Integer (1)
+│     │  │  │  │  │  │     │  │  ├─ Operator: Multiply (*)
+│     │  │  │  │  │  │     │  │  └─ Right-hand Side: Integer (2)
+│     │  │  │  │  │  │     │  ├─ Operator: Add (+)
+│     │  │  │  │  │  │     │  └─ Right-hand Side: Binary Operation
+│     │  │  │  │  │  │     │     ├─ Left-hand Side: Integer (5)
+│     │  │  │  │  │  │     │     ├─ Operator: Divide (/)
+│     │  │  │  │  │  │     │     └─ Right-hand Side: Integer (6)
+│     │  │  │  │  │  │     ├─ Operator: Add (+)
+│     │  │  │  │  │  │     └─ Right-hand Side: Integer (0)
+│     │  │  │  │  │  ├─ Operator: Multiply (*)
+│     │  │  │  │  │  └─ Right-hand Side: Parentheses
+│     │  │  │  │  │     └─ Binary Operation
+│     │  │  │  │  │        ├─ Left-hand Side: Integer (3)
+│     │  │  │  │  │        ├─ Operator: Add (+)
+│     │  │  │  │  │        └─ Right-hand Side: Integer (4)
+│     │  │  │  │  ├─ Operator: Divide (/)
+│     │  │  │  │  └─ Right-hand Side: Integer (8)
+│     │  │  │  ├─ Operator: Add (+)
+│     │  │  │  └─ Right-hand Side: Integer (4)
+│     │  │  ├─ Operator: Subtract (-)
+│     │  │  └─ Right-hand Side: Binary Operation
+│     │  │     ├─ Left-hand Side: Integer (7)
+│     │  │     ├─ Operator: Multiply (*)
+│     │  │     └─ Right-hand Side: Integer (8)
+│     │  ├─ Operator: Subtract (-)
+│     │  └─ Right-hand Side: Integer (1)
+│     ├─ Operator: Add (+)
+│     └─ Right-hand Side: Binary Operation
+│        ├─ Left-hand Side: Binary Operation
+│        │  ├─ Left-hand Side: Integer (94)
+│        │  ├─ Operator: Multiply (*)
+│        │  └─ Right-hand Side: Integer (14087)
+│        ├─ Operator: Divide (/)
+│        └─ Right-hand Side: Parentheses
+│           └─ Binary Operation
+│              ├─ Left-hand Side: Binary Operation
+│              │  ├─ Left-hand Side: Integer (6)
+│              │  ├─ Operator: Add (+)
+│              │  └─ Right-hand Side: Integer (88)
+│              ├─ Operator: Subtract (-)
+│              └─ Right-hand Side: Integer (1)
+├─ Declaration
+│  ├─ Pattern: Identifier (u)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Integer (5)
+│     ├─ Operator: Exclusive Or (^)
+│     └─ Right-hand Side: Binary Operation
+│        ├─ Left-hand Side: Integer (2)
+│        ├─ Operator: Subtract (-)
+│        └─ Right-hand Side: Integer (1)
+├─ Declaration
+│  ├─ Pattern: Identifier (v)
+│  └─ Value: Binary Keyword Operation
+│     ├─ Left-hand Side: Binary Keyword Operation
+│     │  ├─ Left-hand Side: Comparison
+│     │  │  ├─ Left-hand Side: Integer (3)
+│     │  │  ├─ Comparator: Equal (==)
+│     │  │  └─ Right-hand Side: Integer (2)
+│     │  ├─ Operator: And (and)
+│     │  └─ Right-hand Side: Comparison
+│     │     ├─ Left-hand Side: Identifier (y)
+│     │     ├─ Comparator: Greater Than (>)
+│     │     └─ Right-hand Side: Integer (5)
+│     ├─ Operator: Or (or)
+│     └─ Right-hand Side: Unary Operation
+│        ├─ Operator: Not (!)
+│        └─ Right-hand Side: Identifier (a1)
+├─ <! Unknown !>
+├─ Member Access
+│  ├─ Parent: Identifier (std)
+│  └─ Child: Identifier (io)
+├─ <! Unknown !>
+├─ Member Access
+│  ├─ Parent: <! Unknown !>
+│  └─ Child: Identifier (ship)
+├─ <! Unknown !>
+├─ Comparison
+│  ├─ Left-hand Side: Identifier (x)
+│  ├─ Comparator: Greater Than (>)
+│  └─ Right-hand Side: Integer (5)
+├─ Block
+│  ├─ Invocation
+│  │  ├─ Callee: Member Access
+│  │  │  ├─ Parent: Identifier (io)
+│  │  │  └─ Child: Identifier (print)
+│  │  └─ Arguments: Parentheses
+│  │     └─ String
+│  └─ Invocation
+│     ├─ Callee: Member Access
+│     │  ├─ Parent: Identifier (io)
+│     │  └─ Child: Identifier (print)
+│     └─ Arguments: Parentheses
+│        └─ String
+├─ <! Unknown !>
+├─ <! Unknown !>
+├─ Block
+│  ├─ Invocation
+│  │  ├─ Callee: Member Access
+│  │  │  ├─ Parent: Identifier (io)
+│  │  │  └─ Child: Identifier (print)
+│  │  └─ Arguments: Parentheses
+│  │     └─ String
+│  └─ Invocation
+│     ├─ Callee: Member Access
+│     │  ├─ Parent: Identifier (io)
+│     │  └─ Child: Identifier (print)
+│     └─ Arguments: Parentheses
+│        └─ String
+├─ <! Unknown !>
+├─ Declaration
+│  ├─ Pattern: Identifier (x)
+│  └─ Value: Invocation
+│     ├─ Callee: Member Access
+│     │  ├─ Parent: Identifier (ship)
+│     │  └─ Child: Identifier (Ship)
+│     └─ Arguments: Parentheses
+│        ├─ Pair
+│        │  ├─ Left: Identifier (row)
+│        │  └─ Right: Integer (6)
+│        ├─ Pair
+│        │  ├─ Left: Identifier (column)
+│        │  └─ Right: Integer (3)
+│        └─ Pair
+│           ├─ Left: Identifier (direction)
+│           └─ Right: Member Access
+│              ├─ Parent: Member Access
+│              │  ├─ Parent: Identifier (ship)
+│              │  └─ Child: Identifier (Direction)
+│              └─ Child: Identifier (Horizontal)
+├─ <! Unknown !>
+├─ Unary Operation
+│  ├─ Operator: Not (!)
+│  └─ Right-hand Side: Unary Operation
+│     ├─ Operator: Not (!)
+│     └─ Right-hand Side: Unary Operation
+│        ├─ Operator: Not (!)
+│        └─ Right-hand Side: Boolean (true)
+├─ Empty Block
+├─ <! Unknown !>
+├─ Assignment
+│  ├─ Pattern: Identifier (n)
+│  ├─ Assigner: Right Shift Assignment (>>=)
+│  └─ Value: <! Unknown !>
+├─ Comparison
+│  ├─ Left-hand Side: Identifier (x)
+│  ├─ Comparator: Greater Than or Equal (>=)
+│  └─ Right-hand Side: Integer (5)
+├─ Block
+│  └─ Binary Operation
+│     ├─ Left-hand Side: Integer (3)
+│     ├─ Operator: Left Shift (<<)
+│     └─ Right-hand Side: Integer (2)
+├─ <! Unknown !>
+├─ <! Unknown !>
+├─ Block
+│  └─ Binary Operation
+│     ├─ Left-hand Side: Identifier (n)
+│     ├─ Operator: Subtract (-)
+│     └─ Right-hand Side: Integer (1)
+├─ <! Unknown !>
+├─ <! Unknown !>
+├─ Identifier (num)
+├─ <! Unknown !>
+├─ Member Access
+│  ├─ Parent: Floating-Point Number (1)
+│  └─ Child: <! Unknown !>
+├─ Integer (5)
+├─ Block
+│  └─ Invocation
+│     ├─ Callee: Member Access
+│     │  ├─ Parent: Identifier (io)
+│     │  └─ Child: Identifier (print)
+│     └─ Arguments: Parentheses
+│        └─ Identifier (num)
+├─ <! Unknown !>
+├─ Assignment
+│  ├─ Pattern: Identifier (v)
+│  ├─ Assigner: Assignment (=)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Integer (1)
+│     ├─ Operator: Subtract (-)
+│     └─ Right-hand Side: Identifier (v)
+├─ <! Unknown !>
+├─ Block
+│  ├─ <! Unknown !>
+│  ├─ Comparison
+│  │  ├─ Left-hand Side: Identifier (x)
+│  │  ├─ Comparator: Greater Than (>)
+│  │  └─ Right-hand Side: Integer (5)
+│  └─ Block
+│     ├─ Assignment
+│     │  ├─ Pattern: Identifier (x)
+│     │  ├─ Assigner: Subtraction Assignment (-=)
+│     │  └─ Value: <! Unknown !>
+│     └─ Integer (1)
+├─ <! Unknown !>
+└─ <! Unknown !>

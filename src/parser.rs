@@ -53,6 +53,7 @@ where
         self.arena.alloc(elem)
     }
 
+    #[inline]
     pub fn eat_until<F>(&mut self, cond: F)
     where
         F: Fn(Token) -> bool,
@@ -62,19 +63,24 @@ where
         }
     }
 
+    // There must be a way to make this more performant...
+    #[inline(always)]
     pub fn eat_nls(&mut self) {
         self.eat_until(|tok| tok.is_nl());
     }
 
+    #[inline(always)]
     pub fn eat_line(&mut self) {
         self.eat_until(|tok| !tok.is_nl());
     }
 
+    #[inline]
     pub fn peek(&self) -> Token {
         // Is this check even needed? Could we make this something else?
         if self.idx < self.tokens.len() { self.tokens[self.idx] } else { self.eof_token }
     }
 
+    #[inline]
     pub fn next(&mut self) -> Token {
         self.eat_nls();
         self.true_next()
@@ -143,7 +149,12 @@ where
             UntermStr => todo!(),
             Unknown => self.alloc(ast::Node::new(ast::NodeKind::Unknown, tok.span)),
             // _ => panic!("Illegal or not implemented: {:#?}", tok), // TODO: Rich error messages
-            _ => self.alloc(ast::Node::new(ast::NodeKind::Unknown, tok.span)),
+            _ => self.diag.fail(
+                ErrorKind::Syntax,
+                "Invalid Nud".to_string(),
+                tok.span,
+                self.arena,
+            ),
         }
     }
 
@@ -164,7 +175,6 @@ where
                 LBrace => todo!(),
                 At => todo!(),
                 Colon => self.parse_pair(lhs, tok), // There is a better way for sure than to pass in tok
-                Comma => self.alloc(ast::Node::new(ast::NodeKind::Unknown, tok.span)),
                 Arrow => todo!(),
                 _ => panic!(),
             }
@@ -353,9 +363,12 @@ where
         end: TokenKind,
         constructor: F,
     ) -> ast::NodeRef<'ast> {
-        let mut elems = Vec::new();
+        let mut elems = Vec::with_capacity(4);
+        self.eat_nls();
         while self.peek().eof_not_is(end) {
-            elems.push(self.parse_expr(Precedence::None));
+            let expr = self.parse_expr(Precedence::None);
+            elems.push(expr);
+            self.eat_nls();
 
             if self.peek().kind == end {
                 break;
@@ -382,7 +395,6 @@ where
     }
 
     fn parse_block(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        // TODO: In the morning - this creates an infinite loop, idk why
         let elems = self.parse_stmts(|tok| tok.is(TokenKind::RBrace));
         let elems = self.alloc(elems);
         let end = elems.last().map_or(tok.span, |last| last.span);
@@ -402,34 +414,15 @@ where
         lhs: ast::NodeRef<'ast>,
         tok: Token,
     ) -> ast::NodeRef<'ast> {
-        let rhs = self.parse_parens(tok);
+        let rhs = self.parse_delimited(
+            tok,
+            TokenKind::Comma,
+            TokenKind::RParen,
+            ast::NodeKind::Parens,
+        );
         self.alloc(ast::Node::new(
             ast::NodeKind::Invoc { callee: lhs, args: rhs },
             lhs.span.to(rhs.span),
         ))
-    }
-
-    fn parse_parens(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        let mut elems = Vec::with_capacity(4);
-        loop {
-            elems.push(self.parse_expr(Precedence::None));
-
-            self.eat_nls();
-            if self.peek().is(TokenKind::RParen) {
-                break;
-            }
-
-            println!("{:?}", self.peek());
-
-            self.expect(TokenKind::Comma);
-            if self.peek().is(TokenKind::RParen) {
-                break;
-            }
-        }
-
-        let end = self.next();
-
-        let elems = self.alloc(elems);
-        self.alloc(ast::Node::new(ast::NodeKind::Parens(elems), tok.span.to(end.span)))
     }
 }

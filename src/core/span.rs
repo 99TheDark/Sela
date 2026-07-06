@@ -1,4 +1,4 @@
-use std::{fmt, ops::Range};
+use std::{fmt, ops};
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub struct Span {
@@ -21,16 +21,24 @@ impl Span {
         Self { start: self.start + left, end: self.end - right }
     }
 
-    fn range(&self) -> Range<usize> {
-        self.start as usize..self.end as usize
+    pub fn shrink_uniform(&self, radius: u32) -> Self {
+        Self { start: self.start + radius, end: self.end - radius }
     }
 
-    pub fn debug_src(&self, src: &str) -> String {
-        src[self.range()].replace('\n', "\\n")
+    pub fn expand(&self, left: u32, right: u32) -> Self {
+        Self { start: self.start - left, end: self.end + right }
     }
 
-    pub fn src<'a>(&self, src: &'a str) -> &'a str {
-        &src[self.range()]
+    pub fn expand_uniform(&self, radius: u32) -> Self {
+        Self { start: self.start - radius, end: self.end + radius }
+    }
+
+    pub fn debug_src(self, src: &str) -> String {
+        src[self].replace('\n', "\\n")
+    }
+
+    pub fn src<'a>(self, src: &'a str) -> &'a str {
+        &src[self]
     }
 
     // Assumes `to` is after `self`
@@ -42,5 +50,13 @@ impl Span {
 impl fmt::Debug for Span {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}-{}", self.start, self.end)
+    }
+}
+
+impl ops::Index<Span> for str {
+    type Output = str;
+
+    fn index(&self, index: Span) -> &Self::Output {
+        &self[index.start as usize..index.end as usize]
     }
 }

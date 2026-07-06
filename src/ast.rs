@@ -40,8 +40,7 @@ impl<'a> Node<'a> {
 
 impl<'a> fmt::Debug for Node<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Node ({:?}): ", self.span)?;
-        self.kind.fmt(f)
+        write!(f, "Node ({:?} {:?})", self.kind, self.span)
     }
 }
 

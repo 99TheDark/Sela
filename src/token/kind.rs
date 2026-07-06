@@ -186,9 +186,6 @@ impl TokenKind {
         match self {
             Eq | PlusEq | DashEq | StarEq | SlashEq | PctEq | GtGtEq | LtLtEq
             | CaretEq | AmpEq | BarEq => Precedence::Assign,
-
-            Comma => Precedence::List,
-
             DotDotLt | DotDotEq => Precedence::Range,
             Or => Precedence::ShortOr,
             And => Precedence::ShortAnd,
