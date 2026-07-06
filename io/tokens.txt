@@ -283,9 +283,9 @@ Ident<780-781> = `x`
 DashEq<782-783> = `-`
 Eq<783-784> = `=`
 Int<785-786> = `1`
-NewLine<786-787> = `\n`
-RBrace<791-792> = `}`
-NewLine<792-793> = `\n`
-RBrace<793-794> = `}`
-NewLine<794-795> = `\n`
-NewLine<795-796> = `\n`
+NewLine<839-840> = `\n`
+RBrace<844-845> = `}`
+NewLine<845-846> = `\n`
+RBrace<846-847> = `}`
+NewLine<847-848> = `\n`
+NewLine<848-849> = `\n`

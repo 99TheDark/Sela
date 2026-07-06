@@ -34,6 +34,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Pair { .. } => f.write("Pair"),
             Use { .. } => f.write("Use"),
             Unknown => f.write("<! Unknown !>"),
+            UnknownInt => f.write("<! Unknown Integer !>"),
+            UnknownFloat => f.write("<! Unknown Floating-Point Number !>"),
         }
     }
 
@@ -92,7 +94,9 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .finish(),
             String(frags) => pretty::Builder::new()
                 .fold(*frags, |builder, frag| match frag {
-                    ast::string::Fragment::String(inner) => builder.unnamed(inner),
+                    ast::string::Fragment::String(inner) => {
+                        builder.named("Raw String", inner)
+                    }
                     ast::string::Fragment::Expr(inner) => {
                         builder.named("Interpolated Expression", *inner)
                     }
@@ -127,13 +131,13 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Pair { lhs, rhs } => {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
             }
-            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Unknown => {
-                pretty::Builder::empty()
-            }
+            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Unknown | UnknownInt
+            | UnknownFloat => pretty::Builder::empty(),
         }
     }
 }
 
+// TODO: Move this stuff to other files
 impl<'a, B: io::Write, T: Symbolic> Pretty<'a, B> for T {
     fn fmt_title<'w>(&self, f: &mut pretty::Formatter<'w, B>) -> pretty::Result {
         f.write(format!("{} ({})", self.name(), self.as_str()))

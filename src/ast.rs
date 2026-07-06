@@ -74,8 +74,8 @@ pub enum NodeKind<'a> {
     Pair { lhs: NodeRef<'a>, rhs: NodeRef<'a> },
 
     Unknown,
-    // UnknownInt,
-    // UnknownFloat,
+    UnknownInt,
+    UnknownFloat,
     // UnknownChar,
     // UnknownString,
 }

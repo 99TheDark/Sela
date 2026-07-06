@@ -5,7 +5,7 @@ List
 │  │  ├─ Operator: Add (+)
 │  │  └─ Right-hand Side: Boolean (true)
 │  ├─ Operator: Subtract (-)
-│  └─ Right-hand Side: <! Unknown !>
+│  └─ Right-hand Side: <! Unknown Floating-Point Number !>
 ├─ Declaration
 │  ├─ Pattern: Identifier (function)
 │  └─ Value: Invocation
@@ -136,16 +136,16 @@ List
 │  │  │  └─ Child: Identifier (print)
 │  │  └─ Arguments: Parentheses
 │  │     └─ String
-│  │        └─ "\"Hello, world!\""
+│  │        └─ Raw String: "\"Hello, world!\""
 │  └─ Invocation
 │     ├─ Callee: Member Access
 │     │  ├─ Parent: Identifier (io)
 │     │  └─ Child: Identifier (print)
 │     └─ Arguments: Parentheses
 │        └─ String
-│           ├─ "\"u = 5 ^ (2 - 1) = "
+│           ├─ Raw String: "\"u = 5 ^ (2 - 1) = "
 │           ├─ Interpolated Expression: Identifier (u)
-│           └─ ".\""
+│           └─ Raw String: ".\""
 ├─ <! Unknown !>
 ├─ <! Unknown !>
 ├─ Block
@@ -155,26 +155,26 @@ List
 │  │  │  └─ Child: Identifier (print)
 │  │  └─ Arguments: Parentheses
 │  │     └─ String
-│  │        └─ "\"Oh no...\""
+│  │        └─ Raw String: "\"Oh no...\""
 │  └─ Invocation
 │     ├─ Callee: Member Access
 │     │  ├─ Parent: Identifier (io)
 │     │  └─ Child: Identifier (print)
 │     └─ Arguments: Parentheses
 │        └─ String
-│           ├─ "\""
+│           ├─ Raw String: "\""
 │           ├─ Interpolated Expression: Identifier (test)
-│           ├─ " "
+│           ├─ Raw String: " "
 │           ├─ Interpolated Expression: Binary Operation
 │           │  ├─ Left-hand Side: Identifier (othertest)
 │           │  ├─ Operator: Add (+)
 │           │  └─ Right-hand Side: String
-│           │     ├─ "\"woah "
+│           │     ├─ Raw String: "\"woah "
 │           │     ├─ Interpolated Expression: Identifier (chill)
-│           │     └─ "\""
-│           ├─ ""
+│           │     └─ Raw String: "\""
+│           ├─ Raw String: ""
 │           ├─ Interpolated Expression: Identifier (finaltest)
-│           └─ "|+1\""
+│           └─ Raw String: "|+1\""
 ├─ <! Unknown !>
 ├─ Declaration
 │  ├─ Pattern: Identifier (x)
@@ -227,20 +227,19 @@ List
 │     ├─ Operator: Subtract (-)
 │     └─ Right-hand Side: Integer (1)
 ├─ <! Unknown !>
-├─ <! Unknown !>
-├─ Identifier (num)
-├─ <! Unknown !>
-├─ Member Access
-│  ├─ Parent: Floating-Point Number (1)
-│  └─ Child: <! Unknown !>
-├─ Integer (5)
-├─ Block
-│  └─ Invocation
-│     ├─ Callee: Member Access
-│     │  ├─ Parent: Identifier (io)
-│     │  └─ Child: Identifier (print)
-│     └─ Arguments: Parentheses
-│        └─ Identifier (num)
+├─ For Loop
+│  ├─ Variable: Identifier (num)
+│  ├─ Iterable: Member Access
+│  │  ├─ Parent: Floating-Point Number (1)
+│  │  └─ Child: <! Unknown !>
+│  └─ Body: Block
+│     └─ Block
+│        └─ Invocation
+│           ├─ Callee: Member Access
+│           │  ├─ Parent: Identifier (io)
+│           │  └─ Child: Identifier (print)
+│           └─ Arguments: Parentheses
+│              └─ Identifier (num)
 ├─ <! Unknown !>
 ├─ Assignment
 │  ├─ Pattern: Identifier (v)
@@ -249,18 +248,18 @@ List
 │     ├─ Left-hand Side: Integer (1)
 │     ├─ Operator: Subtract (-)
 │     └─ Right-hand Side: Identifier (v)
-├─ <! Unknown !>
-├─ Block
-│  ├─ <! Unknown !>
-│  ├─ Comparison
-│  │  ├─ Left-hand Side: Identifier (x)
-│  │  ├─ Comparator: Greater Than (>)
-│  │  └─ Right-hand Side: Integer (5)
-│  └─ Block
-│     ├─ Assignment
-│     │  ├─ Pattern: Identifier (x)
-│     │  ├─ Assigner: Subtraction Assignment (-=)
-│     │  └─ Value: <! Unknown !>
-│     └─ Integer (1)
+├─ Loop
+│  └─ Body: Block
+│     └─ While Loop
+│        ├─ Condition: Comparison
+│        │  ├─ Left-hand Side: Identifier (x)
+│        │  ├─ Comparator: Greater Than (>)
+│        │  └─ Right-hand Side: Integer (5)
+│        └─ Body: Block
+│           ├─ Assignment
+│           │  ├─ Pattern: Identifier (x)
+│           │  ├─ Assigner: Subtraction Assignment (-=)
+│           │  └─ Value: <! Unknown !>
+│           └─ Integer (1)
 ├─ <! Unknown !>
 └─ <! Unknown !>

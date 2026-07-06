@@ -1,10 +1,5 @@
 pub mod basic;
-pub mod binary;
 pub mod control;
-pub mod import;
-pub mod literal;
-pub mod set;
-pub mod unary;
 
 use std::{borrow::Borrow, str::FromStr};
 
@@ -142,6 +137,9 @@ where
             Let => self.parse_decl(tok),
             True => self.parse_bool(tok, true),
             False => self.parse_bool(tok, false),
+            Loop => self.parse_loop(tok),
+            While => self.parse_while(tok),
+            For => self.parse_for(tok),
             NoChar => todo!(),
             UntermQuot => todo!(),
             UntermQuotEsc => todo!(),
@@ -248,6 +246,7 @@ where
         name: &'static str,
         underscore_checks: ArrayVec<(&R, &'static str), N>, // Maybe make ArrayVec<Check>?
         constructor: F,
+        failure: ast::NodeKind<'ast>,
     ) -> ast::NodeRef<'ast> {
         let src = tok.src(self.src);
 
@@ -265,7 +264,8 @@ where
 
             self.alloc(ast::Node::new(constructor(val), tok.span))
         } else {
-            self.diag.fail(
+            // TODO: Make a method
+            /*self.diag.fail(
                 ErrorKind::Syntax,
                 format!(
                     "Invalid {} literal: underscores may not appear {}",
@@ -274,7 +274,17 @@ where
                 ),
                 tok.span,
                 self.arena,
-            )
+            )*/
+            self.diag.emit(
+                ErrorKind::Syntax,
+                format!(
+                    "Invalid {} literal: underscores may not appear {}",
+                    name,
+                    issues.join_natural("or")
+                ),
+                tok.span,
+            );
+            self.alloc(ast::Node::new(failure, tok.span))
         }
     }
 
@@ -288,6 +298,7 @@ where
                 (regex!(r"_$"), "at the end of a number"),
             ]),
             ast::NodeKind::Int,
+            ast::NodeKind::UnknownInt,
         )
     }
 
@@ -307,6 +318,7 @@ where
                 (regex!(r"[+-]_"), "after an exponential sign"),
             ]),
             ast::NodeKind::Float,
+            ast::NodeKind::UnknownFloat,
         )
     }
 
@@ -396,6 +408,34 @@ where
         let elems = self.alloc(elems);
         let end = elems.last().map_or(tok.span, |last| last.span);
         self.alloc(ast::Node::new(ast::NodeKind::Block(elems), tok.span.to(end)))
+    }
+
+    fn parse_loop(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        self.expect(TokenKind::RBrace);
+        let body = self.parse_block(tok);
+        self.alloc(ast::Node::new(ast::NodeKind::Loop { body }, tok.span.to(body.span)))
+    }
+
+    fn parse_while(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let cond = self.parse_expr(Precedence::None);
+        self.expect(TokenKind::RBrace);
+        let body = self.parse_block(tok);
+        self.alloc(ast::Node::new(
+            ast::NodeKind::While { cond, body },
+            tok.span.to(body.span),
+        ))
+    }
+
+    fn parse_for(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let vari = self.parse_expr(Precedence::None);
+        self.expect(TokenKind::In);
+        let iter = self.parse_expr(Precedence::None);
+        self.expect(TokenKind::RBrace);
+        let body = self.parse_block(tok);
+        self.alloc(ast::Node::new(
+            ast::NodeKind::For { vari, iter, body },
+            tok.span.to(body.span),
+        ))
     }
 
     fn parse_pair(&mut self, lhs: ast::NodeRef<'ast>, tok: Token) -> ast::NodeRef<'ast> {
