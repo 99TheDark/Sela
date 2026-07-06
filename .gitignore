@@ -4,3 +4,4 @@ flamegraph.svg
 docs/design
 io/huge_errorless.se
 io/huge.se
+src/core/atomic_bit_array.rs

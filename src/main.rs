@@ -3,8 +3,8 @@ use std::fs::{self};
 use bumpalo::Bump;
 
 use crate::{
-    error::Diagnostics, lexer::Lexer, parser::Parser, timing::Stopwatch,
-    token::kind::TokenKind,
+    core::arena_pool::ArenaPool, error::Diagnostics, lexer::Lexer, parser::Parser,
+    timing::Stopwatch, token::kind::TokenKind,
 };
 
 pub mod ast;
@@ -24,8 +24,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut watch = Stopwatch::start();
 
     let src = fs::read_to_string(file)?;
-    let arena = Bump::new();
+    let token_arena = Bump::new();
+    let ast_arena = Bump::new();
     let mut diag = Diagnostics::new(file.to_string(), &src);
+
+    let mut pool = ArenaPool::new();
+    let a1 = pool.acquire();
+    let a2 = pool.acquire();
+    drop(a1);
+    drop(a2);
+    let a3 = pool.acquire();
+    drop(a3);
+    drop(pool);
 
     watch.split("File Reading");
 
@@ -57,16 +67,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     watch.split("Lexing");
 
-    let ast_arena = Bump::new();
-
     let ast = {
-        // Maybe create a new arena, or even two (NodeKind and Span)?
         let ast = Parser::new(&src, &tokens, &mut diag, &ast_arena).parse();
 
-        // For debugging
         if is_debug {
             pretty::write_file("io/ast.txt".to_string(), &ast)?;
-            pretty::print(&ast)?;
+            // pretty::print(&ast)?;
 
             println!();
             diag.print();
@@ -77,7 +83,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     watch.split("Parsing");
 
     drop(tokens);
-    drop(arena);
+    drop(token_arena);
     watch.split("Token Stream Deallocation");
 
     drop(ast); // temporarily

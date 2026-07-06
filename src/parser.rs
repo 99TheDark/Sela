@@ -414,10 +414,12 @@ where
         loop {
             elems.push(self.parse_expr(Precedence::None));
 
-            self.eat_nls(); // Feels kind of random. I feel like I could streamline this
+            self.eat_nls();
             if self.peek().is(TokenKind::RParen) {
                 break;
             }
+
+            println!("{:?}", self.peek());
 
             self.expect(TokenKind::Comma);
             if self.peek().is(TokenKind::RParen) {
