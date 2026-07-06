@@ -90,6 +90,14 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .named("Callee", *callee)
                 .named("Arguments", *args)
                 .finish(),
+            String(frags) => pretty::Builder::new()
+                .fold(*frags, |builder, frag| match frag {
+                    ast::string::Fragment::String(inner) => builder.unnamed(inner),
+                    ast::string::Fragment::Expr(inner) => {
+                        builder.named("Interpolated Expression", *inner)
+                    }
+                })
+                .finish(),
             Decl { pat, val } => pretty::Builder::new()
                 .named("Pattern", *pat)
                 .named("Value", *val)
@@ -119,8 +127,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Pair { lhs, rhs } => {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
             }
-            // TODO: Move String(_) to a real pretty printer
-            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | String(_) | Unknown => {
+            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Unknown => {
                 pretty::Builder::empty()
             }
         }
@@ -186,5 +193,15 @@ impl<'a, B: io::Write> Pretty<'a, B> for Option<NodeRef<'a>> {
 
     fn children(&self) -> pretty::ChildNodes<'a, B> {
         self.map_or_else(|| pretty::Builder::empty(), |inner| inner.children())
+    }
+}
+
+impl<'a, B: io::Write> Pretty<'a, B> for String {
+    fn fmt_title<'w>(&self, f: &mut pretty::Formatter<'w, B>) -> pretty::Result {
+        f.write(format!("\"{}\"", self.escape_debug()))
+    }
+
+    fn children(&'a self) -> pretty::ChildNodes<'a, B> {
+        pretty::Builder::empty()
     }
 }

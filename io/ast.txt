@@ -136,12 +136,16 @@ List
 │  │  │  └─ Child: Identifier (print)
 │  │  └─ Arguments: Parentheses
 │  │     └─ String
+│  │        └─ "\"Hello, world!\""
 │  └─ Invocation
 │     ├─ Callee: Member Access
 │     │  ├─ Parent: Identifier (io)
 │     │  └─ Child: Identifier (print)
 │     └─ Arguments: Parentheses
 │        └─ String
+│           ├─ "\"u = 5 ^ (2 - 1) = "
+│           ├─ Interpolated Expression: Identifier (u)
+│           └─ ".\""
 ├─ <! Unknown !>
 ├─ <! Unknown !>
 ├─ Block
@@ -151,12 +155,26 @@ List
 │  │  │  └─ Child: Identifier (print)
 │  │  └─ Arguments: Parentheses
 │  │     └─ String
+│  │        └─ "\"Oh no...\""
 │  └─ Invocation
 │     ├─ Callee: Member Access
 │     │  ├─ Parent: Identifier (io)
 │     │  └─ Child: Identifier (print)
 │     └─ Arguments: Parentheses
 │        └─ String
+│           ├─ "\""
+│           ├─ Interpolated Expression: Identifier (test)
+│           ├─ " "
+│           ├─ Interpolated Expression: Binary Operation
+│           │  ├─ Left-hand Side: Identifier (othertest)
+│           │  ├─ Operator: Add (+)
+│           │  └─ Right-hand Side: String
+│           │     ├─ "\"woah "
+│           │     ├─ Interpolated Expression: Identifier (chill)
+│           │     └─ "\""
+│           ├─ ""
+│           ├─ Interpolated Expression: Identifier (finaltest)
+│           └─ "|+1\""
 ├─ <! Unknown !>
 ├─ Declaration
 │  ├─ Pattern: Identifier (x)

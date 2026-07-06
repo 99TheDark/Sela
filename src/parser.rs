@@ -138,7 +138,6 @@ where
             LBrack => todo!(),
             LBrace => self.parse_block(tok),
             DotDot | DotDotLt | DotDotEq => self.parse_range(tok),
-            Dollar => todo!(),
             Tick => todo!(),
             Let => self.parse_decl(tok),
             True => self.parse_bool(tok, true),
@@ -172,10 +171,8 @@ where
             match tok.kind {
                 LParen => self.parse_invocation(lhs, tok), // Maybe broaden to ( / [ / {
                 LBrack => todo!(),
-                LBrace => todo!(),
                 At => todo!(),
                 Colon => self.parse_pair(lhs, tok), // There is a better way for sure than to pass in tok
-                Arrow => todo!(),
                 _ => panic!(),
             }
         }

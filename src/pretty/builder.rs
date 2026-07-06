@@ -25,6 +25,18 @@ impl<'a, B: io::Write> Builder<'a, B> {
         self
     }
 
+    pub fn fold<T, I: IntoIterator<Item = T>, F: Fn(Self, &T) -> Self>(
+        self,
+        iter: I,
+        folder: F,
+    ) -> Self {
+        let mut builder = self;
+        for elem in iter {
+            builder = folder(builder, &elem);
+        }
+        builder
+    }
+
     pub fn finish(self) -> pretty::ChildNodes<'a, B> {
         self.0
     }

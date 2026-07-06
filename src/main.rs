@@ -28,15 +28,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let ast_arena = Bump::new();
     let mut diag = Diagnostics::new(file.to_string(), &src);
 
-    let mut pool = ArenaPool::new();
-    let a1 = pool.acquire();
-    let a2 = pool.acquire();
-    drop(a1);
-    drop(a2);
-    let a3 = pool.acquire();
-    drop(a3);
-    drop(pool);
-
     watch.split("File Reading");
 
     let tokens = {
@@ -72,7 +63,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         if is_debug {
             pretty::write_file("io/ast.txt".to_string(), &ast)?;
-            // pretty::print(&ast)?;
+            pretty::print(&ast)?;
 
             println!();
             diag.print();
