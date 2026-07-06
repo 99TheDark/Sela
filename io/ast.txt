@@ -124,58 +124,55 @@ List
 ├─ Member Access
 │  ├─ Parent: <! Unknown !>
 │  └─ Child: Identifier (ship)
-├─ <! Unknown !>
-├─ Comparison
-│  ├─ Left-hand Side: Identifier (x)
-│  ├─ Comparator: Greater Than (>)
-│  └─ Right-hand Side: Integer (5)
-├─ Block
-│  ├─ Invocation
-│  │  ├─ Callee: Member Access
-│  │  │  ├─ Parent: Identifier (io)
-│  │  │  └─ Child: Identifier (print)
-│  │  └─ Arguments: Parentheses
-│  │     └─ String
-│  │        └─ Raw String: "\"Hello, world!\""
-│  └─ Invocation
-│     ├─ Callee: Member Access
-│     │  ├─ Parent: Identifier (io)
-│     │  └─ Child: Identifier (print)
-│     └─ Arguments: Parentheses
-│        └─ String
-│           ├─ Raw String: "\"u = 5 ^ (2 - 1) = "
-│           ├─ Interpolated Expression: Identifier (u)
-│           └─ Raw String: ".\""
-├─ <! Unknown !>
-├─ <! Unknown !>
-├─ Block
-│  ├─ Invocation
-│  │  ├─ Callee: Member Access
-│  │  │  ├─ Parent: Identifier (io)
-│  │  │  └─ Child: Identifier (print)
-│  │  └─ Arguments: Parentheses
-│  │     └─ String
-│  │        └─ Raw String: "\"Oh no...\""
-│  └─ Invocation
-│     ├─ Callee: Member Access
-│     │  ├─ Parent: Identifier (io)
-│     │  └─ Child: Identifier (print)
-│     └─ Arguments: Parentheses
-│        └─ String
-│           ├─ Raw String: "\""
-│           ├─ Interpolated Expression: Identifier (test)
-│           ├─ Raw String: " "
-│           ├─ Interpolated Expression: Binary Operation
-│           │  ├─ Left-hand Side: Identifier (othertest)
-│           │  ├─ Operator: Add (+)
-│           │  └─ Right-hand Side: String
-│           │     ├─ Raw String: "\"woah "
-│           │     ├─ Interpolated Expression: Identifier (chill)
-│           │     └─ Raw String: "\""
-│           ├─ Raw String: ""
-│           ├─ Interpolated Expression: Identifier (finaltest)
-│           └─ Raw String: "|+1\""
-├─ <! Unknown !>
+├─ If Statement
+│  ├─ Condition: Comparison
+│  │  ├─ Left-hand Side: Identifier (x)
+│  │  ├─ Comparator: Greater Than (>)
+│  │  └─ Right-hand Side: Integer (5)
+│  ├─ Then Body: Block
+│  │  ├─ Invocation
+│  │  │  ├─ Callee: Member Access
+│  │  │  │  ├─ Parent: Identifier (io)
+│  │  │  │  └─ Child: Identifier (print)
+│  │  │  └─ Arguments: Parentheses
+│  │  │     └─ String
+│  │  │        └─ Raw String: "\"Hello, world!\""
+│  │  └─ Invocation
+│  │     ├─ Callee: Member Access
+│  │     │  ├─ Parent: Identifier (io)
+│  │     │  └─ Child: Identifier (print)
+│  │     └─ Arguments: Parentheses
+│  │        └─ String
+│  │           ├─ Raw String: "\"u = 5 ^ (2 - 1) = "
+│  │           ├─ Interpolated Expression: Identifier (u)
+│  │           └─ Raw String: ".\""
+│  └─ Else Body: Some Block
+│     ├─ Invocation
+│     │  ├─ Callee: Member Access
+│     │  │  ├─ Parent: Identifier (io)
+│     │  │  └─ Child: Identifier (print)
+│     │  └─ Arguments: Parentheses
+│     │     └─ String
+│     │        └─ Raw String: "\"Oh no...\""
+│     └─ Invocation
+│        ├─ Callee: Member Access
+│        │  ├─ Parent: Identifier (io)
+│        │  └─ Child: Identifier (print)
+│        └─ Arguments: Parentheses
+│           └─ String
+│              ├─ Raw String: "\""
+│              ├─ Interpolated Expression: Identifier (test)
+│              ├─ Raw String: " "
+│              ├─ Interpolated Expression: Binary Operation
+│              │  ├─ Left-hand Side: Identifier (othertest)
+│              │  ├─ Operator: Add (+)
+│              │  └─ Right-hand Side: String
+│              │     ├─ Raw String: "\"woah "
+│              │     ├─ Interpolated Expression: Identifier (chill)
+│              │     └─ Raw String: "\""
+│              ├─ Raw String: ""
+│              ├─ Interpolated Expression: Identifier (finaltest)
+│              └─ Raw String: "|+1\""
 ├─ Declaration
 │  ├─ Pattern: Identifier (x)
 │  └─ Value: Invocation
@@ -196,70 +193,64 @@ List
 │              │  ├─ Parent: Identifier (ship)
 │              │  └─ Child: Identifier (Direction)
 │              └─ Child: Identifier (Horizontal)
-├─ <! Unknown !>
-├─ Unary Operation
-│  ├─ Operator: Not (!)
-│  └─ Right-hand Side: Unary Operation
-│     ├─ Operator: Not (!)
-│     └─ Right-hand Side: Unary Operation
-│        ├─ Operator: Not (!)
-│        └─ Right-hand Side: Boolean (true)
-├─ Empty Block
-├─ <! Unknown !>
+├─ If Statement
+│  ├─ Condition: Unary Operation
+│  │  ├─ Operator: Not (!)
+│  │  └─ Right-hand Side: Unary Operation
+│  │     ├─ Operator: Not (!)
+│  │     └─ Right-hand Side: Unary Operation
+│  │        ├─ Operator: Not (!)
+│  │        └─ Right-hand Side: Boolean (true)
+│  ├─ Then Body: Empty Block
+│  └─ Else Body: None
 ├─ Assignment
 │  ├─ Pattern: Identifier (n)
 │  ├─ Assigner: Right Shift Assignment (>>=)
-│  └─ Value: <! Unknown !>
-├─ Comparison
-│  ├─ Left-hand Side: Identifier (x)
-│  ├─ Comparator: Greater Than or Equal (>=)
-│  └─ Right-hand Side: Integer (5)
-├─ Block
-│  └─ Binary Operation
-│     ├─ Left-hand Side: Integer (3)
-│     ├─ Operator: Left Shift (<<)
-│     └─ Right-hand Side: Integer (2)
-├─ <! Unknown !>
-├─ <! Unknown !>
-├─ Block
-│  └─ Binary Operation
-│     ├─ Left-hand Side: Identifier (n)
-│     ├─ Operator: Subtract (-)
-│     └─ Right-hand Side: Integer (1)
-├─ <! Unknown !>
-├─ For Loop
-│  ├─ Variable: Identifier (num)
-│  ├─ Iterable: Member Access
-│  │  ├─ Parent: Floating-Point Number (1)
-│  │  └─ Child: <! Unknown !>
-│  └─ Body: Block
-│     └─ Block
-│        └─ Invocation
-│           ├─ Callee: Member Access
-│           │  ├─ Parent: Identifier (io)
-│           │  └─ Child: Identifier (print)
-│           └─ Arguments: Parentheses
-│              └─ Identifier (num)
-├─ <! Unknown !>
-├─ Assignment
-│  ├─ Pattern: Identifier (v)
-│  ├─ Assigner: Assignment (=)
-│  └─ Value: Binary Operation
-│     ├─ Left-hand Side: Integer (1)
-│     ├─ Operator: Subtract (-)
-│     └─ Right-hand Side: Identifier (v)
-├─ Loop
-│  └─ Body: Block
-│     └─ While Loop
-│        ├─ Condition: Comparison
-│        │  ├─ Left-hand Side: Identifier (x)
-│        │  ├─ Comparator: Greater Than (>)
-│        │  └─ Right-hand Side: Integer (5)
-│        └─ Body: Block
-│           ├─ Assignment
-│           │  ├─ Pattern: Identifier (x)
-│           │  ├─ Assigner: Subtraction Assignment (-=)
-│           │  └─ Value: <! Unknown !>
-│           └─ Integer (1)
-├─ <! Unknown !>
-└─ <! Unknown !>
+│  └─ Value: If Statement
+│     ├─ Condition: Comparison
+│     │  ├─ Left-hand Side: Identifier (x)
+│     │  ├─ Comparator: Greater Than or Equal (>=)
+│     │  └─ Right-hand Side: Integer (5)
+│     ├─ Then Body: Block
+│     │  └─ Binary Operation
+│     │     ├─ Left-hand Side: Integer (3)
+│     │     ├─ Operator: Left Shift (<<)
+│     │     └─ Right-hand Side: Integer (2)
+│     └─ Else Body: Some Block
+│        └─ Binary Operation
+│           ├─ Left-hand Side: Identifier (n)
+│           ├─ Operator: Subtract (-)
+│           └─ Right-hand Side: Integer (1)
+└─ For Loop
+   ├─ Variable: Identifier (num)
+   ├─ Iterable: Member Access
+   │  ├─ Parent: Floating-Point Number (1)
+   │  └─ Child: <! Unknown !>
+   └─ Body: Block
+      ├─ Block
+      │  └─ Invocation
+      │     ├─ Callee: Member Access
+      │     │  ├─ Parent: Identifier (io)
+      │     │  └─ Child: Identifier (print)
+      │     └─ Arguments: Parentheses
+      │        └─ Identifier (num)
+      ├─ Assignment
+      │  ├─ Pattern: Identifier (v)
+      │  ├─ Assigner: Assignment (=)
+      │  └─ Value: Binary Operation
+      │     ├─ Left-hand Side: Integer (1)
+      │     ├─ Operator: Subtract (-)
+      │     └─ Right-hand Side: Identifier (v)
+      └─ Loop
+         └─ Body: Block
+            └─ While Loop
+               ├─ Condition: Comparison
+               │  ├─ Left-hand Side: Identifier (x)
+               │  ├─ Comparator: Greater Than (>)
+               │  └─ Right-hand Side: Integer (5)
+               └─ Body: Block
+                  ├─ Assignment
+                  │  ├─ Pattern: Identifier (x)
+                  │  ├─ Assigner: Subtraction Assignment (-=)
+                  │  └─ Value: <! Unknown !>
+                  └─ Integer (1)

@@ -137,6 +137,7 @@ where
             Let => self.parse_decl(tok),
             True => self.parse_bool(tok, true),
             False => self.parse_bool(tok, false),
+            If => self.parse_if(tok),
             Loop => self.parse_loop(tok),
             While => self.parse_while(tok),
             For => self.parse_for(tok),
@@ -193,7 +194,11 @@ where
         let mut stmts = Vec::new();
         loop {
             self.eat_nls();
-            if self.peek().is_eof() || should_exit(self.peek()) {
+            if self.peek().is_eof() {
+                break;
+            }
+            if should_exit(self.peek()) {
+                self.next();
                 break;
             }
 
@@ -411,15 +416,15 @@ where
     }
 
     fn parse_loop(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        self.expect(TokenKind::RBrace);
-        let body = self.parse_block(tok);
+        let lbrace = self.expect(TokenKind::LBrace);
+        let body = self.parse_block(lbrace);
         self.alloc(ast::Node::new(ast::NodeKind::Loop { body }, tok.span.to(body.span)))
     }
 
     fn parse_while(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let cond = self.parse_expr(Precedence::None);
-        self.expect(TokenKind::RBrace);
-        let body = self.parse_block(tok);
+        let lbrace = self.expect(TokenKind::LBrace);
+        let body = self.parse_block(lbrace);
         self.alloc(ast::Node::new(
             ast::NodeKind::While { cond, body },
             tok.span.to(body.span),
@@ -430,10 +435,28 @@ where
         let vari = self.parse_expr(Precedence::None);
         self.expect(TokenKind::In);
         let iter = self.parse_expr(Precedence::None);
-        self.expect(TokenKind::RBrace);
-        let body = self.parse_block(tok);
+        let lbrace = self.expect(TokenKind::LBrace);
+        let body = self.parse_block(lbrace);
         self.alloc(ast::Node::new(
             ast::NodeKind::For { vari, iter, body },
+            tok.span.to(body.span),
+        ))
+    }
+
+    fn parse_if(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let cond = self.parse_expr(Precedence::None);
+        let lbrace = self.expect(TokenKind::LBrace);
+        let body = self.parse_block(lbrace);
+        println!("{:?}", self.peek());
+        let fallback = if self.peek().is(TokenKind::Else) {
+            self.next();
+            let else_lbrace = self.expect(TokenKind::LBrace);
+            Some(self.parse_block(else_lbrace))
+        } else {
+            None
+        };
+        self.alloc(ast::Node::new(
+            ast::NodeKind::If { cond, body, fallback },
             tok.span.to(body.span),
         ))
     }

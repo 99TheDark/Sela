@@ -63,7 +63,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         if is_debug {
             pretty::write_file("io/ast.txt".to_string(), &ast)?;
-            pretty::print(&ast)?;
+            //pretty::print(&ast)?;
 
             println!();
             diag.print();
