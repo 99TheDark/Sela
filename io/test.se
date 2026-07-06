@@ -2,9 +2,9 @@ ab+
 true-12_.__345_e-8
 
 let function ≠ ∫(&v)dx
-let k: Int = 3 - 2 +   // Statement 2
-               7 * 8 // Statement 2
-             - 2     // Statement 3
+let k: Int = 3 - 2 + // Statement 1
+               7 * 8 // Statement 1
+             - 2     // Statement 2
 
 let a1 = ((0 - 1) * 2 + 5 / 6 + 0) * (3 + 4) / 8 + 4 - 7 * 8 - 
              1 + 94 * 14087 / (
