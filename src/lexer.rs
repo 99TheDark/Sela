@@ -72,6 +72,13 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         self.src[self.idx as usize..].chars().next()
     }
 
+    pub fn peek2(&mut self) -> Option<char> {
+        // TODO: Use a fast implementation or a custom structure like Cursor<'a>
+        let mut chars = self.src[self.idx as usize..].chars();
+        chars.next();
+        chars.next()
+    }
+
     pub fn peek_n(&mut self, n: usize) -> &'src [u8] {
         let end = usize::min(self.idx as usize + n, self.src.len());
         &self.src.as_bytes()[self.idx as usize..end]
@@ -121,18 +128,6 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         &self.src[start as usize..self.idx as usize]
     }
 
-    pub fn eat_while_mut<F>(&mut self, mut valid: F)
-    where
-        F: FnMut(char) -> bool,
-    {
-        while let Some(ch) = self.peek() {
-            if !valid(ch) {
-                break;
-            }
-            self.next();
-        }
-    }
-
     fn ident_or_keyword(&mut self) -> TokenKind {
         let ident = self.eat_while_and_collect(
             |ch| matches!(ch, 'a'..='z' | 'A'..='Z' | '_' | '0'..='9'),
@@ -180,32 +175,40 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         let mut seen_dot = false; // This means no .123
         let mut seen_exp = false;
         let mut just_saw_exp = false;
-        self.eat_while_mut(|ch| {
-            if just_saw_exp {
-                just_saw_exp = false;
-                if matches!(ch, '+' | '-') {
-                    return true;
-                }
-            }
-
-            match ch {
-                '.' => {
-                    if seen_dot {
-                        false
-                    } else {
-                        seen_dot = true;
-                        true
+        while let Some(ch) = self.peek() {
+            let valid = 'valid: {
+                if just_saw_exp {
+                    just_saw_exp = false;
+                    if matches!(ch, '+' | '-') {
+                        break 'valid true;
                     }
                 }
-                'e' | 'E' => {
-                    seen_exp = true;
-                    just_saw_exp = true;
-                    true
+
+                match ch {
+                    '.' if matches!(self.peek2(), Some('0'..='9' | '_')) => {
+                        if seen_dot {
+                            false
+                        } else {
+                            seen_dot = true;
+                            true
+                        }
+                    }
+                    '.' => false,
+                    'e' | 'E' => {
+                        seen_exp = true;
+                        just_saw_exp = true;
+                        true
+                    }
+                    '0'..='9' | '_' => true,
+                    _ => false,
                 }
-                '0'..='9' | '_' => true,
-                _ => false,
+            };
+
+            if !valid {
+                break;
             }
-        });
+            self.next();
+        }
 
         if seen_dot || seen_exp { TokenKind::Float } else { TokenKind::Int }
     }
