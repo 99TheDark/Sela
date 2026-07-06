@@ -1,0 +1,1 @@
+sudo CARGO_PROFILE_RELEASE_DEBUG=true cargo flamegraph --freq 999 --post-process rustfilt --root

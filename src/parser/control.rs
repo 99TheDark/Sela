@@ -1,52 +1,56 @@
-/*use crate::{ast, parser::RDParser, token::keyword::Keyword};
+use crate::{
+    ast,
+    parser::Parser,
+    token::{Token, kind::TokenKind, precedence::Precedence},
+};
 
-impl<'ast, 'diag, 'src> RDParser<'ast, 'diag, 'src> {
-    pub fn parse_if_else(&mut self) -> &'ast ast::Node<'ast> {
-        let start = self.next();
-        let cond = self.parse_expr();
-        let body = self.parse_block();
-
-        let (fallback, span) = if self.at_keyword(Keyword::Else) {
-            self.advance();
-            let block = self.parse_block();
-            (Some(block), start.span.to(block.span))
-        } else {
-            (None, start.span.to(body.span))
-        };
-
-        self.alloc(ast::Node::new(ast::NodeKind::If { cond, body, fallback }, span))
+impl<'tok, 'ast, 'diag, 'src> Parser<'tok, 'ast, 'diag, 'src>
+where
+    'src: 'ast,
+    'src: 'tok,
+{
+    pub(super) fn parse_loop(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let lbrace = self.expect(TokenKind::LBrace);
+        let body = self.parse_block(lbrace);
+        self.alloc(ast::Node::new(ast::NodeKind::Loop { body }, tok.span.to(body.span)))
     }
 
-    pub fn parse_loop(&mut self) -> &'ast ast::Node<'ast> {
-        let start = self.next();
-        let body = self.parse_block();
-
-        self.alloc(ast::Node::new(ast::NodeKind::Loop { body }, start.span.to(body.span)))
-    }
-
-    pub fn parse_while_loop(&mut self) -> &'ast ast::Node<'ast> {
-        let start = self.next();
-        let cond = self.parse_expr();
-        let body = self.parse_block();
-
+    pub(super) fn parse_while(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let cond = self.parse_expr(Precedence::None);
+        let lbrace = self.expect(TokenKind::LBrace);
+        let body = self.parse_block(lbrace);
         self.alloc(ast::Node::new(
             ast::NodeKind::While { cond, body },
-            start.span.to(body.span),
+            tok.span.to(body.span),
         ))
     }
 
-    pub fn parse_for_loop(&mut self) -> &'ast ast::Node<'ast> {
-        let start = self.next();
-        let vari = self.parse_expr();
-
-        self.expect_keyword(Keyword::In);
-        let iter = self.parse_expr();
-        let body = self.parse_block();
-
+    pub(super) fn parse_for(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let vari = self.parse_expr(Precedence::None);
+        self.expect(TokenKind::In);
+        let iter = self.parse_expr(Precedence::None);
+        let lbrace = self.expect(TokenKind::LBrace);
+        let body = self.parse_block(lbrace);
         self.alloc(ast::Node::new(
             ast::NodeKind::For { vari, iter, body },
-            start.span.to(body.span),
+            tok.span.to(body.span),
+        ))
+    }
+
+    pub(super) fn parse_if(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let cond = self.parse_expr(Precedence::None);
+        let lbrace = self.expect(TokenKind::LBrace);
+        let body = self.parse_block(lbrace);
+        let fallback = if self.peek().is(TokenKind::Else) {
+            self.next();
+            let else_lbrace = self.expect(TokenKind::LBrace);
+            Some(self.parse_block(else_lbrace))
+        } else {
+            None
+        };
+        self.alloc(ast::Node::new(
+            ast::NodeKind::If { cond, body, fallback },
+            tok.span.to(body.span),
         ))
     }
 }
-*/
