@@ -8,7 +8,7 @@ use bumpalo::Bump;
 use regex::Regex;
 
 use crate::{
-    ast::{self, binary::BinaryKind, unop::UnOpKind},
+    ast::{self, binary::BinaryKind, range::RangeKind, unop::UnOpKind},
     core::span::Span,
     error::{Diagnostics, ErrorKind, natural::Natural},
     token::{Token, kind::TokenKind, precedence::Precedence},
@@ -132,7 +132,9 @@ where
             ),
             LBrack => todo!(),
             LBrace => self.parse_block(tok),
-            DotDot | DotDotLt | DotDotEq => self.parse_range(tok),
+            DotDot => self.parse_nud_range(tok, RangeKind::Full),
+            DotDotLt => self.parse_nud_range(tok, RangeKind::Excl),
+            DotDotEq => self.parse_nud_range(tok, RangeKind::Incl),
             Tick => todo!(),
             Let => self.parse_decl(tok),
             True => self.parse_bool(tok, true),
@@ -141,6 +143,8 @@ where
             Loop => self.parse_loop(tok),
             While => self.parse_while(tok),
             For => self.parse_for(tok),
+            Use => self.parse_use(tok),
+            Charm => self.alloc(ast::Node::new(ast::NodeKind::Charm, tok.span)),
             NoChar => todo!(),
             UntermQuot => todo!(),
             UntermQuotEsc => todo!(),
@@ -157,7 +161,6 @@ where
     }
 
     pub fn parse_led(
-        // TODO: Use precedence, duh
         &mut self,
         lhs: ast::NodeRef<'ast>,
         tok: Token,
@@ -168,6 +171,9 @@ where
             self.parse_binary(lhs, tok, op_kind)
         } else {
             match tok.kind {
+                DotDot => self.parse_led_range(lhs, RangeKind::Full),
+                DotDotLt => self.parse_led_range(lhs, RangeKind::Excl),
+                DotDotEq => self.parse_led_range(lhs, RangeKind::Incl),
                 LParen => self.parse_invocation(lhs, tok), // Maybe broaden to ( / [ / {
                 LBrack => todo!(),
                 At => todo!(),
@@ -177,6 +183,7 @@ where
         }
     }
 
+    #[inline(always)]
     pub fn parse_expr(&mut self, min_prec: Precedence) -> ast::NodeRef<'ast> {
         let left_tok = self.next();
         let mut left = self.parse_nud(left_tok);
@@ -361,8 +368,113 @@ where
         self.alloc(ast::Node::new(ast::NodeKind::String(&frags), tok.span.to(end)))
     }
 
-    fn parse_range(&mut self, _tok: Token) -> ast::NodeRef<'ast> {
-        todo!()
+    // TODO: Combine shared logic of nud + led
+    fn parse_nud_range(&mut self, tok: Token, range: RangeKind) -> ast::NodeRef<'ast> {
+        let (to, span) = if self.peek().led_prec() != Precedence::None {
+            let rhs = self.parse_expr(Precedence::Range);
+            (Some(rhs), tok.span.to(rhs.span))
+        } else {
+            (None, tok.span)
+        };
+
+        let kind = match (to.is_some(), range) {
+            // ..a
+            (true, RangeKind::Full) => {
+                self.diag.emit(
+                    ErrorKind::Syntax,
+                    format!(
+                        "Half ranges up to a value must be strictly \
+                         inclusive (..=) or exclusive (..<)"
+                    ),
+                    span,
+                );
+                ast::NodeKind::UnknownRange { from: None, range, to }
+            }
+
+            // ..<a, ..=a, ..
+            (true, RangeKind::Excl | RangeKind::Incl) | (false, RangeKind::Full) => {
+                ast::NodeKind::Range { from: None, range, to }
+            }
+
+            // ..<
+            (false, RangeKind::Excl) => {
+                self.diag.emit(
+                    ErrorKind::Syntax,
+                    format!("An exclusive range must go up to a value"),
+                    span,
+                );
+                ast::NodeKind::UnknownRange { from: None, range, to }
+            }
+
+            // ..=
+            (false, RangeKind::Incl) => {
+                self.diag.emit(
+                    ErrorKind::Syntax,
+                    format!("An inclusive range must go up to a value"),
+                    span,
+                );
+                ast::NodeKind::UnknownRange { from: None, range, to }
+            }
+        };
+
+        self.alloc(ast::Node::new(kind, span))
+    }
+
+    fn parse_led_range(
+        &mut self,
+        lhs: ast::NodeRef<'ast>,
+        range: RangeKind,
+    ) -> ast::NodeRef<'ast> {
+        let from = Some(lhs);
+
+        let (to, span) = if self.peek().led_prec() == Precedence::None {
+            let rhs = self.parse_expr(Precedence::Range);
+            (Some(rhs), lhs.span.to(rhs.span))
+        } else {
+            (None, lhs.span)
+        };
+
+        let kind = match (to.is_some(), range) {
+            // a..b
+            (true, RangeKind::Full) => {
+                self.diag.emit(
+                    ErrorKind::Syntax,
+                    format!(
+                        "Ranges between two values must be strictly \
+                         inclusive (..=) or exclusive (..<)"
+                    ),
+                    span,
+                );
+                ast::NodeKind::UnknownRange { from, range, to }
+            }
+
+            // a..<b, a..=b, a..
+            (true, RangeKind::Excl)
+            | (true, RangeKind::Incl)
+            | (false, RangeKind::Full) => ast::NodeKind::Range { from, range, to },
+
+            // a..<
+            (false, RangeKind::Excl) => {
+                self.diag.emit(
+                    ErrorKind::Syntax,
+                    format!("An exclusive range must go up to a value"),
+                    span,
+                );
+                ast::NodeKind::UnknownRange { from, range, to }
+            }
+
+            // b..=
+            (false, RangeKind::Incl) => {
+                self.diag.emit(
+                    ErrorKind::Syntax,
+                    format!("An inclusive range must go up to a value"),
+                    span,
+                );
+                ast::NodeKind::UnknownRange { from, range, to }
+            }
+        };
+
+        self.alloc(ast::Node::new(kind, span))
     }
 
     fn parse_ident(&mut self, tok: Token) -> ast::NodeRef<'ast> {
@@ -447,7 +559,6 @@ where
         let cond = self.parse_expr(Precedence::None);
         let lbrace = self.expect(TokenKind::LBrace);
         let body = self.parse_block(lbrace);
-        println!("{:?}", self.peek());
         let fallback = if self.peek().is(TokenKind::Else) {
             self.next();
             let else_lbrace = self.expect(TokenKind::LBrace);
@@ -459,6 +570,11 @@ where
             ast::NodeKind::If { cond, body, fallback },
             tok.span.to(body.span),
         ))
+    }
+
+    fn parse_use(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let path = self.parse_expr(Precedence::None);
+        self.alloc(ast::Node::new(ast::NodeKind::Use { path }, tok.span.to(path.span)))
     }
 
     fn parse_pair(&mut self, lhs: ast::NodeRef<'ast>, tok: Token) -> ast::NodeRef<'ast> {

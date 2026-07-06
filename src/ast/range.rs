@@ -8,6 +8,9 @@ pub enum RangeKind {
     Full,
     Excl,
     Incl,
+    // From
+    // UpTo
+    // Thru
 }
 
 impl RangeKind {

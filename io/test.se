@@ -42,7 +42,7 @@ v = 1 - v
 
 loop {
     while x > 5 {
-        x -= 1 // For some reason this is parsed as x -= [error]; 1
+        x -= 1
     }
 }
 

@@ -175,7 +175,7 @@ impl TokenKind {
     pub const fn nud_prec(&self) -> Precedence {
         use TokenKind::*;
         match self {
-            DotDotLt | DotDotEq => Precedence::Range,
+            DotDot | DotDotLt | DotDotEq => Precedence::Range,
             Dash | Star | Amp | Not => Precedence::Unary,
             _ => Precedence::None,
         }
@@ -186,7 +186,7 @@ impl TokenKind {
         match self {
             Eq | PlusEq | DashEq | StarEq | SlashEq | PctEq | GtGtEq | LtLtEq
             | CaretEq | AmpEq | BarEq => Precedence::Assign,
-            DotDotLt | DotDotEq => Precedence::Range,
+            DotDot | DotDotLt | DotDotEq => Precedence::Range,
             Or => Precedence::ShortOr,
             And => Precedence::ShortAnd,
             EqEq | NotEq => Precedence::Equal,

@@ -71,6 +71,6 @@ impl Token {
 
 impl fmt::Debug for Token {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Token ({:?} {:?})", self.kind, self.span)
+        write!(f, "Token ({:?}, {:?})", self.kind, self.span)
     }
 }

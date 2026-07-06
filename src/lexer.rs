@@ -348,8 +348,14 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             // Lit: TBD
             '+' => self.fork(Plus, '=', PlusEq),
             '-' => match self.peek() {
-                Some('=') => DashEq,
-                Some('>') => Arrow,
+                Some('=') => {
+                    self.next();
+                    DashEq
+                }
+                Some('>') => {
+                    self.next();
+                    Arrow
+                }
                 _ => Dash,
             },
             '*' => self.fork(Star, '=', StarEq),

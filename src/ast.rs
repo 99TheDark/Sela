@@ -40,7 +40,7 @@ impl<'a> Node<'a> {
 
 impl<'a> fmt::Debug for Node<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Node ({:?} {:?})", self.kind, self.span)
+        write!(f, "Node ({:?}, {:?})", self.kind, self.span)
     }
 }
 
@@ -69,6 +69,7 @@ pub enum NodeKind<'a> {
     While { cond: NodeRef<'a>, body: NodeRef<'a> },
     For { vari: NodeRef<'a>, iter: NodeRef<'a>, body: NodeRef<'a> },
     Use { path: NodeRef<'a> },
+    Charm,
     Parens(&'a [NodeRef<'a>]),
     Block(&'a [NodeRef<'a>]),
     Pair { lhs: NodeRef<'a>, rhs: NodeRef<'a> },
@@ -76,6 +77,7 @@ pub enum NodeKind<'a> {
     Unknown,
     UnknownInt,
     UnknownFloat,
+    UnknownRange { from: Option<NodeRef<'a>>, range: RangeKind, to: Option<NodeRef<'a>> },
     // UnknownChar,
     // UnknownString,
 }

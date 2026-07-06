@@ -33,9 +33,11 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Block(_) => f.write("Block"),
             Pair { .. } => f.write("Pair"),
             Use { .. } => f.write("Use"),
+            Charm => f.write("Charm"),
             Unknown => f.write("<! Unknown !>"),
             UnknownInt => f.write("<! Unknown Integer !>"),
             UnknownFloat => f.write("<! Unknown Floating-Point Number !>"),
+            UnknownRange { .. } => f.write("<! Unknown Range !>"),
         }
     }
 
@@ -43,7 +45,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
         use ast::NodeKind::*;
         let col = match &self.kind {
             // BinOp(..) | Comp(..) | Range(..) | UnOp(..) => AnsiColor::White,
-            Use { .. } => AnsiColor::Blue,
+            Use { .. } | Charm => AnsiColor::Blue,
             KwBinOp { .. } | If { .. } | Loop { .. } | While { .. } | For { .. } => {
                 AnsiColor::Purple
             }
@@ -75,11 +77,13 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .named("Comparator", comp)
                 .named("Right-hand Side", *rhs)
                 .finish(),
-            Range { from, range, to } => pretty::Builder::new()
-                .named("From", from)
-                .named("Range Type", range)
-                .named("To", to)
-                .finish(),
+            Range { from, range, to } | UnknownRange { from, range, to } => {
+                pretty::Builder::new()
+                    .named("From", from)
+                    .named("Range Type", range)
+                    .named("To", to)
+                    .finish()
+            }
             UnOp { op, rhs } => pretty::Builder::new()
                 .named("Operator", op)
                 .named("Right-hand Side", *rhs)
@@ -131,8 +135,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Pair { lhs, rhs } => {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
             }
-            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Unknown | UnknownInt
-            | UnknownFloat => pretty::Builder::empty(),
+            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | Unknown
+            | UnknownInt | UnknownFloat => pretty::Builder::empty(),
         }
     }
 }

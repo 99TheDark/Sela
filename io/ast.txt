@@ -116,14 +116,14 @@ List
 │     └─ Right-hand Side: Unary Operation
 │        ├─ Operator: Not (!)
 │        └─ Right-hand Side: Identifier (a1)
-├─ <! Unknown !>
-├─ Member Access
-│  ├─ Parent: Identifier (std)
-│  └─ Child: Identifier (io)
-├─ <! Unknown !>
-├─ Member Access
-│  ├─ Parent: <! Unknown !>
-│  └─ Child: Identifier (ship)
+├─ Use
+│  └─ Path: Member Access
+│     ├─ Parent: Identifier (std)
+│     └─ Child: Identifier (io)
+├─ Use
+│  └─ Path: Member Access
+│     ├─ Parent: Charm
+│     └─ Child: Identifier (ship)
 ├─ If Statement
 │  ├─ Condition: Comparison
 │  │  ├─ Left-hand Side: Identifier (x)
@@ -221,36 +221,35 @@ List
 │           ├─ Left-hand Side: Identifier (n)
 │           ├─ Operator: Subtract (-)
 │           └─ Right-hand Side: Integer (1)
-└─ For Loop
-   ├─ Variable: Identifier (num)
-   ├─ Iterable: Member Access
-   │  ├─ Parent: Floating-Point Number (1)
-   │  └─ Child: <! Unknown !>
+├─ For Loop
+│  ├─ Variable: Identifier (num)
+│  ├─ Iterable: Range
+│  │  ├─ From: Some Integer (1)
+│  │  ├─ Range Type: Inclusive Range (..=)
+│  │  └─ To: Some Integer (5)
+│  └─ Body: Block
+│     └─ Invocation
+│        ├─ Callee: Member Access
+│        │  ├─ Parent: Identifier (io)
+│        │  └─ Child: Identifier (print)
+│        └─ Arguments: Parentheses
+│           └─ Identifier (num)
+├─ Assignment
+│  ├─ Pattern: Identifier (v)
+│  ├─ Assigner: Assignment (=)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Integer (1)
+│     ├─ Operator: Subtract (-)
+│     └─ Right-hand Side: Identifier (v)
+└─ Loop
    └─ Body: Block
-      ├─ Block
-      │  └─ Invocation
-      │     ├─ Callee: Member Access
-      │     │  ├─ Parent: Identifier (io)
-      │     │  └─ Child: Identifier (print)
-      │     └─ Arguments: Parentheses
-      │        └─ Identifier (num)
-      ├─ Assignment
-      │  ├─ Pattern: Identifier (v)
-      │  ├─ Assigner: Assignment (=)
-      │  └─ Value: Binary Operation
-      │     ├─ Left-hand Side: Integer (1)
-      │     ├─ Operator: Subtract (-)
-      │     └─ Right-hand Side: Identifier (v)
-      └─ Loop
+      └─ While Loop
+         ├─ Condition: Comparison
+         │  ├─ Left-hand Side: Identifier (x)
+         │  ├─ Comparator: Greater Than (>)
+         │  └─ Right-hand Side: Integer (5)
          └─ Body: Block
-            └─ While Loop
-               ├─ Condition: Comparison
-               │  ├─ Left-hand Side: Identifier (x)
-               │  ├─ Comparator: Greater Than (>)
-               │  └─ Right-hand Side: Integer (5)
-               └─ Body: Block
-                  ├─ Assignment
-                  │  ├─ Pattern: Identifier (x)
-                  │  ├─ Assigner: Subtraction Assignment (-=)
-                  │  └─ Value: <! Unknown !>
-                  └─ Integer (1)
+            └─ Assignment
+               ├─ Pattern: Identifier (x)
+               ├─ Assigner: Subtraction Assignment (-=)
+               └─ Value: Integer (1)
