@@ -241,15 +241,23 @@ List
 │     ├─ Left-hand Side: Integer (1)
 │     ├─ Operator: Subtract (-)
 │     └─ Right-hand Side: Identifier (v)
-└─ Loop
-   └─ Body: Block
-      └─ While Loop
-         ├─ Condition: Comparison
-         │  ├─ Left-hand Side: Identifier (x)
-         │  ├─ Comparator: Greater Than (>)
-         │  └─ Right-hand Side: Integer (5)
-         └─ Body: Block
-            └─ Assignment
-               ├─ Pattern: Identifier (x)
-               ├─ Assigner: Subtraction Assignment (-=)
-               └─ Value: Integer (1)
+├─ Loop
+│  └─ Body: Block
+│     └─ While Loop
+│        ├─ Condition: Comparison
+│        │  ├─ Left-hand Side: Identifier (x)
+│        │  ├─ Comparator: Greater Than (>)
+│        │  └─ Right-hand Side: Integer (5)
+│        └─ Body: Block
+│           ├─ Assignment
+│           │  ├─ Pattern: Identifier (x)
+│           │  ├─ Assigner: Subtraction Assignment (-=)
+│           │  └─ Value: Integer (1)
+│           └─ Assignment
+│              ├─ Pattern: Identifier (x)
+│              ├─ Assigner: Addition Assignment (+=)
+│              └─ Value: Floating-Point Number (200000000)
+├─ Declaration
+│  ├─ Pattern: Identifier (x)
+│  └─ Value: <! Unknown Integer !>
+└─ <! Unknown !>

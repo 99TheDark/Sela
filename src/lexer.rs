@@ -172,6 +172,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     }
 
     fn number(&mut self) -> TokenKind {
+        // TODO: How will this lex 0xABC or 123a5?
         let mut seen_dot = false; // This means no .123
         let mut seen_exp = false;
         let mut just_saw_exp = false;

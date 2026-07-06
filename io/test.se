@@ -43,8 +43,11 @@ v = 1 - v
 loop {
     while x > 5 {
         x -= 1
+        x += 2e8
     }
 }
+
+let x = 1249_08329408140121__95_2;
 
 /*ab
 /*cd*/ef /*ghij /*klmno/*pqr*/stuvwxyz*/*/ ÷
