@@ -68,6 +68,8 @@ pub enum NodeKind<'a> {
     Loop { body: NodeRef<'a> },
     While { cond: NodeRef<'a>, body: NodeRef<'a> },
     For { vari: NodeRef<'a>, iter: NodeRef<'a>, body: NodeRef<'a> },
+    FuncSig { params: NodeRef<'a>, ret: Option<NodeRef<'a>> },
+    Func { name: Option<NodeRef<'a>>, sig: NodeRef<'a>, body: Option<NodeRef<'a>> },
     Use { path: NodeRef<'a> },
     Charm,
     Parens(&'a [NodeRef<'a>]),

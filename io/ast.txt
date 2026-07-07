@@ -260,4 +260,36 @@ List
 ├─ Declaration
 │  ├─ Pattern: Identifier (x)
 │  └─ Value: <! Unknown Integer !>
-└─ <! Unknown !>
+├─ Function
+│  ├─ Name: Some Identifier (add)
+│  ├─ Signature: Function Signature
+│  │  ├─ Parameters: Parentheses
+│  │  │  ├─ Pair
+│  │  │  │  ├─ Left: Identifier (a)
+│  │  │  │  └─ Right: Identifier (Int)
+│  │  │  └─ Pair
+│  │  │     ├─ Left: Identifier (b)
+│  │  │     └─ Right: Identifier (Int)
+│  │  └─ Return Type: Some Identifier (Int)
+│  └─ Body: Some Block
+│     └─ Binary Operation
+│        ├─ Left-hand Side: Identifier (a)
+│        ├─ Operator: Add (+)
+│        └─ Right-hand Side: Identifier (b)
+└─ Function
+   ├─ Name: Some Identifier (apply)
+   ├─ Signature: Function Signature
+   │  ├─ Parameters: Parentheses
+   │  │  ├─ Identifier (x)
+   │  │  └─ Pair
+   │  │     ├─ Left: Identifier (y)
+   │  │     └─ Right: Identifier (Int)
+   │  └─ Return Type: Some Identifier (Int)
+   └─ Body: Some Block
+      ├─ Declaration
+      │  ├─ Pattern: Identifier (res)
+      │  └─ Value: Invocation
+      │     ├─ Callee: Identifier (x)
+      │     └─ Arguments: Parentheses
+      │        └─ Identifier (y)
+      └─ Identifier (res)

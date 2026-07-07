@@ -179,18 +179,6 @@ where
     }
 
     pub(super) fn parse_int(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        /*self.parse_number(
-            tok,
-            "integer",
-            ArrayVec::from([
-                (regex!(r"__"), "consecutively"),
-                (regex!(r"^_"), "at the start of a number"),
-                (regex!(r"_$"), "at the end of a number"),
-            ]),
-            ast::NodeKind::Int,
-            ast::NodeKind::UnknownInt,
-        )*/
-
         match parse_int(tok.src(self.src)) {
             Ok(int) => self.alloc(ast::Node::new(ast::NodeKind::Int(int), tok.span)),
             Err(errors) => {

@@ -1,5 +1,7 @@
 use std::io;
 
+use bumpalo::collections::Vec as BumpVec;
+
 use crate::{
     ast::{self, NodeRef, symbol::Symbolic},
     pretty::{self, AnsiColor, Pretty},
@@ -28,6 +30,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Loop { .. } => f.write("Loop"),
             While { .. } => f.write("While Loop"),
             For { .. } => f.write("For Loop"),
+            FuncSig { .. } => f.write("Function Signature"),
+            Func { .. } => f.write("Function"),
             Block(e) if e.is_empty() => f.write("Empty Block"),
             Parens(_) => f.write("Parentheses"),
             Block(_) => f.write("Block"),
@@ -130,6 +134,15 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .named("Iterable", *iter)
                 .named("Body", *body)
                 .finish(),
+            FuncSig { params, ret } => pretty::Builder::new()
+                .named("Parameters", *params)
+                .named("Return Type", ret)
+                .finish(),
+            Func { name, sig, body } => pretty::Builder::new()
+                .named("Name", name)
+                .named("Signature", *sig)
+                .named("Body", body)
+                .finish(),
             Use { path } => pretty::Builder::new().named("Path", *path).finish(),
             Parens(elems) | Block(elems) => elems.children(),
             Pair { lhs, rhs } => {
@@ -157,6 +170,20 @@ impl<'a, B: io::Write, T: Symbolic> Pretty<'a, B> for T {
 }
 
 impl<'a, B: io::Write> Pretty<'a, B> for Vec<NodeRef<'a>> {
+    fn fmt_title<'w>(&self, f: &mut pretty::Formatter<'w, B>) -> pretty::Result {
+        f.write(if self.is_empty() { "Empty List" } else { "List" })
+    }
+
+    fn color(&self) -> Option<AnsiColor> {
+        if self.is_empty() { Some(AnsiColor::Gray) } else { None }
+    }
+
+    fn children(&self) -> pretty::ChildNodes<'a, B> {
+        self.iter().map(|node| pretty::Node::unnamed(*node)).collect()
+    }
+}
+
+impl<'a, B: io::Write> Pretty<'a, B> for BumpVec<'a, NodeRef<'a>> {
     fn fmt_title<'w>(&self, f: &mut pretty::Formatter<'w, B>) -> pretty::Result {
         f.write(if self.is_empty() { "Empty List" } else { "List" })
     }

@@ -1,13 +1,10 @@
-use std::{env, fs, mem};
+use std::{env, fs};
 
 use bumpalo::Bump;
 
 use crate::{
-    error::Diagnostics,
-    lexer::Lexer,
-    parser::Parser,
-    timing::Stopwatch,
-    token::{Token, kind::TokenKind},
+    error::Diagnostics, lexer::Lexer, parser::Parser, timing::Stopwatch,
+    token::kind::TokenKind,
 };
 
 pub mod ast;
@@ -22,88 +19,96 @@ pub mod token;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     let file = if cfg!(debug_assertions) { "io/test.se" } else { "io/huge_errorless.se" };
+    let src = fs::read_to_string(file)?;
 
     if !cfg!(debug_assertions) && args[1..].contains(&"iter".to_string()) {
+        compile(file.to_string(), &src)?;
+        println!("Cold run\n");
+
         const K: u64 = 25;
         let mut total_loc_per_s = 0;
+        let mut total_mb_per_s = 0;
         for i in 0..K {
-            let loc_per_s = compile(file)?;
+            let (loc_per_s, mb_per_s) = compile(file.to_string(), &src)?;
             total_loc_per_s += loc_per_s;
-            println!("{} LOC/s", loc_per_s);
+            total_mb_per_s += mb_per_s;
             println!("{} / {}\n", i + 1, K);
         }
         println!("--- TOTAL ---");
-        println!("{} LOC/s", total_loc_per_s / K);
+        println!("{} LOC/s; {} MB/s", total_loc_per_s / K, total_mb_per_s / K);
     } else {
-        let loc_per_s = compile(file)?;
-        println!("{} LOC/s", loc_per_s);
+        compile(file.to_string(), &src)?;
     }
 
     Ok(())
 }
 
-fn compile(file: &str) -> Result<u64, Box<dyn std::error::Error>> {
+fn compile(file: String, src: &str) -> Result<(u64, u64), Box<dyn std::error::Error>> {
+    let mut ast_arena = Bump::with_capacity(16_000_000);
+    let mut diag = Diagnostics::new(file, &src);
+
     let mut watch = Stopwatch::start();
+    {
+        let tokens = {
+            let tokens = Lexer::new(&src, &mut diag).lex();
 
-    let src = fs::read_to_string(file)?;
-    let token_arena = Bump::new();
-    let ast_arena = Bump::new();
-    let mut diag = Diagnostics::new(file.to_string(), &src);
+            // For debugging
+            if cfg!(debug_assertions) {
+                fs::write("io/tokens.txt", {
+                    tokens
+                        .clone()
+                        .into_iter()
+                        .map(|tok| {
+                            format!(
+                                "{}{:?}<{:?}> = `{}`",
+                                if tok.kind.is_unknown() { "!! " } else { "" },
+                                tok.kind,
+                                tok.span,
+                                tok.debug_src(&src),
+                            )
+                        })
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                })?;
+            }
 
-    watch.split("File Reading");
+            tokens
+        };
 
-    let tokens = {
-        let tokens = Lexer::new(&src, &mut diag).lex();
+        watch.split("Lexing");
 
-        // For debugging
-        if cfg!(debug_assertions) {
-            fs::write("io/tokens.txt", {
-                tokens
-                    .clone()
-                    .into_iter()
-                    .map(|tok| {
-                        format!(
-                            "{}{:?}<{:?}> = `{}`",
-                            if tok.kind.is_unknown() { "!! " } else { "" },
-                            tok.kind,
-                            tok.span,
-                            tok.debug_src(&src),
-                        )
-                    })
-                    .collect::<Vec<_>>()
-                    .join("\n")
-            })?;
-        }
+        let ast = {
+            let ast = Parser::new(&src, &tokens, &mut diag, &ast_arena).parse();
 
-        tokens
-    };
+            if cfg!(debug_assertions) {
+                pretty::write_file("io/ast.txt".to_string(), &ast)?;
+                pretty::print(&ast)?;
 
-    watch.split("Lexing");
+                println!();
+                diag.print();
+            }
+            ast
+        };
 
-    let ast = {
-        let ast = Parser::new(&src, &tokens, &mut diag, &ast_arena).parse();
+        watch.split("Parsing");
 
-        if cfg!(debug_assertions) {
-            pretty::write_file("io/ast.txt".to_string(), &ast)?;
-            // pretty::print(&ast)?;
+        drop(tokens);
+        watch.split("Token Stream Deallocation");
+    }
 
-            println!();
-            diag.print();
-        }
-        ast
-    };
-
-    watch.split("Parsing");
-
-    drop(tokens);
-    drop(token_arena);
-    watch.split("Token Stream Deallocation");
-
-    drop(ast); // temporarily
-    drop(ast_arena);
+    ast_arena.reset();
     watch.split("AST Deallocation");
 
     let line_count = src.chars().filter(|&c| c == '\n').count();
-    let loc_per_s = (line_count as f64 / watch.dump().as_secs_f64()) as u64;
-    Ok(loc_per_s)
+    let byte_count = src.len();
+
+    let total = watch.dump();
+    let loc_per_s = (line_count as f64 / total.as_secs_f64()) as u64;
+    let mb_per_s = (byte_count as f64 / 1_000_000f64 / total.as_secs_f64()) as u64;
+    println!(
+        "{} LOC/s; {} MB/s ({} LOC / {} MB total)",
+        loc_per_s, mb_per_s, line_count, byte_count
+    );
+
+    Ok((loc_per_s, mb_per_s))
 }

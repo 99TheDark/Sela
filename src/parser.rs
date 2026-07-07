@@ -1,5 +1,6 @@
 pub mod atoms;
 pub mod control;
+pub mod functions;
 pub mod groups;
 pub mod numbers;
 pub mod operators;
@@ -8,7 +9,7 @@ pub mod ranges;
 pub mod text;
 pub mod variables;
 
-use bumpalo::Bump;
+use bumpalo::{Bump, collections::Vec as BumpVec};
 
 use crate::{
     ast::{self, binary::BinaryKind, range::RangeKind, unop::UnOpKind},
@@ -141,6 +142,7 @@ where
             Loop => self.parse_loop(tok),
             While => self.parse_while(tok),
             For => self.parse_for(tok),
+            Func => self.parse_func(tok),
             Use => self.parse_use(tok),
             Charm => self.alloc(ast::Node::new(ast::NodeKind::Charm, tok.span)),
             NoChar => todo!(),
@@ -192,11 +194,11 @@ where
         left
     }
 
-    pub fn parse_stmts<F>(&mut self, should_exit: F) -> Vec<ast::NodeRef<'ast>>
+    pub fn parse_stmts<F>(&mut self, should_exit: F) -> BumpVec<'ast, ast::NodeRef<'ast>>
     where
         F: Fn(Token) -> bool,
     {
-        let mut stmts = Vec::new();
+        let mut stmts = BumpVec::new_in(self.arena);
         loop {
             self.eat_nls();
             if self.peek().is_eof() {
@@ -213,8 +215,7 @@ where
         stmts
     }
 
-    pub fn parse(mut self) -> Vec<ast::NodeRef<'ast>> {
-        let stmts = self.parse_stmts(|_| false);
-        stmts
+    pub fn parse(mut self) -> BumpVec<'ast, ast::NodeRef<'ast>> {
+        self.parse_stmts(|_| false)
     }
 }

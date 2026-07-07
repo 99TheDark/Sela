@@ -47,7 +47,14 @@ loop {
     }
 }
 
-let x = 1249_08329408140121__95_2;
+let x = 1249_08329408140121__95_2
+
+func add(a: Int, b: Int) -> Int { a + b }
+
+func apply(x, y: Int) -> Int {
+    let res = x(y)
+    res
+}
 
 /*ab
 /*cd*/ef /*ghij /*klmno/*pqr*/stuvwxyz*/*/ ÷

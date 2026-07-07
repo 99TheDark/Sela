@@ -1,4 +1,4 @@
-use std::str;
+use std::{hint, str};
 
 use smallvec::SmallVec;
 
@@ -134,40 +134,54 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         );
 
         use TokenKind::*;
-        match ident {
-            "let" => Let,
-            "const" => Const,
-            "mut" => Mut,
-            "type" => Type,
-            "enum" => Enum,
-            "class" => Class,
-            "idea" => Idea,
-            "func" => Func,
-            "mod" => Mod,
-            "pub" => Pub,
-            "inn" => Inn,
-            "pri" => Pri,
-            "if" => If,
-            "else" => Else,
-            "loop" => Loop,
-            "while" => While,
-            "for" => For,
-            "match" => Match,
-            "break" => Break,
-            "continue" => Cont,
-            "return" => Ret,
-            "self" => LSelf,
-            "Self" => BSelf,
-            "macro" => Macro,
-            "use" => Use,
-            "charm" => Charm,
-            "as" => As,
-            "true" => True,
-            "false" => False,
-            "in" => In,
-            "and" => And,
-            "or" => Or,
-            _ => Ident,
+        match ident.len() {
+            2 => match ident {
+                "if" => If,
+                "as" => As,
+                "in" => In,
+                "or" => Or,
+                _ => Ident,
+            },
+            3 => match ident {
+                "let" => Let,
+                "mut" => Mut,
+                "mod" => Mod,
+                "pub" => Pub,
+                "inn" => Inn,
+                "pri" => Pri,
+                "for" => For,
+                "use" => Use,
+                "and" => And,
+                _ => Ident,
+            },
+            4 => match ident {
+                "type" => Type,
+                "enum" => Enum,
+                "idea" => Idea,
+                "func" => Func,
+                "else" => Else,
+                "loop" => Loop,
+                "self" => LSelf,
+                "Self" => BSelf,
+                "true" => True,
+                _ => Ident,
+            },
+            5 => match ident {
+                "const" => Const,
+                "class" => Class,
+                "while" => While,
+                "match" => Match,
+                "break" => Break,
+                "macro" => Macro,
+                "charm" => Charm,
+                "false" => False,
+                _ => Ident,
+            },
+            _ => match ident {
+                "return" => Ret,
+                "continue" => Cont,
+                _ => Ident,
+            },
         }
     }
 
@@ -242,6 +256,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
 
         while let Some(ch) = self.peek() {
             if ch == '\n' {
+                hint::cold_path();
                 return UntermQuot;
             }
 
@@ -310,6 +325,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             }
 
             if ch.is_none() {
+                hint::cold_path();
                 return false;
             }
         }
@@ -369,7 +385,12 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                     self.next();
                     let terminated = self.block_comment();
 
-                    if terminated { BlockComment } else { UntermComment }
+                    if terminated {
+                        BlockComment
+                    } else {
+                        hint::cold_path();
+                        UntermComment
+                    }
                 }
                 Some('=') => {
                     self.next();
@@ -469,6 +490,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 tokens.push(Token::new(kind, Span::new(start, self.idx)));
             }
             if self.just_exited {
+                hint::cold_path();
                 let start = self.idx;
                 self.just_exited = false;
                 tokens.push(Token::new(self.string(), Span::new(start, self.idx)));
