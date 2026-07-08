@@ -19,6 +19,7 @@ pub mod symbol;
 pub mod unop;
 
 // Maybe also split up Span, with a structure with two arenas just for that
+#[derive(Copy, Clone)]
 pub struct Node<'a> {
     pub kind: NodeKind<'a>,
     pub span: Span,
@@ -47,7 +48,7 @@ impl<'a> fmt::Debug for Node<'a> {
 // TODO: Use bumpalo references instead; `BinOp(&'ast ast::BinOpData<'ast>),`
 // Allows for fixed-size (~8 byte data + 8 byte tag) `NodeKind`s and thus 24-bye `Node`s
 // Does add indirection, however
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 pub enum NodeKind<'a> {
     Ident(&'a str),
     BinOp { lhs: NodeRef<'a>, op: BinOpKind, rhs: NodeRef<'a> },
