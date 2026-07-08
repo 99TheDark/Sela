@@ -2,6 +2,7 @@ pub mod comments;
 pub mod filtering;
 pub mod numbers;
 pub mod text;
+pub mod vectorized;
 pub mod words;
 
 use std::{hint, str};

@@ -62,6 +62,7 @@ impl<'a> Diagnostics<'a> {
         }
     }
 
+    #[inline]
     pub fn emit(&mut self, kind: ErrorKind, message: String, span: Span) {
         self.errors.push(Error { kind, message, span });
     }
@@ -112,6 +113,11 @@ impl<'a> Diagnostics<'a> {
         }
 
         left_pad
+    }
+
+    #[inline]
+    pub fn error_count(&self) -> usize {
+        self.errors.len()
     }
 
     pub fn print(self) {

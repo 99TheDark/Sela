@@ -16,7 +16,7 @@ impl WordLegal for u8 {
 
 impl<'tok, 'src> Lexer<'tok, 'src> {
     pub(super) fn ident_or_keyword(&self) -> NextToken {
-        let len = self.eat_until(1, |&b| !b.word_legal());
+        let len = self.eat_ident_simd(1);
         let ident = &self.bytes[self.idx..self.idx + len];
 
         use TokenKind::*;
