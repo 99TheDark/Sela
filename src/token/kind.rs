@@ -153,6 +153,10 @@ impl TokenKind {
         self == Self::Unknown
     }
 
+    pub const fn is_comment(&self) -> bool {
+        matches!(self, Self::LineComment | Self::BlockComment | Self::UntermComment)
+    }
+
     pub const fn is_invalid(&self) -> bool {
         use TokenKind::*;
         matches!(

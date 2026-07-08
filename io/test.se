@@ -1,4 +1,4 @@
-ab+
+/*ab+
 true-12_.__345_e-8
 
 let function ≠ ∫(&v)dx
@@ -54,8 +54,34 @@ func add(a: Int, b: Int) -> Int { a + b }
 func apply(x, y: Int) -> Int {
     let res = x(y)
     res
+}*/
+
+-123.986a7bbQ9e+78x.54
+
+3-&!2
+
+"\$(a)b$(c)"
+
+"abc $("def $("ghi") jkl") mno" + "pqrst$" % "$()"
+
+let i = 0
+let x = -10 + 5 * 3
+let b = true and false or !true
+let s = "-10 + 5 * 3 = $(x + 3 | true as Int) btw. $5" // comment btw
+let char = 'A' + '\n' - ''
+
+i += 1
+i *= 100_000_000
+
+i >>= x << 3 | 2
+
+use std.io
+'abc: for j in 0..<1004 {
+    io.print(j)
 }
 
 /*ab
 /*cd*/ef /*ghij /*klmno/*pqr*/stuvwxyz*/*/ ÷
-*//*
+*//**/
+
+//

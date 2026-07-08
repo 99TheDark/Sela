@@ -9,19 +9,19 @@ use crate::{
 };
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub enum TokenFilterMode {
+pub enum OldTokenFilterMode {
     WhitespaceAndComments,
     Whitespace,
     None,
 }
 
-impl Default for TokenFilterMode {
+impl Default for OldTokenFilterMode {
     fn default() -> Self {
         Self::WhitespaceAndComments
     }
 }
 
-impl TokenFilterMode {
+impl OldTokenFilterMode {
     pub fn ignores_comments(self) -> bool {
         self == Self::WhitespaceAndComments
     }
@@ -31,20 +31,21 @@ impl TokenFilterMode {
     }
 }
 
-pub struct Lexer<'tok, 'src> {
+// 415ms for 3.5MLOC / 55MB
+pub struct SlowLexer<'tok, 'src> {
     src: &'src str,
     diag: &'tok mut Diagnostics<'src>,
     idx: u32,
     interp_stack: SmallVec<[usize; 2]>,
     just_exited: bool,
-    filter_mode: TokenFilterMode,
+    filter_mode: OldTokenFilterMode,
 }
 
-impl<'tok, 'src> Lexer<'tok, 'src> {
+impl<'tok, 'src> SlowLexer<'tok, 'src> {
     pub fn new_with_mode(
         src: &'src str,
         diag: &'tok mut Diagnostics<'src>,
-        filter_mode: TokenFilterMode,
+        filter_mode: OldTokenFilterMode,
     ) -> Self {
         Self {
             src,
@@ -57,7 +58,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     }
 
     pub fn new(src: &'src str, diag: &'tok mut Diagnostics<'src>) -> Self {
-        Self::new_with_mode(src, diag, TokenFilterMode::WhitespaceAndComments)
+        Self::new_with_mode(src, diag, OldTokenFilterMode::WhitespaceAndComments)
     }
 
     pub fn next(&mut self) -> Option<char> {
@@ -496,6 +497,348 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 tokens.push(Token::new(self.string(), Span::new(start, self.idx)));
             }
         }
+        tokens
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct FilterMode {
+    ignore_comments: bool,
+    ignore_whitespace: bool,
+}
+
+impl Default for FilterMode {
+    fn default() -> Self {
+        Self::WHITESPACE_AND_COMMENTS
+    }
+}
+
+impl FilterMode {
+    pub const WHITESPACE_AND_COMMENTS: Self =
+        Self { ignore_comments: true, ignore_whitespace: true };
+
+    pub const WHITESPACE: Self = Self { ignore_comments: false, ignore_whitespace: true };
+
+    pub const NONE: Self = Self { ignore_comments: false, ignore_whitespace: false };
+
+    pub const fn ignore_comments(self) -> bool {
+        self.ignore_comments
+    }
+
+    pub const fn ignore_whitespace(self) -> bool {
+        self.ignore_whitespace
+    }
+}
+
+pub struct Lexer<'tok, 'src> {
+    bytes: &'tok [u8],
+    idx: usize,
+    diag: &'tok mut Diagnostics<'src>,
+    filter_mode: FilterMode,
+}
+
+const WINDOW_SIZE: usize = 4;
+type Window = [u8; WINDOW_SIZE];
+
+impl<'tok, 'src> Lexer<'tok, 'src> {
+    pub fn new_with_mode(
+        src: &'tok str,
+        diag: &'tok mut Diagnostics<'src>,
+        filter_mode: FilterMode,
+    ) -> Self {
+        Self { bytes: src.as_bytes(), idx: 0, diag, filter_mode }
+    }
+
+    pub fn new(src: &'tok str, diag: &'tok mut Diagnostics<'src>) -> Self {
+        Self { bytes: src.as_bytes(), idx: 0, diag, filter_mode: FilterMode::default() }
+    }
+
+    pub fn peek(&mut self) -> Option<u8> {
+        // TODO: Speed up
+        self.bytes.get(self.idx).copied()
+    }
+
+    pub fn peek_n(&mut self, n: usize) -> Option<u8> {
+        // TODO: Speed up
+        self.bytes.get(self.idx + n).copied()
+    }
+
+    pub fn skip(&mut self, n: usize) {
+        self.idx += n;
+    }
+
+    pub fn window(&self) -> Window {
+        if self.idx >= self.bytes.len() {
+            hint::cold_path();
+            return [0u8; 4];
+        }
+
+        let remaining = &self.bytes[self.idx..];
+        if let Some(window) = remaining.first_chunk::<WINDOW_SIZE>() {
+            *window
+        } else {
+            hint::cold_path();
+            let mut buf = [0u8; 4];
+            buf[..remaining.len()].copy_from_slice(remaining);
+            buf
+        }
+    }
+
+    fn should_filter(&self, kind: TokenKind) -> bool {
+        use TokenKind::*;
+        if self.filter_mode.ignore_whitespace() && kind == Whitespace {
+            true
+        } else if self.filter_mode.ignore_comments() && kind.is_comment() {
+            true
+        } else {
+            false
+        }
+    }
+
+    fn eat_until<P>(&self, skip: usize, predicate: P) -> usize
+    where
+        P: Fn(&u8) -> bool,
+    {
+        self.bytes[self.idx + skip..].iter().position(predicate).unwrap_or(0) + skip
+    }
+
+    fn line_comment(&self) -> usize {
+        self.eat_until(2, |&b| b == b'\n')
+    }
+
+    fn block_comment(&self) -> (TokenKind, usize) {
+        // TODO: Make SIMD by in chunks bitmasking all /* and */ and counting
+        let mut depth = 1;
+        let mut offset = 2;
+        while depth > 0 {
+            let Some((idx, depth_delta)) = self.bytes[self.idx + offset..]
+                .windows(2)
+                .enumerate()
+                .map(|(idx, window)| {
+                    let is_start = window == [b'/', b'*'];
+                    let is_end = window == [b'*', b'/'];
+                    (idx, is_start as i8 - is_end as i8)
+                })
+                .find(|&(_, delta)| delta != 0)
+            else {
+                return (TokenKind::UntermComment, self.bytes.len() - self.idx);
+            };
+
+            offset += idx + 2;
+            depth += depth_delta;
+
+            // This is a fatal error
+            if depth == i8::MAX {
+                // TODO: Emit error
+                return (TokenKind::Unknown, self.bytes.len() - self.idx);
+            }
+        }
+
+        (TokenKind::BlockComment, offset)
+    }
+
+    // Maybe make this into a two-part struct?
+    pub fn ident_or_keyword(&self) -> (TokenKind, usize) {
+        let len = self.eat_until(1, |&b| !matches!(b, b'a'..=b'z' | b'A'..=b'Z' | b'_'));
+        let ident = &self.bytes[self.idx..self.idx + len];
+
+        use TokenKind::*;
+        let kind = match len {
+            2 => match ident {
+                b"if" => If,
+                b"as" => As,
+                b"in" => In,
+                b"or" => Or,
+                _ => Ident,
+            },
+            3 => match ident {
+                b"let" => Let,
+                b"mut" => Mut,
+                b"mod" => Mod,
+                b"pub" => Pub,
+                b"inn" => Inn,
+                b"pri" => Pri,
+                b"for" => For,
+                b"use" => Use,
+                b"and" => And,
+                _ => Ident,
+            },
+            4 => match ident {
+                b"type" => Type,
+                b"enum" => Enum,
+                b"idea" => Idea,
+                b"func" => Func,
+                b"else" => Else,
+                b"loop" => Loop,
+                b"self" => LSelf,
+                b"Self" => BSelf,
+                b"true" => True,
+                _ => Ident,
+            },
+            5 => match ident {
+                b"const" => Const,
+                b"class" => Class,
+                b"while" => While,
+                b"match" => Match,
+                b"break" => Break,
+                b"macro" => Macro,
+                b"charm" => Charm,
+                b"false" => False,
+                _ => Ident,
+            },
+            _ => match ident {
+                b"return" => Ret,
+                b"continue" => Cont,
+                _ => Ident,
+            },
+        };
+
+        (kind, len)
+    }
+
+    pub fn number(&self) -> (TokenKind, usize) {
+        // Looks all the way to one byte ahead. Make sure to subtract 1 from offset.
+        let mut offset = 0;
+        let mut seen_dot = false;
+        let mut seen_exp = false;
+        let mut last_was_exp_sign = false;
+        for bytes in self.bytes[self.idx..].windows(2) {
+            match bytes {
+                [b'e' | b'E', b'+' | b'-'] => {
+                    last_was_exp_sign = true;
+                    seen_exp = true;
+                }
+                [b'e' | b'E', b'0'..=b'9' | b'_'] => {}
+                [b'e' | b'E', b'a'..=b'z' | b'A'..=b'Z'] => {}
+                [b'+' | b'-', _] if last_was_exp_sign => last_was_exp_sign = false,
+                [b'0'..=b'9' | b'_', _] => {}
+                [b'a'..=b'z' | b'A'..=b'Z', _] => {}
+                [b'.', b'0'..=b'9'] if !seen_dot => seen_dot = true,
+
+                _ => break,
+            }
+
+            offset += 1;
+        }
+
+        if self.idx + offset == self.bytes.len() - 1 {
+            let last_byte = self.bytes[self.idx + offset];
+            if matches!(last_byte, b'0'..=b'9' | b'_' | b'a'..=b'z' | b'A'..=b'Z') {
+                offset += 1;
+            }
+        }
+
+        if seen_dot || seen_exp {
+            (TokenKind::Float, offset)
+        } else {
+            (TokenKind::Int, offset)
+        }
+    }
+
+    pub fn lex_token_kind(&mut self) -> (TokenKind, usize) {
+        let window = self.window();
+
+        // Godbolt analysis confirms this is faster than searching an &[u8]
+        use TokenKind::*;
+        match window {
+            [b'\n', ..] => (NewLine, 1),
+
+            [b'+', b'=', ..] => (PlusEq, 2),
+            [b'+', ..] => (Plus, 1),
+
+            [b'-', b'=', ..] => (DashEq, 2),
+            [b'-', b'>', ..] => (Arrow, 2),
+            [b'-', ..] => (Dash, 1),
+
+            [b'*', b'=', ..] => (StarEq, 2),
+            [b'*', ..] => (Star, 1),
+
+            [b'/', b'=', ..] => (SlashEq, 2),
+            [b'/', b'/', ..] => (LineComment, self.line_comment()),
+            [b'/', b'*', ..] => self.block_comment(),
+            [b'/', ..] => (Slash, 1),
+
+            [b'%', b'=', ..] => (PctEq, 2),
+            [b'%', ..] => (Pct, 1),
+
+            [b'&', b'=', ..] => (AmpEq, 2),
+            [b'&', ..] => (Amp, 1),
+
+            [b'|', b'=', ..] => (BarEq, 2),
+            [b'|', ..] => (Bar, 1),
+
+            [b'^', b'=', ..] => (CaretEq, 2),
+            [b'^', ..] => (Caret, 1),
+
+            [b'(', ..] => (LParen, 1), // TODO: Track interp parens
+            [b')', ..] => (RParen, 1), // TODO: Track interp parens
+            [b'[', ..] => (LBrack, 1),
+            [b']', ..] => (RBrack, 1),
+            [b'{', ..] => (LBrace, 1),
+            [b'}', ..] => (RBrace, 1),
+
+            [b'@', ..] => (At, 1),
+            [b'$', ..] => (Dollar, 1),
+
+            [b'.', b'.', b'<', ..] => (DotDotLt, 3),
+            [b'.', b'.', b'=', ..] => (DotDotEq, 3),
+            [b'.', b'.', ..] => (DotDot, 2),
+            [b'.', ..] => (Dot, 1),
+            [b',', ..] => (Comma, 1),
+
+            [b':', ..] => (Colon, 1),
+            [b';', ..] => (Semi, 1),
+
+            [b'=', b'=', ..] => (EqEq, 2),
+            [b'=', ..] => (Eq, 1),
+
+            [b'>', b'>', b'=', ..] => (GtGtEq, 3),
+            [b'>', b'=', ..] => (GtEq, 2),
+            [b'>', b'>', ..] => (GtGt, 2),
+            [b'>', ..] => (Gt, 1),
+
+            [b'<', b'<', b'=', ..] => (LtLtEq, 3),
+            [b'<', b'=', ..] => (LtEq, 2),
+            [b'<', b'<', ..] => (LtLt, 2),
+            [b'<', ..] => (Lt, 1),
+
+            [b'!', b'=', ..] => (NotEq, 2),
+            [b'!', ..] => (Not, 1),
+
+            [b'\'', ..] => (Char, 1),  // TODO: Handle characters
+            [b'"', ..] => (String, 1), // TODO: Handle strings
+
+            [b'0', b'a'..=b'z' | b'A'..=b'Z', ..] => (Int, 2), // TODO: Handle radix numbers
+            [b'0'..=b'9', ..] => self.number(),
+
+            [b'a'..=b'z' | b'A'..=b'Z' | b'_', ..] => self.ident_or_keyword(),
+
+            // Fast SIMD whitespace??
+            [w, ..] if w.is_ascii_whitespace() => (Whitespace, 1),
+
+            // Make sure to catch
+            _ => (Unknown, 1), // TODO: Throw an error
+        }
+    }
+
+    pub fn lex(mut self) -> Vec<Token> {
+        // Maybe switch to Arena + BumpVec?
+        let mut tokens = Vec::new();
+        while let Some(byte) = self.peek() {
+            let start = self.idx;
+
+            if !byte.is_ascii() {
+                panic!("I will implement non-ascii eating later...");
+            }
+
+            let (kind, len) = self.lex_token_kind();
+            self.idx += len;
+
+            if !self.should_filter(kind) {
+                tokens.push(Token::new(kind, Span::new(start as u32, self.idx as u32)));
+            }
+        }
+
         tokens
     }
 }

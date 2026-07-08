@@ -1,6 +1,7 @@
 # To do
 - Implement forced parens on operators
 - Unary plus?
+- Ensure file size is reasonable for lexer/parser peeking not to overflow integers
 - `mmap` large files and otherwise don't
 - Make error printer automatically wrap lines
 - Add complexity to errors (contextual regions, like where borrows occur, the start and end of a function, etc)
