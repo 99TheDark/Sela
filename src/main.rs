@@ -27,6 +27,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     };
     let src = fs::read_to_string(file)?;
 
+    // TODO: Move to a testing suite, handle medium 100x + large 10x
     if !cfg!(debug_assertions) && args[1..].contains(&"iter".to_string()) {
         const COLD_RUNS: u64 = 3;
         const WARN_RUNS: u64 = 100; // 10 for huge, 100 for medium

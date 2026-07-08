@@ -3,6 +3,7 @@ pub mod filtering;
 pub mod numbers;
 pub mod text;
 pub mod vectorized;
+pub mod whitespace;
 pub mod words;
 
 use std::{hint, str};
@@ -175,7 +176,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             [b'a'..=b'z' | b'A'..=b'Z' | b'_', ..] => self.ident_or_keyword(),
 
             // Fast SIMD whitespace??
-            [w, ..] if w.is_ascii_whitespace() => (Whitespace, 1),
+            [w, ..] if w.is_ascii_whitespace() => (Whitespace, self.whitespace()),
 
             // Make sure to catch
             _ => (Unknown, 1), // TODO: Throw an error
