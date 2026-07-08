@@ -1,5 +1,7 @@
+use std::simd::{cmp::SimdPartialEq, mask8x16, u8x16};
+
 use crate::{
-    lexer::{Lexer, NextToken},
+    lexer::{Lexer, NextToken, vectorized::SimdRange},
     token::kind::TokenKind,
 };
 
@@ -15,8 +17,15 @@ impl WordLegal for u8 {
 }
 
 impl<'tok, 'src> Lexer<'tok, 'src> {
+    fn ident_simd_chunk(bytes: u8x16) -> mask8x16 {
+        bytes.simd_in_range(b'a'..=b'z')
+            | bytes.simd_in_range(b'A'..=b'Z')
+            | bytes.simd_eq(u8x16::splat(b'_'))
+            | bytes.simd_in_range(b'0'..=b'9')
+    }
+
     pub(super) fn ident_or_keyword(&self) -> NextToken {
-        let len = self.eat_ident_simd(1);
+        let len = self.eat_until_simd(1, Self::ident_simd_chunk, |&b| !b.word_legal());
         let ident = &self.bytes[self.idx..self.idx + len];
 
         use TokenKind::*;

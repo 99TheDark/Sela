@@ -175,7 +175,11 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
 
             [b'a'..=b'z' | b'A'..=b'Z' | b'_', ..] => self.ident_or_keyword(),
 
-            // Fast SIMD whitespace??
+            [b' ', b' ', b' ', b' '] => (Whitespace, 4),
+            [b'\t', b'\t', b'\t', b'\t'] => (Whitespace, 4),
+            [b' ', b' ', b' ', _] => (Whitespace, 4),
+            [b'\t', b'\t', b'\t', _] => (Whitespace, 4),
+
             [w, ..] if w.is_ascii_whitespace() => (Whitespace, self.whitespace()),
 
             // Make sure to catch
