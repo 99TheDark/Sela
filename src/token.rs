@@ -8,7 +8,7 @@ use crate::{
 pub mod kind;
 pub mod precedence;
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, PartialEq, Eq)]
 pub struct Token {
     pub kind: TokenKind,
     pub span: Span,

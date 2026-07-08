@@ -1,2 +1,2 @@
 # Sela
-Still on a very similar syntax path as the original Qi with similar feature ideas, though ever-evolving. The former got way too hard to develop so I'm going in for a rewrite. I'm taking it a lot more slow and steady.
+Still on a very similar syntax path as the original Qi with similar feature ideas, though ever-evolving. The former got way too hard to develop so I'm going in for a rewrite. I'm taking it a lot more slow and steady. It is coming out very readable, and my rewrite of my lexer and parser combined got me from 3MLOC/s to 11MLOC/s!

@@ -5,59 +5,62 @@ List
 │  │  ├─ Operator: Add (+)
 │  │  └─ Right-hand Side: Boolean (true)
 │  ├─ Operator: Subtract (-)
-│  └─ Right-hand Side: <! Unknown Floating-Point Number !>
+│  └─ Right-hand Side: Member Access
+│     ├─ Parent: Integer (12)
+│     └─ Child: Identifier (__)
+├─ <! Unknown Floating-Point Number !>
 ├─ Declaration
-│  ├─ Pattern: Identifier (function)
-│  └─ Value: Invocation
-│     ├─ Callee: <! Unknown !>
-│     └─ Arguments: Parentheses
-│        └─ Unary Operation
-│           ├─ Operator: Reference (&)
-│           └─ Right-hand Side: Identifier (v)
-├─ Identifier (dx)
-├─ Declaration
-│  ├─ Pattern: Pair
-│  │  ├─ Left: Identifier (k)
-│  │  └─ Right: Identifier (Int)
-│  └─ Value: Binary Operation
-│     ├─ Left-hand Side: Binary Operation
-│     │  ├─ Left-hand Side: Integer (3)
-│     │  ├─ Operator: Subtract (-)
-│     │  └─ Right-hand Side: Integer (2)
-│     ├─ Operator: Add (+)
-│     └─ Right-hand Side: Binary Operation
-│        ├─ Left-hand Side: Integer (7)
-│        ├─ Operator: Multiply (*)
-│        └─ Right-hand Side: Integer (8)
+│  ├─ Pattern: Invocation
+│  │  ├─ Callee: Identifier (function)
+│  │  └─ Arguments: Parentheses
+│  │     └─ Unary Operation
+│  │        ├─ Operator: Reference (&)
+│  │        └─ Right-hand Side: Identifier (v)
+│  └─ Value: Declaration
+│     ├─ Pattern: Pair
+│     │  ├─ Left: Identifier (k)
+│     │  └─ Right: Identifier (Int)
+│     └─ Value: Binary Operation
+│        ├─ Left-hand Side: Binary Operation
+│        │  ├─ Left-hand Side: Integer (3)
+│        │  ├─ Operator: Subtract (-)
+│        │  └─ Right-hand Side: Integer (2)
+│        ├─ Operator: Add (+)
+│        └─ Right-hand Side: Binary Operation
+│           ├─ Left-hand Side: Integer (7)
+│           ├─ Operator: Multiply (*)
+│           └─ Right-hand Side: Integer (8)
 ├─ Unary Operation
 │  ├─ Operator: Negate (-)
 │  └─ Right-hand Side: Integer (2)
 ├─ Declaration
-│  ├─ Pattern: Identifier (a1)
+│  ├─ Pattern: Identifier (a)
 │  └─ Value: Binary Operation
 │     ├─ Left-hand Side: Binary Operation
 │     │  ├─ Left-hand Side: Binary Operation
 │     │  │  ├─ Left-hand Side: Binary Operation
 │     │  │  │  ├─ Left-hand Side: Binary Operation
 │     │  │  │  │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  ├─ Left-hand Side: Parentheses
-│     │  │  │  │  │  │  └─ Binary Operation
-│     │  │  │  │  │  │     ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  │     │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  │     │  │  ├─ Left-hand Side: Parentheses
-│     │  │  │  │  │  │     │  │  │  └─ Binary Operation
-│     │  │  │  │  │  │     │  │  │     ├─ Left-hand Side: Integer (0)
-│     │  │  │  │  │  │     │  │  │     ├─ Operator: Subtract (-)
-│     │  │  │  │  │  │     │  │  │     └─ Right-hand Side: Integer (1)
-│     │  │  │  │  │  │     │  │  ├─ Operator: Multiply (*)
-│     │  │  │  │  │  │     │  │  └─ Right-hand Side: Integer (2)
-│     │  │  │  │  │  │     │  ├─ Operator: Add (+)
-│     │  │  │  │  │  │     │  └─ Right-hand Side: Binary Operation
-│     │  │  │  │  │  │     │     ├─ Left-hand Side: Integer (5)
-│     │  │  │  │  │  │     │     ├─ Operator: Divide (/)
-│     │  │  │  │  │  │     │     └─ Right-hand Side: Integer (6)
-│     │  │  │  │  │  │     ├─ Operator: Add (+)
-│     │  │  │  │  │  │     └─ Right-hand Side: Integer (0)
+│     │  │  │  │  │  ├─ Left-hand Side: Invocation
+│     │  │  │  │  │  │  ├─ Callee: <! Unknown !>
+│     │  │  │  │  │  │  └─ Arguments: Parentheses
+│     │  │  │  │  │  │     └─ Binary Operation
+│     │  │  │  │  │  │        ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │        │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │        │  │  ├─ Left-hand Side: Parentheses
+│     │  │  │  │  │  │        │  │  │  └─ Binary Operation
+│     │  │  │  │  │  │        │  │  │     ├─ Left-hand Side: Integer (0)
+│     │  │  │  │  │  │        │  │  │     ├─ Operator: Subtract (-)
+│     │  │  │  │  │  │        │  │  │     └─ Right-hand Side: Integer (1)
+│     │  │  │  │  │  │        │  │  ├─ Operator: Multiply (*)
+│     │  │  │  │  │  │        │  │  └─ Right-hand Side: Integer (2)
+│     │  │  │  │  │  │        │  ├─ Operator: Add (+)
+│     │  │  │  │  │  │        │  └─ Right-hand Side: Binary Operation
+│     │  │  │  │  │  │        │     ├─ Left-hand Side: Integer (5)
+│     │  │  │  │  │  │        │     ├─ Operator: Divide (/)
+│     │  │  │  │  │  │        │     └─ Right-hand Side: Integer (6)
+│     │  │  │  │  │  │        ├─ Operator: Add (+)
+│     │  │  │  │  │  │        └─ Right-hand Side: Integer (0)
 │     │  │  │  │  │  ├─ Operator: Multiply (*)
 │     │  │  │  │  │  └─ Right-hand Side: Parentheses
 │     │  │  │  │  │     └─ Binary Operation
@@ -115,7 +118,8 @@ List
 │     ├─ Operator: Or (or)
 │     └─ Right-hand Side: Unary Operation
 │        ├─ Operator: Not (!)
-│        └─ Right-hand Side: Identifier (a1)
+│        └─ Right-hand Side: Identifier (a)
+├─ Integer (1)
 ├─ Use
 │  └─ Path: Member Access
 │     ├─ Parent: Identifier (std)
@@ -256,7 +260,7 @@ List
 │           └─ Assignment
 │              ├─ Pattern: Identifier (x)
 │              ├─ Assigner: Addition Assignment (+=)
-│              └─ Value: Floating-Point Number (200000000)
+│              └─ Value: <! Unknown Integer !>
 ├─ Declaration
 │  ├─ Pattern: Identifier (x)
 │  └─ Value: <! Unknown Integer !>

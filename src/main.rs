@@ -3,10 +3,7 @@ use std::{env, fs};
 use bumpalo::Bump;
 
 use crate::{
-    error::Diagnostics,
-    lexer::{Lexer, SlowLexer},
-    parser::Parser,
-    timing::Stopwatch,
+    error::Diagnostics, lexer::Lexer, parser::Parser, timing::Stopwatch,
     token::kind::TokenKind,
 };
 
@@ -24,64 +21,29 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let file = if cfg!(debug_assertions) { "io/test.se" } else { "io/huge_errorless.se" };
     let src = fs::read_to_string(file)?;
 
-    let mut diag1 = Diagnostics::new(file.to_string(), &src);
-    let tokens1 =
-        SlowLexer::new_with_mode(&src, &mut diag1, lexer::OldTokenFilterMode::None).lex();
-
-    let mut diag2 = Diagnostics::new(file.to_string(), &src);
-    let tokens2 = Lexer::new_with_mode(&src, &mut diag2, lexer::FilterMode::NONE).lex();
-
-    fs::write("io/tokens.txt", {
-        tokens1
-            .clone()
-            .into_iter()
-            .map(|tok| {
-                format!(
-                    "{}{:?}<{:?}> = `{}`",
-                    if tok.kind.is_unknown() { "!! " } else { "" },
-                    tok.kind,
-                    tok.span,
-                    tok.debug_src(&src),
-                )
-            })
-            .collect::<Vec<_>>()
-            .join("\n")
-    })?;
-
-    fs::write("io/tokens_new.txt", {
-        tokens2
-            .clone()
-            .into_iter()
-            .map(|tok| {
-                format!(
-                    "{}{:?}<{:?}> = `{}`",
-                    if tok.kind.is_unknown() { "!! " } else { "" },
-                    tok.kind,
-                    tok.span,
-                    tok.debug_src(&src),
-                )
-            })
-            .collect::<Vec<_>>()
-            .join("\n")
-    })?;
-
-    return Ok(());
-
     if !cfg!(debug_assertions) && args[1..].contains(&"iter".to_string()) {
-        compile(file.to_string(), &src)?;
-        println!("Cold run\n");
+        const COLD_RUNS: u64 = 3;
+        const WARN_RUNS: u64 = 10;
 
-        const K: u64 = 25;
+        for i in 0..COLD_RUNS {
+            compile(file.to_string(), &src)?;
+            println!("Cold run {} / {}\n", i + 1, COLD_RUNS);
+        }
+
         let mut total_loc_per_s = 0;
         let mut total_mb_per_s = 0;
-        for i in 0..K {
+        for i in 0..WARN_RUNS {
             let (loc_per_s, mb_per_s) = compile(file.to_string(), &src)?;
             total_loc_per_s += loc_per_s;
             total_mb_per_s += mb_per_s;
-            println!("{} / {}\n", i + 1, K);
+            println!("Warm run {} / {}\n", i + 1, WARN_RUNS);
         }
         println!("--- TOTAL ---");
-        println!("{} LOC/s; {} MB/s", total_loc_per_s / K, total_mb_per_s / K);
+        println!(
+            "{} LOC/s; {} MB/s",
+            total_loc_per_s / WARN_RUNS,
+            total_mb_per_s / WARN_RUNS
+        );
     } else {
         compile(file.to_string(), &src)?;
     }
@@ -90,13 +52,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn compile(file: String, src: &str) -> Result<(u64, u64), Box<dyn std::error::Error>> {
-    let mut ast_arena = Bump::with_capacity(16_000_000);
+    let mut ast_arena = Bump::new();
     let mut diag = Diagnostics::new(file, &src);
 
     let mut watch = Stopwatch::start();
     {
         let tokens = {
-            let tokens = SlowLexer::new(&src, &mut diag).lex();
+            let tokens = Lexer::new(&src, &mut diag).lex();
 
             // For debugging
             if cfg!(debug_assertions) {

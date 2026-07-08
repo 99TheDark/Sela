@@ -2,7 +2,7 @@ On my machine (M1 Macbook Air, Apple Silicon, 8GB RAM Unified), all files in ful
 
 |Language|MLOC/s|MB/s|
 |-|-|-|
-|Sela|8.01|125|
+|Sela|11.0|347|
 |Oxc|7.16|129|
 |Rust|0.799|14.0|
 |Rust Macroless|1.08|18.9|
