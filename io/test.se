@@ -58,6 +58,9 @@ func apply(x, y: Int) -> Int {
 
 -123.986a7bbQ9e+78x.54
 
+' abc def\'\\\n \ \" 
+'' '\'b\''
+
 3-&!2
 
 "\$(a)b$(c)"

@@ -146,7 +146,7 @@ where
             Use => self.parse_use(tok),
             Charm => self.alloc(ast::Node::new(ast::NodeKind::Charm, tok.span)),
             NoChar => todo!(),
-            UntermQuot => todo!(),
+            UntermChar => todo!(),
             UntermQuotEsc => todo!(),
             UntermStr => todo!(),
             Unknown => self.alloc(ast::Node::new(ast::NodeKind::Unknown, tok.span)),

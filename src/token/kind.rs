@@ -8,6 +8,7 @@ pub enum TokenKind {
     BlockComment,
     Ident,
     Int,
+    RadixInt,
     Float,
     Char,
     String,
@@ -113,7 +114,7 @@ pub enum TokenKind {
 
     NoChar,        //\\ ''
     UntermComment, //\\ /* blah blah
-    UntermQuot,
+    UntermChar,
     UntermQuotEsc,
     UntermStr,
 
@@ -165,7 +166,7 @@ impl TokenKind {
                 | EOF
                 | NoChar
                 | UntermComment
-                | UntermQuot
+                | UntermChar
                 | UntermQuotEsc
                 | UntermStr
         )

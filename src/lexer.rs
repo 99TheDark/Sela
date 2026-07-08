@@ -233,7 +233,7 @@ impl<'tok, 'src> SlowLexer<'tok, 'src> {
         use TokenKind::*;
 
         let Some(ch) = self.next() else {
-            return UntermQuot;
+            return UntermChar;
         };
 
         match ch {
@@ -250,7 +250,7 @@ impl<'tok, 'src> SlowLexer<'tok, 'src> {
 
                 return if self.try_consume('\'') { Char } else { Annot };
             }
-            '\n' => return UntermQuot,
+            '\n' => return UntermChar,
             '\'' => return NoChar,
             _ => {}
         }
@@ -258,7 +258,7 @@ impl<'tok, 'src> SlowLexer<'tok, 'src> {
         while let Some(ch) = self.peek() {
             if ch == '\n' {
                 hint::cold_path();
-                return UntermQuot;
+                return UntermChar;
             }
 
             self.next();
@@ -553,21 +553,21 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         Self { bytes: src.as_bytes(), idx: 0, diag, filter_mode: FilterMode::default() }
     }
 
-    pub fn peek(&mut self) -> Option<u8> {
+    fn peek(&mut self) -> Option<u8> {
         // TODO: Speed up
         self.bytes.get(self.idx).copied()
     }
 
-    pub fn peek_n(&mut self, n: usize) -> Option<u8> {
+    fn peek_n(&mut self, n: usize) -> Option<u8> {
         // TODO: Speed up
         self.bytes.get(self.idx + n).copied()
     }
 
-    pub fn skip(&mut self, n: usize) {
+    fn skip(&mut self, n: usize) {
         self.idx += n;
     }
 
-    pub fn window(&self) -> Window {
+    fn window(&self) -> Window {
         if self.idx >= self.bytes.len() {
             hint::cold_path();
             return [0u8; 4];
@@ -638,7 +638,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     }
 
     // Maybe make this into a two-part struct?
-    pub fn ident_or_keyword(&self) -> (TokenKind, usize) {
+    fn ident_or_keyword(&self) -> (TokenKind, usize) {
         let len = self.eat_until(1, |&b| !matches!(b, b'a'..=b'z' | b'A'..=b'Z' | b'_'));
         let ident = &self.bytes[self.idx..self.idx + len];
 
@@ -696,7 +696,14 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         (kind, len)
     }
 
-    pub fn number(&self) -> (TokenKind, usize) {
+    fn radix_int(&self) -> usize {
+        self.eat_until(
+            2,
+            |&b| !matches!(b, b'0'..=b'9' | b'_' | b'a'..=b'z' | b'A'..=b'Z'),
+        )
+    }
+
+    fn number(&self) -> (TokenKind, usize) {
         // Looks all the way to one byte ahead. Make sure to subtract 1 from offset.
         let mut offset = 0;
         let mut seen_dot = false;
@@ -733,6 +740,45 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         } else {
             (TokenKind::Int, offset)
         }
+    }
+
+    fn char_or_lifetime(&self) -> (TokenKind, usize) {
+        // Gives 1 if this is the last character
+        let remaining = self.bytes.len() - self.idx;
+        if remaining == 1 {
+            return (TokenKind::UntermChar, 1);
+        }
+
+        let can_be_annot = match &self.bytes[self.idx + 1] {
+            b'\n' => return (TokenKind::UntermChar, 2),
+            b'\'' => return (TokenKind::NoChar, 2),
+            b if b.is_ascii_whitespace() => false,
+            _ => true,
+        };
+
+        let mut offset = 2;
+        let kind = 'eater: {
+            for bytes in self.bytes[self.idx + 1..].windows(2) {
+                match bytes {
+                    [_, ws] if can_be_annot && ws.is_ascii_whitespace() => {
+                        break 'eater TokenKind::Annot;
+                    }
+                    [_, b'\n'] => break 'eater TokenKind::UntermChar,
+                    [b'\\', b'\''] => {}
+                    [_, b'\''] => {
+                        offset += 1;
+                        break 'eater TokenKind::Char;
+                    }
+                    _ => {}
+                }
+
+                offset += 1;
+            }
+
+            TokenKind::UntermChar
+        };
+
+        (kind, offset)
     }
 
     pub fn lex_token_kind(&mut self) -> (TokenKind, usize) {
@@ -805,10 +851,12 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             [b'!', b'=', ..] => (NotEq, 2),
             [b'!', ..] => (Not, 1),
 
-            [b'\'', ..] => (Char, 1),  // TODO: Handle characters
+            [b'\'', ..] => self.char_or_lifetime(),
             [b'"', ..] => (String, 1), // TODO: Handle strings
 
-            [b'0', b'a'..=b'z' | b'A'..=b'Z', ..] => (Int, 2), // TODO: Handle radix numbers
+            [b'0', b'a'..=b'z' | b'A'..=b'Z', ..] => {
+                (TokenKind::RadixInt, self.radix_int())
+            }
             [b'0'..=b'9', ..] => self.number(),
 
             [b'a'..=b'z' | b'A'..=b'Z' | b'_', ..] => self.ident_or_keyword(),
