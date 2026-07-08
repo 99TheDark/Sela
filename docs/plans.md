@@ -13,5 +13,5 @@ The precedence between domains is always set as Standard > Comparative > Logical
 An enum can be subset via `.()`. For example, `read_file()` may return `Result[String, FileError.(Read, Permission)]` and no other `FileError` needs to be matched. Similarly, you can have granular/partial borrows via something like `&mut x.(a, b)`, `&x.(b, mut c)`, `&mut x.d`. This allows for greater flexibility. This is similarly used for multiselection in something like `use charm.ship.(Ship, Direction)`.
 
 ## Implicit Coercion
-- Widening (UInt32 -> UInt64, Int16 -> UInt32, Int32 -> Float64)
-- String interpolation ("Hello, I am $(age) years old.")
+- Widening (`UInt32` -> `UInt64`, `Int16` -> `UInt32`, `Int32` -> `Float64`)
+- String interpolation (`"Hello, I am $(age) years old."`)

@@ -1,6 +1,8 @@
 # Current Decisions
 All keywords, operators, and types currently decided to exist in the Sela programming language. These must currently be used somewhere in example code even if the feature's use is highly likely to be adapted, unless its use is guaranteed (like the modulus operator). Decisions may—and often will—be overturned on this document. Not every potential feature used will be documented here as currently definite.
 
+I have not been using this doc lately I'll be honest...
+
 ## Keywords
 |Name|Keyword|Name|Keyword|Name|Keyword|
 |-|-|-|-|-|-|
