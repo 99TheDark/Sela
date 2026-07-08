@@ -62,10 +62,12 @@ where
     }
 
     // There must be a way to make this more performant...
+    #[inline(always)]
     pub fn eat_nls(&mut self) {
         self.eat_until(|tok| tok.is_nl());
     }
 
+    #[inline(always)]
     pub fn eat_line(&mut self) {
         self.eat_until(|tok| !tok.is_nl());
     }
@@ -105,6 +107,7 @@ where
         tok
     }
 
+    #[inline(always)]
     pub fn peek_prec(&self) -> Precedence {
         self.tokens.get(self.idx).map_or(Precedence::None, |tok| tok.led_prec())
     }

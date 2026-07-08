@@ -2,6 +2,5 @@
 .DS_Store
 flamegraph.svg
 docs/design
-io/huge_errorless.se
-io/huge.se
+io/tests
 src/core/atomic_bit_array.rs

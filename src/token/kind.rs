@@ -177,6 +177,7 @@ impl TokenKind {
         matches!(self, RParen | RBrack | RBrace | NewLine | Comma | Eq | EOF)
     }
 
+    #[inline(always)]
     pub const fn nud_prec(&self) -> Precedence {
         use TokenKind::*;
         match self {
@@ -186,6 +187,7 @@ impl TokenKind {
         }
     }
 
+    #[inline(always)]
     pub const fn led_prec(&self) -> Precedence {
         use TokenKind::*;
         match self {

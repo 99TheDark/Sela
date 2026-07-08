@@ -9,12 +9,14 @@ where
     'src: 'ast,
     'src: 'tok,
 {
+    #[inline]
     pub(super) fn parse_loop(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let lbrace = self.expect(TokenKind::LBrace);
         let body = self.parse_block(lbrace);
         self.alloc(ast::Node::new(ast::NodeKind::Loop { body }, tok.span.to(body.span)))
     }
 
+    #[inline]
     pub(super) fn parse_while(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let cond = self.parse_expr(Precedence::None);
         let lbrace = self.expect(TokenKind::LBrace);
@@ -25,6 +27,7 @@ where
         ))
     }
 
+    #[inline]
     pub(super) fn parse_for(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let vari = self.parse_expr(Precedence::None);
         self.expect(TokenKind::In);
@@ -37,6 +40,7 @@ where
         ))
     }
 
+    #[inline]
     pub(super) fn parse_if(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let cond = self.parse_expr(Precedence::None);
         let lbrace = self.expect(TokenKind::LBrace);

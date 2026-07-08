@@ -1,14 +1,16 @@
 List
 ├─ Binary Operation
 │  ├─ Left-hand Side: Binary Operation
-│  │  ├─ Left-hand Side: Identifier (ab)
-│  │  ├─ Operator: Add (+)
-│  │  └─ Right-hand Side: Boolean (true)
+│  │  ├─ Left-hand Side: Binary Operation
+│  │  │  ├─ Left-hand Side: Identifier (ab)
+│  │  │  ├─ Operator: Add (+)
+│  │  │  └─ Right-hand Side: Boolean (true)
+│  │  ├─ Operator: Subtract (-)
+│  │  └─ Right-hand Side: Member Access
+│  │     ├─ Parent: Integer (12)
+│  │     └─ Child: Identifier (__345_e)
 │  ├─ Operator: Subtract (-)
-│  └─ Right-hand Side: Member Access
-│     ├─ Parent: Integer (12)
-│     └─ Child: Identifier (__)
-├─ <! Unknown Floating-Point Number !>
+│  └─ Right-hand Side: Integer (8)
 ├─ Declaration
 │  ├─ Pattern: Invocation
 │  │  ├─ Callee: Identifier (function)
@@ -34,33 +36,31 @@ List
 │  ├─ Operator: Negate (-)
 │  └─ Right-hand Side: Integer (2)
 ├─ Declaration
-│  ├─ Pattern: Identifier (a)
+│  ├─ Pattern: Identifier (a1)
 │  └─ Value: Binary Operation
 │     ├─ Left-hand Side: Binary Operation
 │     │  ├─ Left-hand Side: Binary Operation
 │     │  │  ├─ Left-hand Side: Binary Operation
 │     │  │  │  ├─ Left-hand Side: Binary Operation
 │     │  │  │  │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  ├─ Left-hand Side: Invocation
-│     │  │  │  │  │  │  ├─ Callee: <! Unknown !>
-│     │  │  │  │  │  │  └─ Arguments: Parentheses
-│     │  │  │  │  │  │     └─ Binary Operation
-│     │  │  │  │  │  │        ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  │        │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  │        │  │  ├─ Left-hand Side: Parentheses
-│     │  │  │  │  │  │        │  │  │  └─ Binary Operation
-│     │  │  │  │  │  │        │  │  │     ├─ Left-hand Side: Integer (0)
-│     │  │  │  │  │  │        │  │  │     ├─ Operator: Subtract (-)
-│     │  │  │  │  │  │        │  │  │     └─ Right-hand Side: Integer (1)
-│     │  │  │  │  │  │        │  │  ├─ Operator: Multiply (*)
-│     │  │  │  │  │  │        │  │  └─ Right-hand Side: Integer (2)
-│     │  │  │  │  │  │        │  ├─ Operator: Add (+)
-│     │  │  │  │  │  │        │  └─ Right-hand Side: Binary Operation
-│     │  │  │  │  │  │        │     ├─ Left-hand Side: Integer (5)
-│     │  │  │  │  │  │        │     ├─ Operator: Divide (/)
-│     │  │  │  │  │  │        │     └─ Right-hand Side: Integer (6)
-│     │  │  │  │  │  │        ├─ Operator: Add (+)
-│     │  │  │  │  │  │        └─ Right-hand Side: Integer (0)
+│     │  │  │  │  │  ├─ Left-hand Side: Parentheses
+│     │  │  │  │  │  │  └─ Binary Operation
+│     │  │  │  │  │  │     ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │     │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │     │  │  ├─ Left-hand Side: Parentheses
+│     │  │  │  │  │  │     │  │  │  └─ Binary Operation
+│     │  │  │  │  │  │     │  │  │     ├─ Left-hand Side: Integer (0)
+│     │  │  │  │  │  │     │  │  │     ├─ Operator: Subtract (-)
+│     │  │  │  │  │  │     │  │  │     └─ Right-hand Side: Integer (1)
+│     │  │  │  │  │  │     │  │  ├─ Operator: Multiply (*)
+│     │  │  │  │  │  │     │  │  └─ Right-hand Side: Integer (2)
+│     │  │  │  │  │  │     │  ├─ Operator: Add (+)
+│     │  │  │  │  │  │     │  └─ Right-hand Side: Binary Operation
+│     │  │  │  │  │  │     │     ├─ Left-hand Side: Integer (5)
+│     │  │  │  │  │  │     │     ├─ Operator: Divide (/)
+│     │  │  │  │  │  │     │     └─ Right-hand Side: Integer (6)
+│     │  │  │  │  │  │     ├─ Operator: Add (+)
+│     │  │  │  │  │  │     └─ Right-hand Side: Integer (0)
 │     │  │  │  │  │  ├─ Operator: Multiply (*)
 │     │  │  │  │  │  └─ Right-hand Side: Parentheses
 │     │  │  │  │  │     └─ Binary Operation
@@ -118,8 +118,7 @@ List
 │     ├─ Operator: Or (or)
 │     └─ Right-hand Side: Unary Operation
 │        ├─ Operator: Not (!)
-│        └─ Right-hand Side: Identifier (a)
-├─ Integer (1)
+│        └─ Right-hand Side: Identifier (a1)
 ├─ Use
 │  └─ Path: Member Access
 │     ├─ Parent: Identifier (std)
@@ -280,20 +279,207 @@ List
 │        ├─ Left-hand Side: Identifier (a)
 │        ├─ Operator: Add (+)
 │        └─ Right-hand Side: Identifier (b)
+├─ Function
+│  ├─ Name: Some Identifier (apply)
+│  ├─ Signature: Function Signature
+│  │  ├─ Parameters: Parentheses
+│  │  │  ├─ Identifier (x)
+│  │  │  └─ Pair
+│  │  │     ├─ Left: Identifier (y)
+│  │  │     └─ Right: Identifier (Int)
+│  │  └─ Return Type: Some Identifier (Int)
+│  └─ Body: Some Block
+│     ├─ Declaration
+│     │  ├─ Pattern: Identifier (res)
+│     │  └─ Value: Invocation
+│     │     ├─ Callee: Identifier (x)
+│     │     └─ Arguments: Parentheses
+│     │        └─ Identifier (y)
+│     └─ Identifier (res)
+├─ Use
+│  └─ Path: Member Access
+│     ├─ Parent: Identifier (std)
+│     └─ Child: Identifier (io)
+├─ Use
+│  └─ Path: Member Access
+│     ├─ Parent: Charm
+│     └─ Child: Identifier (ship)
+├─ Declaration
+│  ├─ Pattern: Identifier (init_state)
+│  └─ Value: Integer (1)
+├─ Function
+│  ├─ Name: Some Identifier (task_worker_0)
+│  ├─ Signature: Function Signature
+│  │  ├─ Parameters: Parentheses
+│  │  │  ├─ Pair
+│  │  │  │  ├─ Left: Identifier (bounds_0_a)
+│  │  │  │  └─ Right: Identifier (Int)
+│  │  │  └─ Pair
+│  │  │     ├─ Left: Identifier (payload_0_b)
+│  │  │     └─ Right: Identifier (Int)
+│  │  └─ Return Type: Some Identifier (Int)
+│  └─ Body: Some Block
+│     ├─ Declaration
+│     │  ├─ Pattern: Identifier (status_flag)
+│     │  └─ Value: Binary Operation
+│     │     ├─ Left-hand Side: Identifier (bounds_0_a)
+│     │     ├─ Operator: Add (+)
+│     │     └─ Right-hand Side: Identifier (payload_0_b)
+│     ├─ Declaration
+│     │  ├─ Pattern: Identifier (threshold)
+│     │  └─ Value: Integer (500)
+│     ├─ Declaration
+│     │  ├─ Pattern: Identifier (modifier)
+│     │  └─ Value: Binary Operation
+│     │     ├─ Left-hand Side: Parentheses
+│     │     │  └─ Binary Operation
+│     │     │     ├─ Left-hand Side: Integer (94)
+│     │     │     ├─ Operator: Multiply (*)
+│     │     │     └─ Right-hand Side: Integer (22)
+│     │     ├─ Operator: Multiply (*)
+│     │     └─ Right-hand Side: Integer (100)
+│     ├─ Assignment
+│     │  ├─ Pattern: Identifier (threshold)
+│     │  ├─ Assigner: Assignment (=)
+│     │  └─ Value: Binary Operation
+│     │     ├─ Left-hand Side: Identifier (threshold)
+│     │     ├─ Operator: Add (+)
+│     │     └─ Right-hand Side: Identifier (modifier)
+│     ├─ If Statement
+│     │  ├─ Condition: Comparison
+│     │  │  ├─ Left-hand Side: Identifier (status_flag)
+│     │  │  ├─ Comparator: Greater Than (>)
+│     │  │  └─ Right-hand Side: Integer (25)
+│     │  ├─ Then Body: Block
+│     │  │  └─ Assignment
+│     │  │     ├─ Pattern: Identifier (status_flag)
+│     │  │     ├─ Assigner: Assignment (=)
+│     │  │     └─ Value: Binary Operation
+│     │  │        ├─ Left-hand Side: Identifier (status_flag)
+│     │  │        ├─ Operator: Add (+)
+│     │  │        └─ Right-hand Side: Integer (1)
+│     │  └─ Else Body: Some Block
+│     │     └─ Assignment
+│     │        ├─ Pattern: Identifier (status_flag)
+│     │        ├─ Assigner: Assignment (=)
+│     │        └─ Value: Binary Operation
+│     │           ├─ Left-hand Side: Identifier (status_flag)
+│     │           ├─ Operator: Subtract (-)
+│     │           └─ Right-hand Side: Integer (1)
+│     └─ Identifier (status_flag)
+├─ Function
+│  ├─ Name: Some Identifier (task_worker_1)
+│  ├─ Signature: Function Signature
+│  │  ├─ Parameters: Parentheses
+│  │  │  ├─ Pair
+│  │  │  │  ├─ Left: Identifier (session_1_a)
+│  │  │  │  └─ Right: Identifier (Int)
+│  │  │  └─ Pair
+│  │  │     ├─ Left: Identifier (shader_1_b)
+│  │  │     └─ Right: Identifier (Int)
+│  │  └─ Return Type: Some Identifier (Int)
+│  └─ Body: Some Block
+│     ├─ Declaration
+│     │  ├─ Pattern: Identifier (status_flag)
+│     │  └─ Value: Binary Operation
+│     │     ├─ Left-hand Side: Identifier (session_1_a)
+│     │     ├─ Operator: Add (+)
+│     │     └─ Right-hand Side: Identifier (shader_1_b)
+│     ├─ Declaration
+│     │  ├─ Pattern: Identifier (threshold)
+│     │  └─ Value: Integer (500)
+│     ├─ Declaration
+│     │  ├─ Pattern: Identifier (modifier)
+│     │  └─ Value: Binary Operation
+│     │     ├─ Left-hand Side: Parentheses
+│     │     │  └─ Binary Operation
+│     │     │     ├─ Left-hand Side: Integer (90)
+│     │     │     ├─ Operator: Subtract (-)
+│     │     │     └─ Right-hand Side: Integer (27)
+│     │     ├─ Operator: Subtract (-)
+│     │     └─ Right-hand Side: Integer (98)
+│     ├─ Assignment
+│     │  ├─ Pattern: Identifier (threshold)
+│     │  ├─ Assigner: Assignment (=)
+│     │  └─ Value: Binary Operation
+│     │     ├─ Left-hand Side: Identifier (threshold)
+│     │     ├─ Operator: Add (+)
+│     │     └─ Right-hand Side: Identifier (modifier)
+│     ├─ If Statement
+│     │  ├─ Condition: Comparison
+│     │  │  ├─ Left-hand Side: Identifier (status_flag)
+│     │  │  ├─ Comparator: Greater Than (>)
+│     │  │  └─ Right-hand Side: Integer (24)
+│     │  ├─ Then Body: Block
+│     │  │  └─ Assignment
+│     │  │     ├─ Pattern: Identifier (status_flag)
+│     │  │     ├─ Assigner: Assignment (=)
+│     │  │     └─ Value: Binary Operation
+│     │  │        ├─ Left-hand Side: Identifier (status_flag)
+│     │  │        ├─ Operator: Add (+)
+│     │  │        └─ Right-hand Side: Integer (1)
+│     │  └─ Else Body: Some Block
+│     │     └─ Assignment
+│     │        ├─ Pattern: Identifier (status_flag)
+│     │        ├─ Assigner: Assignment (=)
+│     │        └─ Value: Binary Operation
+│     │           ├─ Left-hand Side: Identifier (status_flag)
+│     │           ├─ Operator: Subtract (-)
+│     │           └─ Right-hand Side: Integer (1)
+│     └─ Identifier (status_flag)
 └─ Function
-   ├─ Name: Some Identifier (apply)
+   ├─ Name: Some Identifier (task_worker_2)
    ├─ Signature: Function Signature
    │  ├─ Parameters: Parentheses
-   │  │  ├─ Identifier (x)
+   │  │  ├─ Pair
+   │  │  │  ├─ Left: Identifier (gamma_2_a)
+   │  │  │  └─ Right: Identifier (Int)
    │  │  └─ Pair
-   │  │     ├─ Left: Identifier (y)
+   │  │     ├─ Left: Identifier (render_2_b)
    │  │     └─ Right: Identifier (Int)
    │  └─ Return Type: Some Identifier (Int)
    └─ Body: Some Block
       ├─ Declaration
-      │  ├─ Pattern: Identifier (res)
-      │  └─ Value: Invocation
-      │     ├─ Callee: Identifier (x)
-      │     └─ Arguments: Parentheses
-      │        └─ Identifier (y)
-      └─ Identifier (res)
+      │  ├─ Pattern: Identifier (status_flag)
+      │  └─ Value: Binary Operation
+      │     ├─ Left-hand Side: Identifier (gamma_2_a)
+      │     ├─ Operator: Add (+)
+      │     └─ Right-hand Side: Identifier (render_2_b)
+      ├─ Declaration
+      │  ├─ Pattern: Identifier (threshold)
+      │  └─ Value: Integer (500)
+      ├─ Declaration
+      │  ├─ Pattern: Identifier (modifier)
+      │  └─ Value: Binary Operation
+      │     ├─ Left-hand Side: Integer (65)
+      │     ├─ Operator: Subtract (-)
+      │     └─ Right-hand Side: Integer (90)
+      ├─ Assignment
+      │  ├─ Pattern: Identifier (threshold)
+      │  ├─ Assigner: Assignment (=)
+      │  └─ Value: Binary Operation
+      │     ├─ Left-hand Side: Identifier (threshold)
+      │     ├─ Operator: Add (+)
+      │     └─ Right-hand Side: Identifier (modifier)
+      ├─ If Statement
+      │  ├─ Condition: Comparison
+      │  │  ├─ Left-hand Side: Identifier (status_flag)
+      │  │  ├─ Comparator: Greater Than (>)
+      │  │  └─ Right-hand Side: Integer (26)
+      │  ├─ Then Body: Block
+      │  │  └─ Assignment
+      │  │     ├─ Pattern: Identifier (status_flag)
+      │  │     ├─ Assigner: Assignment (=)
+      │  │     └─ Value: Binary Operation
+      │  │        ├─ Left-hand Side: Identifier (status_flag)
+      │  │        ├─ Operator: Add (+)
+      │  │        └─ Right-hand Side: Integer (1)
+      │  └─ Else Body: Some Block
+      │     └─ Assignment
+      │        ├─ Pattern: Identifier (status_flag)
+      │        ├─ Assigner: Assignment (=)
+      │        └─ Value: Binary Operation
+      │           ├─ Left-hand Side: Identifier (status_flag)
+      │           ├─ Operator: Subtract (-)
+      │           └─ Right-hand Side: Integer (1)
+      └─ Identifier (status_flag)

@@ -9,6 +9,7 @@ where
     'src: 'ast,
     'src: 'tok,
 {
+    #[inline]
     pub(super) fn parse_func(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let name = if self.peek().is(TokenKind::Ident) {
             let ident_tok = self.next();
