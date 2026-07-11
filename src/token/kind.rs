@@ -182,7 +182,7 @@ impl TokenKind {
         use TokenKind::*;
         match self {
             DotDot | DotDotLt | DotDotEq => Precedence::Range,
-            Dash | Star | Amp | Not => Precedence::Unary,
+            Plus | Dash | Star | Amp | Not => Precedence::Unary,
             _ => Precedence::None,
         }
     }

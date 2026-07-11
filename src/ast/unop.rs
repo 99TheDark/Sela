@@ -2,6 +2,7 @@ use crate::ast::symbol::{Symbol, Symbolic};
 
 #[derive(Debug, Copy, Clone)]
 pub enum UnOpKind {
+    Pos,
     Neg,
     Not,
     Ref,
@@ -20,6 +21,7 @@ impl Symbolic for UnOpKind {
     fn name(&self) -> &str {
         use UnOpKind::*;
         match self {
+            Pos => "Posit",
             Neg => "Negate",
             Not => "Not",
             Ref => "Reference",
@@ -31,6 +33,7 @@ impl Symbolic for UnOpKind {
     fn as_str(&self) -> &str {
         use UnOpKind::*;
         match self {
+            Pos => "+",
             Neg => "-",
             Not => "!",
             Ref => "&",

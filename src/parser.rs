@@ -124,6 +124,7 @@ where
             Char => self.parse_char(tok),
             String => self.parse_string(tok),
             Annot => todo!(),
+            Plus => self.parse_unop(tok, UnOpKind::Pos),
             Dash => self.parse_unop(tok, UnOpKind::Neg),
             Star => self.parse_unop(tok, UnOpKind::Deref),
             Amp => self.parse_unop(tok, UnOpKind::Ref),
