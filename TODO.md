@@ -5,7 +5,6 @@
 - Handle numbers like `00001230` gracefully as `1230` (no overflow, proper errors)
 - Abtract away arena alloc + preorder + idx + slice to a `Cursor<T>`
 - Handle ultra-wide errors and errors at the end of a line
-- Unary plus?
 - Remove unneeded crates
 - '\r\n' checking?
 - Crap I forgot to implement escape codes into strings
