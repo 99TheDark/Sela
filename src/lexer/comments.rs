@@ -12,6 +12,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
 
     pub(super) fn block_comment(&self) -> NextToken {
         // TODO: Make SIMD by in chunks bitmasking all /* and */ and counting
+        // If that even is faster since // SIMD wasn't faster, nor was whitespace...
         let mut depth = 1;
         let mut offset = 2;
         while depth > 0 {

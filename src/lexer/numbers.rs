@@ -25,11 +25,10 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 [b'+' | b'-', _] if just_saw_exp_sign => just_saw_exp_sign = false,
                 [b'0'..=b'9' | b'_', _] => {}
                 [b'a'..=b'z' | b'A'..=b'Z', _] => {}
-                [b'.', b'0'..=b'9'] if !seen_dot => seen_dot = true,
+                [b'.', b'0'..=b'9' | b'_'] if !seen_dot => seen_dot = true,
 
                 _ => break,
             }
-
             offset += 1;
         }
 

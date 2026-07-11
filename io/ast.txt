@@ -7,16 +7,11 @@ List
 │     └─ Right-hand Side: Identifier (Berwerr)
 ├─ Binary Operation
 │  ├─ Left-hand Side: Binary Operation
-│  │  ├─ Left-hand Side: Binary Operation
-│  │  │  ├─ Left-hand Side: Identifier (ab)
-│  │  │  ├─ Operator: Add (+)
-│  │  │  └─ Right-hand Side: Boolean (true)
-│  │  ├─ Operator: Subtract (-)
-│  │  └─ Right-hand Side: Member Access
-│  │     ├─ Parent: <! Unknown Integer !>
-│  │     └─ Child: Identifier (__345_e)
+│  │  ├─ Left-hand Side: Identifier (ab)
+│  │  ├─ Operator: Add (+)
+│  │  └─ Right-hand Side: Boolean (true)
 │  ├─ Operator: Subtract (-)
-│  └─ Right-hand Side: Integer (8)
+│  └─ Right-hand Side: Floating-Point Number (0)
 ├─ Declaration
 │  ├─ Pattern: Invocation
 │  │  ├─ Callee: Identifier (function)
@@ -303,78 +298,27 @@ List
 │     │        └─ Identifier (y)
 │     └─ Identifier (res)
 ├─ Declaration
-│  ├─ Pattern: Identifier (valid_dec)
-│  └─ Value: Integer (123456789)
-├─ <! Unknown !>
-├─ Declaration
-│  ├─ Pattern: Identifier (valid_hex)
-│  └─ Value: Integer (439041101)
-├─ <! Unknown !>
-├─ Declaration
-│  ├─ Pattern: Identifier (valid_oct)
-│  └─ Value: Integer (252499)
-├─ <! Unknown !>
-├─ Declaration
-│  ├─ Pattern: Identifier (valid_bin)
-│  └─ Value: Integer (165)
-├─ <! Unknown !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_under_start)
-│  └─ Value: Identifier (_999)
-├─ Declaration
-│  ├─ Pattern: Identifier (err_under_end)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_consecutive)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_post_radix)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_start_consec)
-│  └─ Value: Identifier (_12__34)
-├─ Declaration
-│  ├─ Pattern: Identifier (err_end_consec)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_start_end)
-│  └─ Value: Identifier (_1234_)
-├─ Declaration
-│  ├─ Pattern: Identifier (err_radix_consec)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_radix_end)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_all_underscores)
-│  └─ Value: Identifier (_0x__12__)
-├─ Declaration
-│  ├─ Pattern: Identifier (err_bad_radix)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_overflow)
-│  └─ Value: Integer (9223372036854775808)
-├─ Declaration
-│  ├─ Pattern: Identifier (err_massive_overflow)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_hex_outside_radix)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_bin_outside_radix)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_oct_outside_radix)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (err_dec_outside_radix)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (nightmare_radix)
-│  └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (oh_god)
-│  └─ Value: <! Unknown Integer !>
+│  ├─ Pattern: Identifier (x)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Binary Operation
+│     │  ├─ Left-hand Side: Floating-Point Number (0)
+│     │  ├─ Operator: Add (+)
+│     │  └─ Right-hand Side: Floating-Point Number (0)
+│     ├─ Operator: Subtract (-)
+│     └─ Right-hand Side: Floating-Point Number (0)
+├─ Binary Operation
+│  ├─ Left-hand Side: Binary Operation
+│  │  ├─ Left-hand Side: Binary Operation
+│  │  │  ├─ Left-hand Side: Binary Operation
+│  │  │  │  ├─ Left-hand Side: Floating-Point Number (0)
+│  │  │  │  ├─ Operator: Multiply (*)
+│  │  │  │  └─ Right-hand Side: Floating-Point Number (0)
+│  │  │  ├─ Operator: Add (+)
+│  │  │  └─ Right-hand Side: Floating-Point Number (0)
+│  │  ├─ Operator: Subtract (-)
+│  │  └─ Right-hand Side: Floating-Point Number (0)
+│  ├─ Operator: Add (+)
+│  └─ Right-hand Side: Floating-Point Number (0)
 └─ Invocation
    ├─ Callee: Member Access
    │  ├─ Parent: Identifier (io)

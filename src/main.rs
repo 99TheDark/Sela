@@ -23,7 +23,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let file = if cfg!(debug_assertions) {
         "io/current.se"
     } else {
-        "io/tests/yet_another_test.se"
+        "io/tests/huge_errorless_messy.se"
     };
     // Should I just read (no to_string?)
     let src = fs::read_to_string(file)?;

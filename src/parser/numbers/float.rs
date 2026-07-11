@@ -75,3 +75,8 @@ impl IsEmpty for ParsingError {
         self.0.is_empty()
     }
 }
+
+pub(super) fn parse_bytes(mut src: &[u8]) -> Result<f64, ParsingError> {
+    let mut errors = ParsingError::new();
+    todo!()
+}
