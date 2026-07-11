@@ -482,4 +482,4 @@ Ident<1891-1893> = `io`
 Dot<1893-1894> = `.`
 Ident<1894-1899> = `print`
 LParen<1899-1900> = `(`
-UntermStr<1900-1916> = `"Hello, world)*/`
+UntermStr<1900-1914> = `"Hello, world)`

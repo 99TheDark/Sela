@@ -168,7 +168,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             [b'!', ..] => (Not, 1),
 
             [b'\'', ..] => self.char_or_lifetime(),
-            [b'"', ..] => self.string(1),
+            [b'"', ..] => self.string(),
 
             [b'0', b'a'..=b'z' | b'A'..=b'Z', ..] => {
                 (TokenKind::RadixInt, self.radix_int())
@@ -187,7 +187,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     }
 
     pub fn lex(mut self) -> Vec<Token> {
-        let mut tokens = Vec::new();
+        let mut tokens = Vec::with_capacity(self.bytes.len() / 6); // 4 or 6, hard to say
         while let Some(byte) = self.peek() {
             let start = self.idx;
 

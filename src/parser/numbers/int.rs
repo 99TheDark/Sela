@@ -63,33 +63,34 @@ pub(super) fn parse_bytes(mut src: &[u8]) -> Result<u64, ParsingError> {
     }
 
     while let [byte, rest @ ..] = src {
-        'byte_match: {
-            match (byte, rest.get(0)) {
-                (b'_', Some(b'_')) => errors.raise(ErrorKind::UnderConsecutive),
-                (b'_', None) => errors.raise(ErrorKind::UnderEnd),
-                (b'_', _) => {}
-                (b'0'..=b'9', _) => {
-                    if errors.has(ErrorKind::TooLarge) {
-                        hint::cold_path();
-                        break 'byte_match;
-                    }
-
-                    let digit = byte - b'0';
-                    let new_result = result
-                        .checked_mul(10)
-                        .and_then(|result| result.checked_add(digit as u64));
-
-                    if let Some(new_result) = new_result {
-                        result = new_result;
-                    } else {
-                        errors.raise(ErrorKind::TooLarge);
-                    }
-                }
-                _ => errors.raise(ErrorKind::NonNumeric),
-            }
-        }
         src = &src[1..];
+        match (byte, rest.get(0)) {
+            (b'_', Some(b'_')) => errors.raise(ErrorKind::UnderConsecutive),
+            (b'_', None) => errors.raise(ErrorKind::UnderEnd),
+            (b'_', _) => {}
+            (b'0'..=b'9', _) => {
+                if errors.has(ErrorKind::TooLarge) {
+                    hint::cold_path();
+                    continue;
+                }
+
+                let digit = byte - b'0';
+
+                let new_result = result
+                    .checked_mul(10)
+                    .and_then(|result| result.checked_add(digit as u64));
+
+                if let Some(new_result) = new_result {
+                    result = new_result;
+                } else {
+                    hint::cold_path();
+                    errors.raise(ErrorKind::TooLarge);
+                }
+            }
+            _ => errors.raise(ErrorKind::NonNumeric),
+        }
     }
+    // let mut prev_byte = 0u8;
 
     if errors.is_empty() { Ok(result) } else { Err(errors) }
 }

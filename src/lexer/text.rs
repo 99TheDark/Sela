@@ -1,3 +1,5 @@
+use std::hint;
+
 use crate::{
     core::span::Span,
     lexer::{Lexer, NextToken, words::WordLegal},
@@ -79,10 +81,11 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         (kind, offset)
     }
 
-    pub(super) fn string(&mut self, mut offset: usize) -> NextToken {
+    pub(super) fn string(&mut self) -> NextToken {
+        let mut offset = 0;
         let broke = 'eater: {
             let mut just_saw_esc_dollar = false;
-            for bytes in self.bytes[self.idx + offset..].windows(2) {
+            for bytes in self.bytes[self.idx..].windows(2) {
                 match bytes {
                     [b'\\', b'"'] => {}
                     [_, b'"'] => {
@@ -105,6 +108,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         if broke {
             (TokenKind::String, offset)
         } else {
+            hint::cold_path();
             (TokenKind::UntermStr, self.bytes.len() - self.idx)
         }
     }
@@ -117,7 +121,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             );
             (tok, 1)
         } else {
-            let (kind, len) = self.string(0);
+            let (kind, len) = self.string();
             let span = Span::new(self.idx as u32, (self.idx + len) as u32);
             let tok = Token::new(kind, span);
             (tok, len)

@@ -11,7 +11,7 @@ mod float;
 mod int;
 mod radix_int;
 
-use std::{iter::zip, ops};
+use std::{hint, iter::zip, ops};
 
 use arrayvec::ArrayVec;
 use modular_bitfield::bitfield;
@@ -160,6 +160,7 @@ where
         match int::parse_bytes(tok.byte_src(self.src)) {
             Ok(val) => self.alloc_atom(ast::NodeKind::Int(val), tok),
             Err(errs) => {
+                hint::cold_path();
                 errs.0.emit(tok.span, &mut self.diag);
                 self.alloc_atom(ast::NodeKind::UnknownInt, tok)
             }
@@ -170,6 +171,7 @@ where
         match radix_int::parse_bytes(tok.byte_src(self.src)) {
             Ok(val) => self.alloc_atom(ast::NodeKind::Int(val), tok),
             Err(errs) => {
+                hint::cold_path();
                 errs.0.emit(tok.span, &mut self.diag);
                 self.alloc_atom(ast::NodeKind::UnknownInt, tok)
             }
@@ -177,6 +179,6 @@ where
     }
 
     pub(super) fn parse_float(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        todo!()
+        self.alloc_atom(ast::NodeKind::Float(0.0), tok)
     }
 }

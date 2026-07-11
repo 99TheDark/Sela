@@ -213,7 +213,7 @@ where
                 break;
             }
             if should_exit(self.peek()) {
-                self.next();
+                self.true_next();
                 break;
             }
 

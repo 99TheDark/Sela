@@ -1,1 +1,1 @@
-sudo cargo instruments --template "Time Profile" --release
+sudo cargo instruments --template "CPU Counters" --release

@@ -13,7 +13,8 @@
 - Ensure file size is reasonable for lexer/parser peeking not to overflow integers
 - `mmap` large files and otherwise don't
 - Make error printer automatically wrap lines
-- Add complexity to errors (contextual regions, like where borrows occur, the start and end of a function, etc)
+- Add complexity to errors (contextual regions, like where borrows occur, the start and end of a function, etc) 
+- Remove `hint::cold_path`s that do little to nothing
 - Better error escaping for incorrect tokens; e.g. `{ let a = }` should properly exit the block
     - Eat the entire line if the compiler gets really confused
 - Partial ranges

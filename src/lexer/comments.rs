@@ -1,3 +1,5 @@
+use std::hint;
+
 use crate::{
     lexer::{Lexer, NextToken},
     token::kind::TokenKind,
@@ -23,6 +25,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 })
                 .find(|&(_, delta)| delta != 0)
             else {
+                hint::cold_path();
                 return (TokenKind::UntermComment, self.bytes.len() - self.idx);
             };
 

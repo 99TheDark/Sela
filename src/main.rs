@@ -1,6 +1,6 @@
 #![feature(portable_simd)]
 
-use std::{env, fs};
+use std::{env, fs, mem};
 
 use bumpalo::Bump;
 
@@ -23,12 +23,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let file = if cfg!(debug_assertions) {
         "io/current.se"
     } else {
-        "io/tests/huge_errorless_messy.se"
+        "io/tests/yet_another_test.se"
     };
     // Should I just read (no to_string?)
     let src = fs::read_to_string(file)?;
 
-    // TODO: Move to a testing suite, handle medium 100x + large 10x
+    // TODO: Move to a testing suite
     if !cfg!(debug_assertions) && args[1..].contains(&"iter".to_string()) {
         const COLD_RUNS: u64 = 3;
         const WARN_RUNS: u64 = 10;
@@ -67,7 +67,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn compile(file: String, src: &str) -> Result<(u64, u64), pretty::Error> {
-    let mut ast_arena = Bump::new();
+    let mut ast_arena = Bump::with_capacity(src.len() / 4 * mem::size_of::<ast::Node>());
     let mut diag = Diagnostics::new(file, &src);
 
     let mut watch = Stopwatch::start();
