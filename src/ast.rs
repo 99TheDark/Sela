@@ -18,7 +18,6 @@ pub mod string;
 pub mod symbol;
 pub mod unop;
 
-// Maybe also split up Span, with a structure with two arenas just for that
 #[derive(Copy, Clone)]
 pub struct Node<'a> {
     pub kind: NodeKind<'a>,
@@ -58,7 +57,7 @@ pub enum NodeKind<'a> {
     UnOp { op: UnOpKind, rhs: NodeRef<'a> },
     Access { parent: NodeRef<'a>, child: NodeRef<'a> },
     Invoc { callee: NodeRef<'a>, args: NodeRef<'a> },
-    Int(i64),
+    Int(u64),
     Float(f64),
     Bool(bool),
     Char(char),

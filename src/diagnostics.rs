@@ -7,11 +7,20 @@ use unicode_segmentation::UnicodeSegmentation;
 use crate::{
     ast,
     core::span::Span,
-    error::utils::{Location, NumDigits},
+    diagnostics::utils::{Location, NumDigits},
 };
 
 pub const CONSOLE_WIDTH: usize = 80;
 
+pub enum Severity {
+    Error,
+    Warning,
+    // Hint,
+    // Note,
+}
+
+// TODO: Make error just have ErrorKind and Span(s) and make this use trait impls and variant data to store info for printing
+// Maybe subspans can be held in the structure? Also maybe use span arena and point some larger errors to other definitions
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum ErrorKind {
     Syntax,
@@ -63,10 +72,12 @@ impl<'a> Diagnostics<'a> {
     }
 
     #[inline]
+    #[cold]
     pub fn emit(&mut self, kind: ErrorKind, message: String, span: Span) {
         self.errors.push(Error { kind, message, span });
     }
 
+    #[cold]
     pub fn fail<'ast>(
         &mut self,
         kind: ErrorKind,

@@ -33,12 +33,16 @@ impl Span {
         Self { start: self.start - radius, end: self.end + radius }
     }
 
-    pub fn debug_src(self, src: &str) -> String {
-        src[self].replace('\n', "\\n")
-    }
-
     pub fn src<'a>(self, src: &'a str) -> &'a str {
         &src[self]
+    }
+
+    pub fn byte_src<'a>(&self, src: &'a str) -> &'a [u8] {
+        &src.as_bytes()[*self]
+    }
+
+    pub fn debug_src(self, src: &str) -> String {
+        src[self].replace('\n', "\\n")
     }
 
     // Assumes `to` is after `self`
@@ -55,6 +59,14 @@ impl fmt::Debug for Span {
 
 impl ops::Index<Span> for str {
     type Output = str;
+
+    fn index(&self, index: Span) -> &Self::Output {
+        &self[index.start as usize..index.end as usize]
+    }
+}
+
+impl ops::Index<Span> for [u8] {
+    type Output = [u8];
 
     fn index(&self, index: Span) -> &Self::Output {
         &self[index.start as usize..index.end as usize]

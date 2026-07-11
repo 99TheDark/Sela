@@ -12,7 +12,7 @@ use smallvec::SmallVec;
 
 use crate::{
     core::span::Span,
-    error::Diagnostics,
+    diagnostics::Diagnostics,
     lexer::filtering::FilterMode,
     token::{Token, kind::TokenKind},
 };
@@ -59,7 +59,6 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     }
 
     fn peek(&self) -> Option<u8> {
-        // TODO: Speed up
         self.bytes.get(self.idx).copied()
     }
 
@@ -84,7 +83,10 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     where
         P: Fn(&u8) -> bool,
     {
-        self.bytes[self.idx + skip..].iter().position(predicate).unwrap_or(0) + skip
+        self.bytes[self.idx + skip..]
+            .iter()
+            .position(predicate)
+            .map_or(self.bytes.len() - self.idx, |pos| pos + skip)
     }
 
     pub fn lex_token_kind(&mut self) -> NextToken {
@@ -182,13 +184,11 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
 
             [w, ..] if w.is_ascii_whitespace() => (Whitespace, self.whitespace()),
 
-            // Make sure to catch
             _ => (Unknown, 1), // TODO: Throw an error
         }
     }
 
     pub fn lex(mut self) -> Vec<Token> {
-        // Maybe switch to Arena + BumpVec?
         let mut tokens = Vec::new();
         while let Some(byte) = self.peek() {
             let start = self.idx;
@@ -213,7 +213,6 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 self.idx += len;
             }
         }
-
         tokens
     }
 }

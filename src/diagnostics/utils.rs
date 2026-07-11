@@ -1,4 +1,4 @@
-use crate::error::Diagnostics;
+use crate::diagnostics::Diagnostics;
 
 pub trait NumDigits {
     fn num_digits(self) -> u32;
@@ -23,13 +23,9 @@ impl Location {
 }
 
 impl<'a> Diagnostics<'a> {
-    /*pub(super) fn yellow(&self, s: String) -> String {
-        if self.with_color {
-            format!("\x1b[33m{}\x1b[0m", s)
-        } else {
-            s
-        }
-    }*/
+    // pub(super) fn yellow(&self, s: String) -> String {
+    //     if self.with_color { format!("\x1b[33m{}\x1b[0m", s) } else { s }
+    // }
 
     pub(super) fn red(&self, s: String) -> String {
         if self.with_color { format!("\x1b[31m{}\x1b[0m", s) } else { s }

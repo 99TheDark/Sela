@@ -1,6 +1,6 @@
 use crate::{
     ast::{self, range::RangeKind},
-    error::ErrorKind,
+    diagnostics::ErrorKind,
     parser::Parser,
     token::{Token, precedence::Precedence},
 };

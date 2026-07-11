@@ -25,6 +25,11 @@ impl Token {
     }
 
     #[inline(always)]
+    pub fn byte_src<'a>(&self, src: &'a str) -> &'a [u8] {
+        self.span.byte_src(src)
+    }
+
+    #[inline(always)]
     pub fn debug_src(&self, src: &str) -> String {
         self.span.debug_src(src)
     }

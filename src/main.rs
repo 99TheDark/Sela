@@ -5,13 +5,13 @@ use std::{env, fs};
 use bumpalo::Bump;
 
 use crate::{
-    error::Diagnostics, lexer::Lexer, parser::Parser, timing::Stopwatch,
+    diagnostics::Diagnostics, lexer::Lexer, parser::Parser, timing::Stopwatch,
     token::kind::TokenKind,
 };
 
 pub mod ast;
 pub mod core;
-pub mod error;
+pub mod diagnostics;
 pub mod lexer;
 pub mod parser;
 pub mod pretty;
@@ -25,32 +25,37 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         "io/tests/huge_errorless_messy.se"
     };
+    // Should I just read (no to_string?)
     let src = fs::read_to_string(file)?;
 
     // TODO: Move to a testing suite, handle medium 100x + large 10x
     if !cfg!(debug_assertions) && args[1..].contains(&"iter".to_string()) {
         const COLD_RUNS: u64 = 3;
-        const WARN_RUNS: u64 = 10; // 10 for huge, 100 for medium
+        const WARN_RUNS: u64 = 10;
 
-        for i in 0..COLD_RUNS {
-            compile(file.to_string(), &src)?;
-            println!("Cold run {} / {}\n", i + 1, COLD_RUNS);
-        }
+        std::thread::scope(|s| {
+            for i in 0..COLD_RUNS {
+                s.spawn(|| compile(file.to_string(), &src)).join().unwrap().unwrap();
+                println!("Cold run {} / {}\n", i + 1, COLD_RUNS);
+            }
 
-        let mut total_loc_per_s = 0;
-        let mut total_mb_per_s = 0;
-        for i in 0..WARN_RUNS {
-            let (loc_per_s, mb_per_s) = compile(file.to_string(), &src)?;
-            total_loc_per_s += loc_per_s;
-            total_mb_per_s += mb_per_s;
-            println!("Warm run {} / {}\n", i + 1, WARN_RUNS);
-        }
-        println!("--- TOTAL ---");
-        println!(
-            "{} LOC/s; {} MB/s",
-            total_loc_per_s / WARN_RUNS,
-            total_mb_per_s / WARN_RUNS
-        );
+            let mut total_loc_per_s = 0;
+            let mut total_mb_per_s = 0;
+            for i in 0..WARN_RUNS {
+                let (loc_per_s, mb_per_s) =
+                    s.spawn(|| compile(file.to_string(), &src)).join().unwrap().unwrap();
+                total_loc_per_s += loc_per_s;
+                total_mb_per_s += mb_per_s;
+                println!("Warm run {} / {}\n", i + 1, WARN_RUNS);
+            }
+
+            println!("--- TOTAL ---");
+            println!(
+                "{} LOC/s; {} MB/s",
+                total_loc_per_s / WARN_RUNS,
+                total_mb_per_s / WARN_RUNS
+            );
+        });
     } else {
         compile(file.to_string(), &src)?;
     }
@@ -58,7 +63,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn compile(file: String, src: &str) -> Result<(u64, u64), Box<dyn std::error::Error>> {
+fn compile(file: String, src: &str) -> Result<(u64, u64), pretty::Error> {
     let mut ast_arena = Bump::new();
     let mut diag = Diagnostics::new(file, &src);
 

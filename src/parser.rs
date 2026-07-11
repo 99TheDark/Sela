@@ -9,12 +9,14 @@ pub mod ranges;
 pub mod text;
 pub mod variables;
 
+use std::hint;
+
 use bumpalo::{Bump, collections::Vec as BumpVec};
 
 use crate::{
     ast::{self, binary::BinaryKind, range::RangeKind, unop::UnOpKind},
     core::span::Span,
-    error::{Diagnostics, ErrorKind},
+    diagnostics::{Diagnostics, ErrorKind},
     token::{Token, kind::TokenKind, precedence::Precedence},
 };
 
@@ -73,8 +75,7 @@ where
     }
 
     pub fn peek(&self) -> Token {
-        // Is this check even needed? Could we make this something else?
-        if self.idx < self.tokens.len() { self.tokens[self.idx] } else { self.eof_token }
+        *self.tokens.get(self.idx).unwrap_or(&self.eof_token)
     }
 
     pub fn next(&mut self) -> Token {
@@ -88,6 +89,7 @@ where
             self.idx += 1;
             tok
         } else {
+            hint::cold_path();
             self.eof_token
         }
     }
@@ -117,6 +119,7 @@ where
         match tok.kind {
             Ident => self.parse_ident(tok),
             Int => self.parse_int(tok),
+            RadixInt => self.parse_radix_int(tok),
             Float => self.parse_float(tok),
             Char => self.parse_char(tok),
             String => self.parse_string(tok),
@@ -205,6 +208,7 @@ where
         loop {
             self.eat_nls();
             if self.peek().is_eof() {
+                hint::cold_path();
                 break;
             }
             if should_exit(self.peek()) {

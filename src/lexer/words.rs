@@ -1,4 +1,7 @@
-use std::simd::{cmp::SimdPartialEq, mask8x16, u8x16};
+use std::{
+    hint,
+    simd::{cmp::SimdPartialEq, mask8x16, u8x16},
+};
 
 use crate::{
     lexer::{Lexer, NextToken, vectorized::SimdRange},
@@ -25,7 +28,19 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     }
 
     pub(super) fn ident_or_keyword(&self) -> NextToken {
-        let len = self.eat_until_simd(1, Self::ident_simd_chunk, |&b| !b.word_legal());
+        // Very gross but after much benchmarking it beats all offsets
+        // alongside never SIMD and always SIMD
+        let len = if let Some(byte) = self.bytes.get(self.idx + 4) {
+            if byte.word_legal() {
+                self.eat_until_simd(1, Self::ident_simd_chunk, |&b| !b.word_legal())
+            } else {
+                self.eat_until(1, |&b| !b.word_legal())
+            }
+        } else {
+            hint::cold_path();
+            self.eat_until(1, |&b| !b.word_legal())
+        };
+
         let ident = &self.bytes[self.idx..self.idx + len];
 
         use TokenKind::*;

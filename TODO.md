@@ -1,7 +1,14 @@
 # To do
 - Implement forced parens on operators
+- Make binary operators & funcs actually stop in time based on lines
+- Implement preorder parsing
+- Handle numbers like `00001230` gracefully as `1230` (no overflow, proper errors)
+- Abtract away arena alloc + preorder + idx + slice to a `Cursor<T>`
+- Handle ultra-wide errors and errors at the end of a line
 - Unary plus?
+- Remove unneeded crates
 - '\r\n' checking?
+- Crap I forgot to implement escape codes into strings
 - Ensure file size is reasonable for lexer/parser peeking not to overflow integers
 - `mmap` large files and otherwise don't
 - Make error printer automatically wrap lines
@@ -12,7 +19,4 @@
 - Implement parallellism for lexing + parsing + type signatures
 - Harvest type signatures (functions, types, aliases, classes, constants, etc) for a global pool
 - Use Cells to reserve spots for future arena allocs to be more cache-friendly when traversing
-- Decouple ast nodes and ast node data to preserve space
-- What happes if I insert non-UTF-8 characters into my source code?
 - Maybe try out on-demand lexing/file reading
-- Split up lexer into multiple files
