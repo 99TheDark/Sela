@@ -3,6 +3,8 @@
 - Make binary operators & funcs actually stop in time based on lines
 - Implement preorder parsing
 - Handle numbers like `00001230` gracefully as `1230` (no overflow, proper errors)
+    - Same for floats
+- Maybe unify 
 - Abtract away arena alloc + preorder + idx + slice to a `Cursor<T>`
 - Handle ultra-wide errors and errors at the end of a line
 - Remove unneeded crates

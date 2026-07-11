@@ -151,12 +151,12 @@ where
             For => self.parse_for(tok),
             Func => self.parse_func(tok),
             Use => self.parse_use(tok),
-            Charm => self.alloc(ast::Node::new(ast::NodeKind::Charm, tok.span)),
+            Charm => self.alloc_atom(ast::NodeKind::Charm, tok),
             NoChar => todo!(),
-            UntermChar => todo!(),
+            UntermChar => self.alloc_atom(ast::NodeKind::UnknownChar, tok),
             UntermQuotEsc => todo!(),
-            UntermStr => todo!(),
-            Unknown => self.alloc(ast::Node::new(ast::NodeKind::Unknown, tok.span)),
+            UntermStr => self.alloc_atom(ast::NodeKind::UnknownString, tok),
+            Unknown => self.alloc_atom(ast::NodeKind::Unknown, tok),
             // _ => panic!("Illegal or not implemented: {:#?}", tok), // TODO: Rich error messages
             _ => self.diag.fail(
                 ErrorKind::Syntax,

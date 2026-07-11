@@ -79,7 +79,7 @@ pub enum NodeKind<'a> {
     Unknown,
     UnknownInt,
     UnknownFloat,
+    UnknownChar,
+    UnknownString,
     UnknownRange { from: Option<NodeRef<'a>>, range: RangeKind, to: Option<NodeRef<'a>> },
-    // UnknownChar,
-    // UnknownString,
 }

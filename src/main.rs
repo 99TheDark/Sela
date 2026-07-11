@@ -42,8 +42,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let mut total_loc_per_s = 0;
             let mut total_mb_per_s = 0;
             for i in 0..WARN_RUNS {
-                let (loc_per_s, mb_per_s) =
-                    s.spawn(|| compile(file.to_string(), &src)).join().unwrap().unwrap();
+                let res = s.spawn(|| compile(file.to_string(), &src)).join();
+                let Ok(res) = res else { panic!("{:?}", res) };
+                let Ok(res) = res else { panic!("{:?}", res) };
+
+                let (loc_per_s, mb_per_s) = res;
                 total_loc_per_s += loc_per_s;
                 total_mb_per_s += mb_per_s;
                 println!("Warm run {} / {}\n", i + 1, WARN_RUNS);

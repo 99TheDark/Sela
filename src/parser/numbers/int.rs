@@ -6,6 +6,7 @@ use crate::parser::numbers::{ErrorSet, IsEmpty, NumberParsingError};
 pub enum ErrorKind {
     UnderConsecutive,
     UnderEnd,
+    LeadingZeros,
     NonNumeric,
     TooLarge,
 }
@@ -26,6 +27,7 @@ impl ErrorSet for ParsingError {
         match kind {
             UnderConsecutive => self.0.under_consecutive(),
             UnderEnd => self.0.under_end(),
+            LeadingZeros => self.0.leading_zeros(),
             NonNumeric => self.0.non_numeric(),
             TooLarge => self.0.too_large(),
         }
@@ -36,6 +38,7 @@ impl ErrorSet for ParsingError {
         match kind {
             UnderConsecutive => self.0.set_under_consecutive(true),
             UnderEnd => self.0.set_under_end(true),
+            LeadingZeros => self.0.set_leading_zeros(true),
             NonNumeric => self.0.set_non_numeric(true),
             TooLarge => self.0.set_too_large(true),
         }
@@ -53,13 +56,19 @@ pub(super) fn parse_bytes(mut src: &[u8]) -> Result<u64, ParsingError> {
     let mut errors = ParsingError::new();
     let mut result = 0u64;
 
+    if src.len() > 1 && src[0] == b'0' {
+        errors.raise(ErrorKind::LeadingZeros);
+        let non_zero_pos = src.iter().position(|&b| b != b'0').map_or(0, |p| p + 1);
+        src = &src[non_zero_pos..];
+    }
+
     while let [byte, rest @ ..] = src {
         'byte_match: {
             match (byte, rest.get(0)) {
                 (b'_', Some(b'_')) => errors.raise(ErrorKind::UnderConsecutive),
                 (b'_', None) => errors.raise(ErrorKind::UnderEnd),
                 (b'_', _) => {}
-                (byte @ b'0'..=b'9', _) => {
+                (b'0'..=b'9', _) => {
                     if errors.has(ErrorKind::TooLarge) {
                         hint::cold_path();
                         break 'byte_match;

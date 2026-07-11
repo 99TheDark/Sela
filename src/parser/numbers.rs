@@ -3,7 +3,7 @@
 // 314159265358979323 * 10^-17
 //
 // Maybe this? (Could make float_pow a table as there is a set number of lengths)
-// dec_len = min(byte_len(dec_part), 17) <- this needs to cap based on byte_len(int) to prevent overflow
+// dec_len = min(byte_len(dec_part), 17) <- this needs to cap based on byte_len(int) to prevent overflow, but also even more so if the int part is extra long
 // unified = parse_int(int_part) * int_pow(10, dec_len) + parse_int(dec_part[0..dec_len])
 // result = float(unified) * float_pow(0.1, dec_len) * float_pow(10.0, exp_part)
 
@@ -38,6 +38,7 @@ struct NumberParsingError {
     pub under_post_radix: bool,
     pub incomplete_radix: bool,
     pub unsupported_radix: bool,
+    pub leading_zeros: bool,
     pub invalid_digit: bool,
     pub non_numeric: bool,
     pub too_large: bool,
@@ -102,10 +103,12 @@ impl NumberParsingError {
 
         // Should this be SmallVec since usually you have 0-2 errors?
         let mut errors = ArrayVec::<String, 3>::new();
-        errors.push(format!(
-            "underscores may not appear {}",
-            under_errs.join_natural(",", "or")
-        ));
+        if !under_errs.is_empty() {
+            errors.push(format!(
+                "underscores may not appear {}",
+                under_errs.join_natural(",", "or")
+            ));
+        }
 
         if self.incomplete_radix() {
             errors.push("the radix integer contains no value".to_string());
@@ -127,13 +130,17 @@ impl NumberParsingError {
             errors.push("the literal contains characters outside its radix".to_string());
         }
 
+        if self.leading_zeros() {
+            errors.push("the literal begins with leading zero(s)".to_string());
+        }
+
         if self.non_numeric() {
             // TODO: Maybe be a bit more specific?
             errors.push("the literal contains non-numeric digits".to_string())
         }
 
         if self.too_large() {
-            errors.push(format!("the literal is too large (maximum {})", i64::MAX));
+            errors.push(format!("the literal is too large (maximum {})", u64::MAX));
         }
 
         diag.emit(
@@ -151,16 +158,22 @@ where
 {
     pub(super) fn parse_int(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         match int::parse_bytes(tok.byte_src(self.src)) {
-            Ok(val) => self.alloc(ast::Node::new(ast::NodeKind::Int(val), tok.span)),
+            Ok(val) => self.alloc_atom(ast::NodeKind::Int(val), tok),
             Err(errs) => {
                 errs.0.emit(tok.span, &mut self.diag);
-                self.alloc(ast::Node::new(ast::NodeKind::UnknownInt, tok.span))
+                self.alloc_atom(ast::NodeKind::UnknownInt, tok)
             }
         }
     }
 
     pub(super) fn parse_radix_int(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        todo!()
+        match radix_int::parse_bytes(tok.byte_src(self.src)) {
+            Ok(val) => self.alloc_atom(ast::NodeKind::Int(val), tok),
+            Err(errs) => {
+                errs.0.emit(tok.span, &mut self.diag);
+                self.alloc_atom(ast::NodeKind::UnknownInt, tok)
+            }
+        }
     }
 
     pub(super) fn parse_float(&mut self, tok: Token) -> ast::NodeRef<'ast> {

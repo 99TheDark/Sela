@@ -1,7 +1,4 @@
-
-let oh_god = 198249_028410294819023812039123ZQ__098241aL_20948920481____
-
-/*ei124AOIK14231__wo49SDJKF314013r___uweroiwe-&Berwerr
+ei124AOIK14231__wo49SDJKF314013r___uweroiwe-&Berwerr
 
 ab+
 true-12_.__345_e-8
@@ -65,39 +62,32 @@ func apply(x, y: Int) -> Int {
 /*cd*/ef /*ghij /*klmno/*pqr*/stuvwxyz*/*/ ÷
 *//**/
 
-// --- Valid Baselines ---
 let valid_dec = 123_456_789;
 let valid_hex = 0x1A2B_3C4D;
 let valid_oct = 0o755_123;
 let valid_bin = 0b1010_0101;
 
-// --- Isolated Underscore Locations ---
-let err_under_start = _999;           // Triggers: under_start
-let err_under_end = 999_;             // Triggers: under_end
-let err_consecutive = 123__456;       // Triggers: under_consecutive
-let err_post_radix = 0x_123;          // Triggers: under_post_radix
+let err_under_start = _999
+let err_under_end = 999_
+let err_consecutive = 123__456
+let err_post_radix = 0x_123
 
-// --- Composite Underscore States (join_natural checks) ---
-let err_start_consec = _12__34;       // Triggers: under_start, under_consecutive
-let err_end_consec = 12__34_;         // Triggers: under_end, under_consecutive
-let err_start_end = _1234_;           // Triggers: under_start, under_end
-let err_radix_consec = 0b__101;       // Triggers: under_post_radix, under_consecutive
-let err_radix_end = 0o7_;             // Triggers: under_post_radix, under_end (if len is short)
-let err_all_underscores = _0x__12__;  // Triggers: under_start, under_post_radix, under_consecutive, under_end
+let err_start_consec = _12__34
+let err_end_consec = 12__34_
+let err_start_end = _1234_
+let err_radix_consec = 0b__101
+let err_radix_end = 0o7_
+let err_all_underscores = _0x__12__
 
-// --- Radix, Size, and Malformed Characters ---
-let err_bad_radix = 0z1234;           // Triggers: unsupported_radix
-let err_overflow = 9223372036854775808; // Triggers: too_large (i64::MAX + 1)
-let err_massive_overflow = 999999999999999999999999999999999999; // Triggers: too_large
-let err_hex_outside_radix = 0x12G45;  // Triggers: non_numeric (G is invalid)
-let err_bin_outside_radix = 0b10201;  // Triggers: non_numeric (2 is invalid)
-let err_oct_outside_radix = 0o7581;   // Triggers: non_numeric (8 is invalid)
-let err_dec_outside_radix = 123a456;  // Triggers: non_numeric (a is invalid)
+let err_bad_radix = 0z1234
+let err_overflow = 9223372036854775808
+let err_massive_overflow = 999999999999999999999999999999999999
+let err_hex_outside_radix = 0x12G45
+let err_bin_outside_radix = 0b10201
+let err_oct_outside_radix = 0o7581
+let err_dec_outside_radix = 123a456
 
-// --- Combined Heavy Payloads ---
-let nightmare_radix = 0z99999999999999999999999999999__a_; 
-// Expected flags raised simultaneously: 
-// unsupported_radix, too_large, under_consecutive, under_end, non_numeric
+let nightmare_radix = 0z99999999999999999999999999999__a_
 
 // wtf bro
 let oh_god = 0m_198249_028410294819023812039123ZQ__098241aL_20948920481____

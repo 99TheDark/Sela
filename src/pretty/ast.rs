@@ -41,6 +41,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Unknown => f.write("<! Unknown !>"),
             UnknownInt => f.write("<! Unknown Integer !>"),
             UnknownFloat => f.write("<! Unknown Floating-Point Number !>"),
+            UnknownChar => f.write("<! Unknown Character !>"),
+            UnknownString => f.write("<! Unknown String !>"),
             UnknownRange { .. } => f.write("<! Unknown Range !>"),
         }
     }
@@ -57,7 +59,12 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Ident(_) => AnsiColor::Cyan,
             Decl { .. } | Assign { .. } => AnsiColor::Green,
             Block(e) if e.is_empty() => AnsiColor::Gray,
-            Unknown => AnsiColor::Red,
+            Unknown
+            | UnknownInt
+            | UnknownFloat
+            | UnknownChar
+            | UnknownString
+            | UnknownRange { .. } => AnsiColor::Red,
             _ => return None,
         };
         Some(col)
@@ -149,7 +156,9 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
             }
             Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | Unknown
-            | UnknownInt | UnknownFloat => pretty::Builder::empty(),
+            | UnknownInt | UnknownFloat | UnknownChar | UnknownString => {
+                pretty::Builder::empty()
+            }
         }
     }
 }

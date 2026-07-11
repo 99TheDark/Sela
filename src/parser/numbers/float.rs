@@ -12,6 +12,7 @@ pub enum ErrorKind {
     UnderPostExp,
     UnderPreExpSgn,
     UnderPostExpSgn,
+    LeadingZeros,
     NonNumeric,
     TooLarge,
 }
@@ -38,6 +39,7 @@ impl ErrorSet for ParsingError {
             UnderPostExp => self.0.under_post_exp(),
             UnderPreExpSgn => self.0.under_pre_exp_sgn(),
             UnderPostExpSgn => self.0.under_post_exp_sgn(),
+            LeadingZeros => self.0.leading_zeros(),
             NonNumeric => self.0.non_numeric(),
             TooLarge => self.0.too_large(),
         }
@@ -54,6 +56,7 @@ impl ErrorSet for ParsingError {
             UnderPostExp => self.0.set_under_post_exp(true),
             UnderPreExpSgn => self.0.set_under_pre_exp_sgn(true),
             UnderPostExpSgn => self.0.set_under_post_exp_sgn(true),
+            LeadingZeros => self.0.set_leading_zeros(true),
             NonNumeric => self.0.set_non_numeric(true),
             TooLarge => self.0.set_too_large(true),
         }
