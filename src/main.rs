@@ -20,18 +20,15 @@ pub mod token;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
-    let file = if cfg!(debug_assertions) {
-        "io/current.se"
-    } else {
-        "io/tests/huge_errorless_messy.se"
-    };
+    let file =
+        if cfg!(debug_assertions) { "io/current.se" } else { "io/tests/huge_errorless_messy.se" };
     // Should I just read (no to_string?)
     let src = fs::read_to_string(file)?;
 
     // TODO: Move to a testing suite
     if !cfg!(debug_assertions) && args[1..].contains(&"iter".to_string()) {
         const COLD_RUNS: u64 = 3;
-        const WARN_RUNS: u64 = 10;
+        const WARN_RUNS: u64 = 5;
 
         std::thread::scope(|s| {
             for i in 0..COLD_RUNS {
@@ -53,11 +50,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
 
             println!("--- TOTAL ---");
-            println!(
-                "{} LOC/s; {} MB/s",
-                total_loc_per_s / WARN_RUNS,
-                total_mb_per_s / WARN_RUNS
-            );
+            println!("{} LOC/s; {} MB/s", total_loc_per_s / WARN_RUNS, total_mb_per_s / WARN_RUNS);
         });
     } else {
         compile(file.to_string(), &src)?;
@@ -133,7 +126,10 @@ fn compile(file: String, src: &str) -> Result<(u64, u64), pretty::Error> {
     let mb_per_s = (byte_count as f64 / 1_000_000f64 / total.as_secs_f64()) as u64;
     println!(
         "{} LOC/s; {} MB/s ({} LOC / {} MB total)",
-        loc_per_s, mb_per_s, line_count, byte_count
+        loc_per_s,
+        mb_per_s,
+        line_count,
+        byte_count / 1_000_000
     );
     println!("{} total errors", err_count);
 

@@ -23,5 +23,9 @@ where
         let rhs = self.parse_expr(tok.nud_prec());
         let kind = ast::NodeKind::UnOp { op, rhs };
         self.alloc(ast::Node::new(kind, tok.span.to(rhs.span)))
+        // let node = self.reserve::<ast::Node>();
+        // let rhs = self.parse_expr(tok.nud_prec());
+        // let kind = ast::NodeKind::UnOp { op, rhs };
+        // self.fill(node, ast::Node::new(kind, tok.span.to(rhs.span)))
     }
 }

@@ -95,6 +95,9 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         // Godbolt analysis confirms this is faster than searching an &[u8]
         use TokenKind::*;
         match window {
+            [b'\n', b'\n', b'\n', b'\n'] => (Whitespace, 3),
+            [b'\n', b'\n', b'\n', ..] => (Whitespace, 2),
+            [b'\n', b'\n', ..] => (Whitespace, 1),
             [b'\n', ..] => (NewLine, 1),
 
             [b'+', b'=', ..] => (PlusEq, 2),
@@ -170,9 +173,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             [b'\'', ..] => self.char_or_lifetime(),
             [b'"', ..] => self.string(),
 
-            [b'0', b'a'..=b'z' | b'A'..=b'Z', ..] => {
-                (TokenKind::RadixInt, self.radix_int())
-            }
+            [b'0', b'a'..=b'z' | b'A'..=b'Z', ..] => (TokenKind::RadixInt, self.radix_int()),
             [b'0'..=b'9', ..] => self.number(),
 
             [b'a'..=b'z' | b'A'..=b'Z' | b'_', ..] => self.ident_or_keyword(),

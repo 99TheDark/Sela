@@ -39,8 +39,7 @@ pub fn write_file<'a>(
     let file = File::create(file_name)?;
     let mut buffer = BufWriter::new(file);
 
-    Formatter::new(&mut buffer, Theme::sharp(Coloring::None, Spacing::Full))
-        .format(src)?;
+    Formatter::new(&mut buffer, Theme::sharp(Coloring::None, Spacing::Full)).format(src)?;
 
     buffer.flush()?;
     Ok(())
@@ -50,8 +49,7 @@ pub fn print<'a>(src: &'a dyn Pretty<'a, StdoutLock<'_>>) -> pretty::Result {
     let stdout = std::io::stdout();
     let mut buffer = stdout.lock();
 
-    Formatter::new(&mut buffer, Theme::round(Coloring::Colorful, Spacing::Full))
-        .format(src)?;
+    Formatter::new(&mut buffer, Theme::round(Coloring::Colorful, Spacing::Full)).format(src)?;
 
     buffer.flush()?;
     Ok(())

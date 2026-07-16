@@ -1,8 +1,8 @@
 use std::fmt;
 
 use crate::ast::{
-    assign::AssignKind, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind,
-    range::RangeKind, unop::UnOpKind,
+    assign::AssignKind, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind, range::RangeKind,
+    unop::UnOpKind,
 };
 
 pub trait Symbolic {

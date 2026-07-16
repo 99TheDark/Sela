@@ -1,327 +1,54 @@
 List
-├─ Binary Operation
-│  ├─ Left-hand Side: Identifier (ei124AOIK14231__wo49SDJKF314013r___uweroiwe)
-│  ├─ Operator: Subtract (-)
-│  └─ Right-hand Side: Unary Operation
-│     ├─ Operator: Reference (&)
-│     └─ Right-hand Side: Identifier (Berwerr)
-├─ Binary Operation
-│  ├─ Left-hand Side: Binary Operation
-│  │  ├─ Left-hand Side: Identifier (ab)
-│  │  ├─ Operator: Add (+)
-│  │  └─ Right-hand Side: Boolean (true)
-│  ├─ Operator: Subtract (-)
-│  └─ Right-hand Side: Floating-Point Number (0)
 ├─ Declaration
-│  ├─ Pattern: Invocation
-│  │  ├─ Callee: Identifier (function)
-│  │  └─ Arguments: Parentheses
-│  │     └─ Unary Operation
-│  │        ├─ Operator: Reference (&)
-│  │        └─ Right-hand Side: Identifier (v)
-│  └─ Value: Declaration
-│     ├─ Pattern: Pair
-│     │  ├─ Left: Identifier (k)
-│     │  └─ Right: Identifier (Int)
-│     └─ Value: Binary Operation
-│        ├─ Left-hand Side: Binary Operation
-│        │  ├─ Left-hand Side: Integer (3)
-│        │  ├─ Operator: Subtract (-)
-│        │  └─ Right-hand Side: Integer (2)
-│        ├─ Operator: Add (+)
-│        └─ Right-hand Side: Binary Operation
-│           ├─ Left-hand Side: Integer (7)
-│           ├─ Operator: Multiply (*)
-│           └─ Right-hand Side: Integer (8)
-├─ Unary Operation
-│  ├─ Operator: Negate (-)
-│  └─ Right-hand Side: Integer (2)
+│  ├─ Pattern: Identifier (x)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Binary Operation
+│     │  ├─ Left-hand Side: Floating-Point Number (0.00001432186)
+│     │  ├─ Operator: Add (+)
+│     │  └─ Right-hand Side: Floating-Point Number (53.887)
+│     ├─ Operator: Subtract (-)
+│     └─ Right-hand Side: Floating-Point Number (inf)
 ├─ Declaration
-│  ├─ Pattern: Identifier (a1)
+│  ├─ Pattern: Identifier (z)
 │  └─ Value: Binary Operation
 │     ├─ Left-hand Side: Binary Operation
 │     │  ├─ Left-hand Side: Binary Operation
 │     │  │  ├─ Left-hand Side: Binary Operation
 │     │  │  │  ├─ Left-hand Side: Binary Operation
 │     │  │  │  │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  ├─ Left-hand Side: Parentheses
-│     │  │  │  │  │  │  └─ Binary Operation
-│     │  │  │  │  │  │     ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  │     │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  │     │  │  ├─ Left-hand Side: Parentheses
-│     │  │  │  │  │  │     │  │  │  └─ Binary Operation
-│     │  │  │  │  │  │     │  │  │     ├─ Left-hand Side: Integer (0)
-│     │  │  │  │  │  │     │  │  │     ├─ Operator: Subtract (-)
-│     │  │  │  │  │  │     │  │  │     └─ Right-hand Side: Integer (1)
-│     │  │  │  │  │  │     │  │  ├─ Operator: Multiply (*)
-│     │  │  │  │  │  │     │  │  └─ Right-hand Side: Integer (2)
-│     │  │  │  │  │  │     │  ├─ Operator: Add (+)
-│     │  │  │  │  │  │     │  └─ Right-hand Side: Binary Operation
-│     │  │  │  │  │  │     │     ├─ Left-hand Side: Integer (5)
-│     │  │  │  │  │  │     │     ├─ Operator: Divide (/)
-│     │  │  │  │  │  │     │     └─ Right-hand Side: Integer (6)
-│     │  │  │  │  │  │     ├─ Operator: Add (+)
-│     │  │  │  │  │  │     └─ Right-hand Side: Integer (0)
-│     │  │  │  │  │  ├─ Operator: Multiply (*)
-│     │  │  │  │  │  └─ Right-hand Side: Parentheses
-│     │  │  │  │  │     └─ Binary Operation
-│     │  │  │  │  │        ├─ Left-hand Side: Integer (3)
-│     │  │  │  │  │        ├─ Operator: Add (+)
-│     │  │  │  │  │        └─ Right-hand Side: Integer (4)
-│     │  │  │  │  ├─ Operator: Divide (/)
-│     │  │  │  │  └─ Right-hand Side: Integer (8)
+│     │  │  │  │  │  ├─ Left-hand Side: Binary Operation
+│     │  │  │  │  │  │  ├─ Left-hand Side: Floating-Point Number (1168.5)
+│     │  │  │  │  │  │  ├─ Operator: Add (+)
+│     │  │  │  │  │  │  └─ Right-hand Side: Binary Operation
+│     │  │  │  │  │  │     ├─ Left-hand Side: Floating-Point Number (inf)
+│     │  │  │  │  │  │     ├─ Operator: Multiply (*)
+│     │  │  │  │  │  │     └─ Right-hand Side: <! Unknown Floating-Point Number !>
+│     │  │  │  │  │  ├─ Operator: Add (+)
+│     │  │  │  │  │  └─ Right-hand Side: Floating-Point Number (3.141592653589796)
+│     │  │  │  │  ├─ Operator: Add (+)
+│     │  │  │  │  └─ Right-hand Side: Floating-Point Number (3.141592653589796)
 │     │  │  │  ├─ Operator: Add (+)
-│     │  │  │  └─ Right-hand Side: Integer (4)
+│     │  │  │  └─ Right-hand Side: Floating-Point Number (0)
 │     │  │  ├─ Operator: Subtract (-)
-│     │  │  └─ Right-hand Side: Binary Operation
-│     │  │     ├─ Left-hand Side: Integer (7)
-│     │  │     ├─ Operator: Multiply (*)
-│     │  │     └─ Right-hand Side: Integer (8)
-│     │  ├─ Operator: Subtract (-)
-│     │  └─ Right-hand Side: Integer (1)
-│     ├─ Operator: Add (+)
-│     └─ Right-hand Side: Binary Operation
-│        ├─ Left-hand Side: Binary Operation
-│        │  ├─ Left-hand Side: Integer (94)
-│        │  ├─ Operator: Multiply (*)
-│        │  └─ Right-hand Side: Integer (14087)
-│        ├─ Operator: Divide (/)
-│        └─ Right-hand Side: Parentheses
-│           └─ Binary Operation
-│              ├─ Left-hand Side: Binary Operation
-│              │  ├─ Left-hand Side: Integer (6)
-│              │  ├─ Operator: Add (+)
-│              │  └─ Right-hand Side: Integer (88)
-│              ├─ Operator: Subtract (-)
-│              └─ Right-hand Side: Integer (1)
-├─ Declaration
-│  ├─ Pattern: Identifier (u)
-│  └─ Value: Binary Operation
-│     ├─ Left-hand Side: Integer (5)
-│     ├─ Operator: Exclusive Or (^)
-│     └─ Right-hand Side: Binary Operation
-│        ├─ Left-hand Side: Integer (2)
-│        ├─ Operator: Subtract (-)
-│        └─ Right-hand Side: Integer (1)
-├─ Declaration
-│  ├─ Pattern: Identifier (v)
-│  └─ Value: Binary Keyword Operation
-│     ├─ Left-hand Side: Binary Keyword Operation
-│     │  ├─ Left-hand Side: Comparison
-│     │  │  ├─ Left-hand Side: Integer (3)
-│     │  │  ├─ Comparator: Equal (==)
-│     │  │  └─ Right-hand Side: Integer (2)
-│     │  ├─ Operator: And (and)
-│     │  └─ Right-hand Side: Comparison
-│     │     ├─ Left-hand Side: Identifier (y)
-│     │     ├─ Comparator: Greater Than (>)
-│     │     └─ Right-hand Side: Integer (5)
-│     ├─ Operator: Or (or)
-│     └─ Right-hand Side: Unary Operation
-│        ├─ Operator: Not (!)
-│        └─ Right-hand Side: Identifier (a1)
-├─ Use
-│  └─ Path: Member Access
-│     ├─ Parent: Identifier (std)
-│     └─ Child: Identifier (io)
-├─ Use
-│  └─ Path: Member Access
-│     ├─ Parent: Charm
-│     └─ Child: Identifier (ship)
-├─ If Statement
-│  ├─ Condition: Comparison
-│  │  ├─ Left-hand Side: Identifier (x)
-│  │  ├─ Comparator: Greater Than (>)
-│  │  └─ Right-hand Side: Integer (5)
-│  ├─ Then Body: Block
-│  │  ├─ Invocation
-│  │  │  ├─ Callee: Member Access
-│  │  │  │  ├─ Parent: Identifier (io)
-│  │  │  │  └─ Child: Identifier (print)
-│  │  │  └─ Arguments: Parentheses
-│  │  │     └─ String
-│  │  │        └─ Raw String: "\"Hello, world!\""
-│  │  └─ Invocation
-│  │     ├─ Callee: Member Access
-│  │     │  ├─ Parent: Identifier (io)
-│  │     │  └─ Child: Identifier (print)
-│  │     └─ Arguments: Parentheses
-│  │        └─ String
-│  │           ├─ Raw String: "\"u = 5 ^ (2 - 1) = "
-│  │           ├─ Interpolated Expression: Identifier (u)
-│  │           └─ Raw String: ".\""
-│  └─ Else Body: Some Block
-│     ├─ Invocation
-│     │  ├─ Callee: Member Access
-│     │  │  ├─ Parent: Identifier (io)
-│     │  │  └─ Child: Identifier (print)
-│     │  └─ Arguments: Parentheses
-│     │     └─ String
-│     │        └─ Raw String: "\"Oh no...\""
-│     └─ Invocation
-│        ├─ Callee: Member Access
-│        │  ├─ Parent: Identifier (io)
-│        │  └─ Child: Identifier (print)
-│        └─ Arguments: Parentheses
-│           └─ String
-│              ├─ Raw String: "\""
-│              ├─ Interpolated Expression: Identifier (test)
-│              ├─ Raw String: " "
-│              ├─ Interpolated Expression: Binary Operation
-│              │  ├─ Left-hand Side: Identifier (othertest)
-│              │  ├─ Operator: Add (+)
-│              │  └─ Right-hand Side: String
-│              │     ├─ Raw String: "\"woah "
-│              │     ├─ Interpolated Expression: Identifier (chill)
-│              │     └─ Raw String: "\""
-│              ├─ Raw String: ""
-│              ├─ Interpolated Expression: Identifier (finaltest)
-│              └─ Raw String: "|+1\""
-├─ Declaration
-│  ├─ Pattern: Identifier (x)
-│  └─ Value: Invocation
-│     ├─ Callee: Member Access
-│     │  ├─ Parent: Identifier (ship)
-│     │  └─ Child: Identifier (Ship)
-│     └─ Arguments: Parentheses
-│        ├─ Pair
-│        │  ├─ Left: Identifier (row)
-│        │  └─ Right: Integer (6)
-│        ├─ Pair
-│        │  ├─ Left: Identifier (column)
-│        │  └─ Right: Integer (3)
-│        └─ Pair
-│           ├─ Left: Identifier (direction)
-│           └─ Right: Member Access
-│              ├─ Parent: Member Access
-│              │  ├─ Parent: Identifier (ship)
-│              │  └─ Child: Identifier (Direction)
-│              └─ Child: Identifier (Horizontal)
-├─ If Statement
-│  ├─ Condition: Unary Operation
-│  │  ├─ Operator: Not (!)
-│  │  └─ Right-hand Side: Unary Operation
-│  │     ├─ Operator: Not (!)
-│  │     └─ Right-hand Side: Unary Operation
-│  │        ├─ Operator: Not (!)
-│  │        └─ Right-hand Side: Boolean (true)
-│  ├─ Then Body: Empty Block
-│  └─ Else Body: None
-├─ Assignment
-│  ├─ Pattern: Identifier (n)
-│  ├─ Assigner: Right Shift Assignment (>>=)
-│  └─ Value: If Statement
-│     ├─ Condition: Comparison
-│     │  ├─ Left-hand Side: Identifier (x)
-│     │  ├─ Comparator: Greater Than or Equal (>=)
-│     │  └─ Right-hand Side: Integer (5)
-│     ├─ Then Body: Block
-│     │  └─ Binary Operation
-│     │     ├─ Left-hand Side: Integer (3)
-│     │     ├─ Operator: Left Shift (<<)
-│     │     └─ Right-hand Side: Integer (2)
-│     └─ Else Body: Some Block
-│        └─ Binary Operation
-│           ├─ Left-hand Side: Identifier (n)
-│           ├─ Operator: Subtract (-)
-│           └─ Right-hand Side: Integer (1)
-├─ For Loop
-│  ├─ Variable: Identifier (num)
-│  ├─ Iterable: Range
-│  │  ├─ From: Some Integer (1)
-│  │  ├─ Range Type: Inclusive Range (..=)
-│  │  └─ To: Some Integer (5)
-│  └─ Body: Block
-│     └─ Invocation
-│        ├─ Callee: Member Access
-│        │  ├─ Parent: Identifier (io)
-│        │  └─ Child: Identifier (print)
-│        └─ Arguments: Parentheses
-│           └─ Identifier (num)
-├─ Assignment
-│  ├─ Pattern: Identifier (v)
-│  ├─ Assigner: Assignment (=)
-│  └─ Value: Binary Operation
-│     ├─ Left-hand Side: Integer (1)
-│     ├─ Operator: Subtract (-)
-│     └─ Right-hand Side: Identifier (v)
-├─ Loop
-│  └─ Body: Block
-│     └─ While Loop
-│        ├─ Condition: Comparison
-│        │  ├─ Left-hand Side: Identifier (x)
-│        │  ├─ Comparator: Greater Than (>)
-│        │  └─ Right-hand Side: Integer (5)
-│        └─ Body: Block
-│           ├─ Assignment
-│           │  ├─ Pattern: Identifier (x)
-│           │  ├─ Assigner: Subtraction Assignment (-=)
-│           │  └─ Value: Integer (1)
-│           └─ Assignment
-│              ├─ Pattern: Identifier (x)
-│              ├─ Assigner: Addition Assignment (+=)
-│              └─ Value: <! Unknown Integer !>
-├─ Declaration
-│  ├─ Pattern: Identifier (x)
-│  └─ Value: <! Unknown Integer !>
-├─ Function
-│  ├─ Name: Some Identifier (add)
-│  ├─ Signature: Function Signature
-│  │  ├─ Parameters: Parentheses
-│  │  │  ├─ Pair
-│  │  │  │  ├─ Left: Identifier (a)
-│  │  │  │  └─ Right: Identifier (Int)
-│  │  │  └─ Pair
-│  │  │     ├─ Left: Identifier (b)
-│  │  │     └─ Right: Identifier (Int)
-│  │  └─ Return Type: Some Identifier (Int)
-│  └─ Body: Some Block
-│     └─ Binary Operation
-│        ├─ Left-hand Side: Identifier (a)
-│        ├─ Operator: Add (+)
-│        └─ Right-hand Side: Identifier (b)
-├─ Function
-│  ├─ Name: Some Identifier (apply)
-│  ├─ Signature: Function Signature
-│  │  ├─ Parameters: Parentheses
-│  │  │  ├─ Identifier (x)
-│  │  │  └─ Pair
-│  │  │     ├─ Left: Identifier (y)
-│  │  │     └─ Right: Identifier (Int)
-│  │  └─ Return Type: Some Identifier (Int)
-│  └─ Body: Some Block
-│     ├─ Declaration
-│     │  ├─ Pattern: Identifier (res)
-│     │  └─ Value: Invocation
-│     │     ├─ Callee: Identifier (x)
-│     │     └─ Arguments: Parentheses
-│     │        └─ Identifier (y)
-│     └─ Identifier (res)
-├─ Declaration
-│  ├─ Pattern: Identifier (x)
-│  └─ Value: Binary Operation
-│     ├─ Left-hand Side: Binary Operation
-│     │  ├─ Left-hand Side: Floating-Point Number (0)
+│     │  │  └─ Right-hand Side: <! Unknown Floating-Point Number !>
 │     │  ├─ Operator: Add (+)
-│     │  └─ Right-hand Side: Floating-Point Number (0)
+│     │  └─ Right-hand Side: Floating-Point Number (123.456)
 │     ├─ Operator: Subtract (-)
-│     └─ Right-hand Side: Floating-Point Number (0)
-├─ Binary Operation
-│  ├─ Left-hand Side: Binary Operation
-│  │  ├─ Left-hand Side: Binary Operation
-│  │  │  ├─ Left-hand Side: Binary Operation
-│  │  │  │  ├─ Left-hand Side: Floating-Point Number (0)
-│  │  │  │  ├─ Operator: Multiply (*)
-│  │  │  │  └─ Right-hand Side: Floating-Point Number (0)
-│  │  │  ├─ Operator: Add (+)
-│  │  │  └─ Right-hand Side: Floating-Point Number (0)
-│  │  ├─ Operator: Subtract (-)
-│  │  └─ Right-hand Side: Floating-Point Number (0)
-│  ├─ Operator: Add (+)
-│  └─ Right-hand Side: Floating-Point Number (0)
-└─ Invocation
-   ├─ Callee: Member Access
-   │  ├─ Parent: Identifier (io)
-   │  └─ Child: Identifier (print)
-   └─ Arguments: Parentheses
-      └─ <! Unknown String !>
+│     └─ Right-hand Side: Member Access
+│        ├─ Parent: Integer (0)
+│        └─ Child: Unary Operation
+│           ├─ Operator: Posit (+)
+│           └─ Right-hand Side: <! Unknown !>
+└─ Binary Operation
+   ├─ Left-hand Side: Binary Operation
+   │  ├─ Left-hand Side: Integer (0)
+   │  ├─ Operator: Subtract (-)
+   │  └─ Right-hand Side: Floating-Point Number (2300)
+   ├─ Operator: Add (+)
+   └─ Right-hand Side: Binary Operation
+      ├─ Left-hand Side: Binary Operation
+      │  ├─ Left-hand Side: Floating-Point Number (inf)
+      │  ├─ Operator: Divide (/)
+      │  └─ Right-hand Side: <! Unknown Floating-Point Number !>
+      ├─ Operator: Multiply (*)
+      └─ Right-hand Side: <! Unknown Floating-Point Number !>

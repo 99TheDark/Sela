@@ -45,8 +45,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 if self.bytes.len() < self.idx + offset + u8x16::LEN {
                     hint::cold_path();
 
-                    for (idx, byte) in self.bytes[self.idx + offset..].iter().enumerate()
-                    {
+                    for (idx, byte) in self.bytes[self.idx + offset..].iter().enumerate() {
                         if eat_remaining_until(byte) {
                             break 'delta idx;
                         }

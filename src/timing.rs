@@ -16,8 +16,7 @@ impl Stopwatch {
 
     pub fn dump(self) -> time::Duration {
         let padding = self.splits.iter().map(|k| k.0.len()).max().unwrap_or(0);
-        let total_time =
-            self.splits.last().map_or(time::Duration::ZERO, |s| s.1 - self.start);
+        let total_time = self.splits.last().map_or(time::Duration::ZERO, |s| s.1 - self.start);
 
         println!("Report:");
         let mut last_split = self.start;

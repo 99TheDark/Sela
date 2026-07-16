@@ -14,12 +14,7 @@ pub struct TriArena<T: Sized> {
 
 impl<T: Sized> TriArena<T> {
     pub fn new() -> Self {
-        Self {
-            elems: Bump::new(),
-            spans: Bump::new(),
-            misc: Bump::new(),
-            _phantom: PhantomData,
-        }
+        Self { elems: Bump::new(), spans: Bump::new(), misc: Bump::new(), _phantom: PhantomData }
     }
 
     pub fn alloc(&self, elem: T, span: Span) -> (&mut T, &mut Span) {

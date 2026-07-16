@@ -21,10 +21,7 @@ where
         let cond = self.parse_expr(Precedence::None);
         let lbrace = self.expect(TokenKind::LBrace);
         let body = self.parse_block(lbrace);
-        self.alloc(ast::Node::new(
-            ast::NodeKind::While { cond, body },
-            tok.span.to(body.span),
-        ))
+        self.alloc(ast::Node::new(ast::NodeKind::While { cond, body }, tok.span.to(body.span)))
     }
 
     #[inline]
@@ -34,10 +31,7 @@ where
         let iter = self.parse_expr(Precedence::None);
         let lbrace = self.expect(TokenKind::LBrace);
         let body = self.parse_block(lbrace);
-        self.alloc(ast::Node::new(
-            ast::NodeKind::For { vari, iter, body },
-            tok.span.to(body.span),
-        ))
+        self.alloc(ast::Node::new(ast::NodeKind::For { vari, iter, body }, tok.span.to(body.span)))
     }
 
     #[inline]

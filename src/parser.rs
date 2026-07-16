@@ -9,7 +9,7 @@ pub mod ranges;
 pub mod text;
 pub mod variables;
 
-use std::hint;
+use std::{hint, mem::MaybeUninit};
 
 use bumpalo::{Bump, collections::Vec as BumpVec};
 
@@ -49,12 +49,18 @@ where
         Self { src, tokens, idx: 0, diag, arena, eof_token }
     }
 
-    pub fn alloc<T>(&mut self, elem: T) -> &'ast T {
+    fn alloc<T>(&mut self, elem: T) -> &'ast T {
         self.arena.alloc(elem)
     }
 
+    // What about early returns?? I wish there were linear types too...
+    // Could use Bump::alloc_with?
+    fn reserve<T>(&self) -> &'ast mut MaybeUninit<T> {
+        self.arena.alloc(MaybeUninit::<T>::uninit())
+    }
+
     #[inline]
-    pub fn eat_until<F>(&mut self, cond: F)
+    fn eat_until<F>(&mut self, cond: F)
     where
         F: Fn(Token) -> bool,
     {
@@ -65,25 +71,25 @@ where
 
     // There must be a way to make this more performant...
     #[inline(always)]
-    pub fn eat_nls(&mut self) {
+    fn eat_nls(&mut self) {
         self.eat_until(|tok| tok.is_nl());
     }
 
     #[inline(always)]
-    pub fn eat_line(&mut self) {
+    fn eat_line(&mut self) {
         self.eat_until(|tok| !tok.is_nl());
     }
 
-    pub fn peek(&self) -> Token {
+    fn peek(&self) -> Token {
         *self.tokens.get(self.idx).unwrap_or(&self.eof_token)
     }
 
-    pub fn next(&mut self) -> Token {
+    fn next(&mut self) -> Token {
         self.eat_nls();
         self.true_next()
     }
 
-    pub fn true_next(&mut self) -> Token {
+    fn true_next(&mut self) -> Token {
         if self.idx < self.tokens.len() {
             let tok = self.tokens[self.idx];
             self.idx += 1;
@@ -94,15 +100,12 @@ where
         }
     }
 
-    pub fn expect(&mut self, expected: TokenKind) -> Token {
+    fn expect(&mut self, expected: TokenKind) -> Token {
         let tok = self.next();
         if tok.kind != expected {
             self.diag.emit(
                 ErrorKind::Syntax,
-                format!(
-                    "Expected {:?} token, found {:?} token instead",
-                    expected, tok.kind
-                ),
+                format!("Expected {:?} token, found {:?} token instead", expected, tok.kind),
                 tok.span,
             );
         }
@@ -110,11 +113,11 @@ where
     }
 
     #[inline(always)]
-    pub fn peek_prec(&self) -> Precedence {
+    fn peek_prec(&self) -> Precedence {
         self.tokens.get(self.idx).map_or(Precedence::None, |tok| tok.led_prec())
     }
 
-    pub fn parse_nud(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+    fn parse_nud(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         use TokenKind::*;
         match tok.kind {
             Ident => self.parse_ident(tok),
@@ -160,18 +163,14 @@ where
             // _ => panic!("Illegal or not implemented: {:#?}", tok), // TODO: Rich error messages
             _ => self.diag.fail(
                 ErrorKind::Syntax,
-                "Invalid Nud".to_string(),
+                format!("Invalid Nud {:?}", tok.kind),
                 tok.span,
                 self.arena,
             ),
         }
     }
 
-    pub fn parse_led(
-        &mut self,
-        lhs: ast::NodeRef<'ast>,
-        tok: Token,
-    ) -> ast::NodeRef<'ast> {
+    fn parse_led(&mut self, lhs: ast::NodeRef<'ast>, tok: Token) -> ast::NodeRef<'ast> {
         use TokenKind::*;
         // Maybe make this a manual pattern?
         if let Some(op_kind) = BinaryKind::from_token(tok) {
@@ -191,7 +190,7 @@ where
     }
 
     #[inline(always)]
-    pub fn parse_expr(&mut self, min_prec: Precedence) -> ast::NodeRef<'ast> {
+    fn parse_expr(&mut self, min_prec: Precedence) -> ast::NodeRef<'ast> {
         let left_tok = self.next();
         let mut left = self.parse_nud(left_tok);
         while min_prec < self.peek_prec() {
@@ -201,7 +200,7 @@ where
         left
     }
 
-    pub fn parse_stmts<F>(&mut self, should_exit: F) -> BumpVec<'ast, ast::NodeRef<'ast>>
+    fn parse_stmts<F>(&mut self, should_exit: F) -> BumpVec<'ast, ast::NodeRef<'ast>>
     where
         F: Fn(Token) -> bool,
     {

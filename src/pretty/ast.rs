@@ -88,39 +88,31 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .named("Comparator", comp)
                 .named("Right-hand Side", *rhs)
                 .finish(),
-            Range { from, range, to } | UnknownRange { from, range, to } => {
-                pretty::Builder::new()
-                    .named("From", from)
-                    .named("Range Type", range)
-                    .named("To", to)
-                    .finish()
+            Range { from, range, to } | UnknownRange { from, range, to } => pretty::Builder::new()
+                .named("From", from)
+                .named("Range Type", range)
+                .named("To", to)
+                .finish(),
+            UnOp { op, rhs } => {
+                pretty::Builder::new().named("Operator", op).named("Right-hand Side", *rhs).finish()
             }
-            UnOp { op, rhs } => pretty::Builder::new()
-                .named("Operator", op)
-                .named("Right-hand Side", *rhs)
-                .finish(),
-            Access { parent, child } => pretty::Builder::new()
-                .named("Parent", *parent)
-                .named("Child", *child)
-                .finish(),
-            Invoc { callee, args } => pretty::Builder::new()
-                .named("Callee", *callee)
-                .named("Arguments", *args)
-                .finish(),
+            Access { parent, child } => {
+                pretty::Builder::new().named("Parent", *parent).named("Child", *child).finish()
+            }
+            Invoc { callee, args } => {
+                pretty::Builder::new().named("Callee", *callee).named("Arguments", *args).finish()
+            }
             String(frags) => pretty::Builder::new()
                 .fold(*frags, |builder, frag| match frag {
-                    ast::string::Fragment::String(inner) => {
-                        builder.named("Raw String", inner)
-                    }
+                    ast::string::Fragment::String(inner) => builder.named("Raw String", inner),
                     ast::string::Fragment::Expr(inner) => {
                         builder.named("Interpolated Expression", *inner)
                     }
                 })
                 .finish(),
-            Decl { pat, val } => pretty::Builder::new()
-                .named("Pattern", *pat)
-                .named("Value", *val)
-                .finish(),
+            Decl { pat, val } => {
+                pretty::Builder::new().named("Pattern", *pat).named("Value", *val).finish()
+            }
             Assign { pat, assign, val } => pretty::Builder::new()
                 .named("Pattern", *pat)
                 .named("Assigner", assign)
@@ -132,10 +124,9 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .named("Else Body", fallback)
                 .finish(),
             Loop { body } => pretty::Builder::new().named("Body", *body).finish(),
-            While { cond, body } => pretty::Builder::new()
-                .named("Condition", *cond)
-                .named("Body", *body)
-                .finish(),
+            While { cond, body } => {
+                pretty::Builder::new().named("Condition", *cond).named("Body", *body).finish()
+            }
             For { vari, iter, body } => pretty::Builder::new()
                 .named("Variable", *vari)
                 .named("Iterable", *iter)
@@ -155,10 +146,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Pair { lhs, rhs } => {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
             }
-            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | Unknown
-            | UnknownInt | UnknownFloat | UnknownChar | UnknownString => {
-                pretty::Builder::empty()
-            }
+            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | Unknown | UnknownInt
+            | UnknownFloat | UnknownChar | UnknownString => pretty::Builder::empty(),
         }
     }
 }

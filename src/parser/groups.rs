@@ -9,9 +9,7 @@ where
     'src: 'ast,
     'src: 'tok,
 {
-    pub(super) fn parse_delimited<
-        F: FnOnce(&'ast [ast::NodeRef<'ast>]) -> ast::NodeKind<'ast>,
-    >(
+    pub(super) fn parse_delimited<F: FnOnce(&'ast [ast::NodeRef<'ast>]) -> ast::NodeKind<'ast>>(
         &mut self,
         tok: Token,
         delim: TokenKind,

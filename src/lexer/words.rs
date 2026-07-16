@@ -77,6 +77,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 _ => Ident,
             },
             5 => match ident {
+                b"alias" => Alias,
                 b"const" => Const,
                 b"class" => Class,
                 b"while" => While,

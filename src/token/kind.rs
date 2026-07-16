@@ -83,6 +83,7 @@ pub enum TokenKind {
     Const, //\\ const
     Mut,   //\\ mut
     Type,  //\\ type
+    Alias, //\\ alias
     Enum,  //\\ enum
     Class, //\\ class
     Idea,  //\\ idea
@@ -162,13 +163,7 @@ impl TokenKind {
         use TokenKind::*;
         matches!(
             self,
-            Unknown
-                | EOF
-                | NoChar
-                | UntermComment
-                | UntermChar
-                | UntermQuotEsc
-                | UntermStr
+            Unknown | EOF | NoChar | UntermComment | UntermChar | UntermQuotEsc | UntermStr
         )
     }
 
@@ -191,8 +186,8 @@ impl TokenKind {
     pub const fn led_prec(&self) -> Precedence {
         use TokenKind::*;
         match self {
-            Eq | PlusEq | DashEq | StarEq | SlashEq | PctEq | GtGtEq | LtLtEq
-            | CaretEq | AmpEq | BarEq => Precedence::Assign,
+            Eq | PlusEq | DashEq | StarEq | SlashEq | PctEq | GtGtEq | LtLtEq | CaretEq | AmpEq
+            | BarEq => Precedence::Assign,
             DotDot | DotDotLt | DotDotEq => Precedence::Range,
             Or => Precedence::ShortOr,
             And => Precedence::ShortAnd,

@@ -115,10 +115,8 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
 
     pub(super) fn exit_string(&mut self) -> (Token, usize) {
         if self.peek() == Some(b'"') {
-            let tok = Token::new(
-                TokenKind::String,
-                Span::new(self.idx as u32, self.idx as u32 + 1),
-            );
+            let tok =
+                Token::new(TokenKind::String, Span::new(self.idx as u32, self.idx as u32 + 1));
             (tok, 1)
         } else {
             let (kind, len) = self.string();

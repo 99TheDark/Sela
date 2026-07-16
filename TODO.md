@@ -2,9 +2,14 @@
 - Implement forced parens on operators
 - Make binary operators & funcs actually stop in time based on lines
 - Implement preorder parsing
+- Implement `mut X` nud
+- Remove deref/derefmut in place of something that doesn't leak all internals easily
+- Why do I have `&'a [NodeRef]` instead of `Vec<NodeRef>` again...? That's just more indirection
 - Handle numbers like `00001230` gracefully as `1230` (no overflow, proper errors)
     - Same for floats
-- Maybe unify 
+- Maybe unify floats+ints+radix ints in parser
+- Move pretty to diagnostics
+- Lex -> Parse -> Output `use` metadata to check first!
 - Abtract away arena alloc + preorder + idx + slice to a `Cursor<T>`
 - Handle ultra-wide errors and errors at the end of a line
 - Remove unneeded crates
@@ -20,5 +25,9 @@
 - Partial ranges
 - Implement parallellism for lexing + parsing + type signatures
 - Harvest type signatures (functions, types, aliases, classes, constants, etc) for a global pool
-- Use Cells to reserve spots for future arena allocs to be more cache-friendly when traversing
+- Make number parsing more efficient with fast loops for small numbers and such
+
+# Try
 - Maybe try out on-demand lexing/file reading
+- Attempt throwing a test warmup file to lex+parse while the project directory is being explored to train the branch predictor
+- Use `std::hint::spin_loop()`

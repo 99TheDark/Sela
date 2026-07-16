@@ -11,11 +11,7 @@ where
     'src: 'tok,
 {
     // TODO: Combine shared logic of nud + led
-    pub(super) fn parse_nud_range(
-        &mut self,
-        tok: Token,
-        range: RangeKind,
-    ) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_nud_range(&mut self, tok: Token, range: RangeKind) -> ast::NodeRef<'ast> {
         let (to, span) = if self.peek().led_prec() != Precedence::None {
             let rhs = self.parse_expr(Precedence::Range);
             (Some(rhs), tok.span.to(rhs.span))
@@ -95,9 +91,9 @@ where
             }
 
             // a..<b, a..=b, a..
-            (true, RangeKind::Excl)
-            | (true, RangeKind::Incl)
-            | (false, RangeKind::Full) => ast::NodeKind::Range { from, range, to },
+            (true, RangeKind::Excl) | (true, RangeKind::Incl) | (false, RangeKind::Full) => {
+                ast::NodeKind::Range { from, range, to }
+            }
 
             // a..<
             (false, RangeKind::Excl) => {

@@ -20,8 +20,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                     just_saw_exp_sign = true;
                     seen_exp = true;
                 }
-                [b'e' | b'E', b'0'..=b'9' | b'_'] => {}
-                [b'e' | b'E', b'a'..=b'z' | b'A'..=b'Z'] => {}
+                [b'e' | b'E', _] => seen_exp = true,
                 [b'+' | b'-', _] if just_saw_exp_sign => just_saw_exp_sign = false,
                 [b'0'..=b'9' | b'_', _] => {}
                 [b'a'..=b'z' | b'A'..=b'Z', _] => {}
@@ -39,10 +38,6 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             }
         }
 
-        if seen_dot || seen_exp {
-            (TokenKind::Float, offset)
-        } else {
-            (TokenKind::Int, offset)
-        }
+        if seen_dot || seen_exp { (TokenKind::Float, offset) } else { (TokenKind::Int, offset) }
     }
 }

@@ -1,17 +1,8 @@
-// Parse floats as ints first? make sure the decimal gets chopped off at 17 digits
-// 3.141592653589793238462643383279502884197169399 ->
-// 314159265358979323 * 10^-17
-//
-// Maybe this? (Could make float_pow a table as there is a set number of lengths)
-// dec_len = min(byte_len(dec_part), 17) <- this needs to cap based on byte_len(int) to prevent overflow, but also even more so if the int part is extra long
-// unified = parse_int(int_part) * int_pow(10, dec_len) + parse_int(dec_part[0..dec_len])
-// result = float(unified) * float_pow(0.1, dec_len) * float_pow(10.0, exp_part)
-
 mod float;
 mod int;
 mod radix_int;
 
-use std::{hint, iter::zip, ops};
+use std::{fmt, hint, iter::zip, ops};
 
 use arrayvec::ArrayVec;
 use modular_bitfield::bitfield;
@@ -24,9 +15,9 @@ use crate::{
     token::Token,
 };
 
-#[bitfield(filled = false)]
-#[derive(PartialEq, Eq)]
-struct NumberParsingError {
+#[bitfield/*(filled  = false)*/]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub struct NumberParsingError {
     pub under_consecutive: bool,
     pub under_end: bool,
     pub under_pre_dot: bool,
@@ -38,10 +29,46 @@ struct NumberParsingError {
     pub under_post_radix: bool,
     pub incomplete_radix: bool,
     pub unsupported_radix: bool,
+    pub missing_exp_val: bool,
     pub leading_zeros: bool,
     pub invalid_digit: bool,
     pub non_numeric: bool,
     pub too_large: bool,
+}
+
+impl fmt::Display for NumberParsingError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        const FIELDS: [(
+            fn(&NumberParsingError) -> <bool as ::modular_bitfield::Specifier>::InOut,
+            &'static str,
+        ); 15] = [
+            (NumberParsingError::under_consecutive, "under_consecutive"),
+            (NumberParsingError::under_end, "under_end"),
+            (NumberParsingError::under_pre_dot, "under_pre_dot"),
+            (NumberParsingError::under_post_dot, "under_post_dot"),
+            (NumberParsingError::under_pre_exp, "under_pre_exp"),
+            (NumberParsingError::under_post_exp, "under_post_exp"),
+            (NumberParsingError::under_pre_exp_sgn, "under_pre_exp_sgn"),
+            (NumberParsingError::under_post_exp_sgn, "under_post_exp_sgn"),
+            (NumberParsingError::under_post_radix, "under_post_radix"),
+            (NumberParsingError::incomplete_radix, "incomplete_radix"),
+            (NumberParsingError::unsupported_radix, "unsupported_radix"),
+            (NumberParsingError::leading_zeros, "leading_zeros"),
+            (NumberParsingError::invalid_digit, "invalid_digit"),
+            (NumberParsingError::non_numeric, "non_numeric"),
+            (NumberParsingError::too_large, "too_large"),
+        ];
+
+        f.write_str("{ ")?;
+        let joined = FIELDS
+            .iter()
+            .filter_map(|(func, name)| if func(&self) { Some(*name) } else { None })
+            .collect::<Vec<&'static str>>()
+            .join(", ");
+        f.write_str(&joined)?;
+        f.write_str(" }")?;
+        Ok(())
+    }
 }
 
 trait IsEmpty {
@@ -49,12 +76,16 @@ trait IsEmpty {
 }
 
 impl IsEmpty for NumberParsingError {
+    #[inline(always)]
     fn is_empty(&self) -> bool {
         *self == Self::new()
     }
 }
 
-trait ErrorSet {
+trait ErrorSet
+where
+    Self: ops::Deref<Target = NumberParsingError> + ops::DerefMut,
+{
     type Kind: Copy;
 
     fn has(&self, kind: Self::Kind) -> bool;
@@ -70,8 +101,24 @@ impl ops::BitOrAssign<NumberParsingError> for NumberParsingError {
     }
 }
 
+trait UnwrapAccumulate<T, U: ErrorSet> {
+    fn unwrap_acc(self, accumulator: &mut U) -> T;
+}
+
+impl<T: Default, U: ErrorSet, V: ErrorSet> UnwrapAccumulate<T, V> for Result<T, U> {
+    fn unwrap_acc(self, accumulator: &mut V) -> T {
+        match self {
+            Ok(val) => val,
+            Err(err) => {
+                **accumulator |= *err;
+                T::default()
+            }
+        }
+    }
+}
+
 impl NumberParsingError {
-    fn emit(&self, span: Span, diag: &mut Diagnostics) {
+    pub fn emit(&self, lit_kind: &str, span: Span, diag: &mut Diagnostics) {
         let mut under_errs = ArrayVec::<&str, 9>::new();
         if self.under_consecutive() {
             under_errs.push("consecutively");
@@ -102,12 +149,10 @@ impl NumberParsingError {
         }
 
         // Should this be SmallVec since usually you have 0-2 errors?
-        let mut errors = ArrayVec::<String, 3>::new();
+        let mut errors = ArrayVec::<String, 8>::new();
         if !under_errs.is_empty() {
-            errors.push(format!(
-                "underscores may not appear {}",
-                under_errs.join_natural(",", "or")
-            ));
+            errors
+                .push(format!("underscores may not appear {}", under_errs.join_natural(",", "or")));
         }
 
         if self.incomplete_radix() {
@@ -123,6 +168,10 @@ impl NumberParsingError {
                  0x (hexadecimal), 0o (octal), or 0b (binary)"
                     .to_string(),
             );
+        }
+
+        if self.missing_exp_val() {
+            errors.push("the exponent is missing from the literal".to_string());
         }
 
         if self.invalid_digit() {
@@ -145,7 +194,7 @@ impl NumberParsingError {
 
         diag.emit(
             ErrorKind::Syntax,
-            format!("Invalid integer literal: {}", errors.join_natural(",", "and")),
+            format!("Invalid {} literal: {}", lit_kind, errors.join_natural(",", "and")),
             span,
         );
     }
@@ -156,12 +205,13 @@ where
     'src: 'ast,
     'src: 'tok,
 {
+    // Could be a trait...
     pub(super) fn parse_int(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         match int::parse_bytes(tok.byte_src(self.src)) {
             Ok(val) => self.alloc_atom(ast::NodeKind::Int(val), tok),
             Err(errs) => {
                 hint::cold_path();
-                errs.0.emit(tok.span, &mut self.diag);
+                errs.0.emit("integer", tok.span, &mut self.diag);
                 self.alloc_atom(ast::NodeKind::UnknownInt, tok)
             }
         }
@@ -172,13 +222,20 @@ where
             Ok(val) => self.alloc_atom(ast::NodeKind::Int(val), tok),
             Err(errs) => {
                 hint::cold_path();
-                errs.0.emit(tok.span, &mut self.diag);
+                errs.0.emit("radix integer", tok.span, &mut self.diag);
                 self.alloc_atom(ast::NodeKind::UnknownInt, tok)
             }
         }
     }
 
     pub(super) fn parse_float(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        self.alloc_atom(ast::NodeKind::Float(0.0), tok)
+        match float::parse_bytes(tok.byte_src(self.src)) {
+            Ok(val) => self.alloc_atom(ast::NodeKind::Float(val), tok),
+            Err(errs) => {
+                hint::cold_path();
+                errs.0.emit("floating-point", tok.span, &mut self.diag);
+                self.alloc_atom(ast::NodeKind::UnknownFloat, tok)
+            }
+        }
     }
 }

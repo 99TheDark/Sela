@@ -15,8 +15,7 @@ where
 
     pub(super) fn parse_string(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         // TODO: Unescape
-        let mut frags =
-            vec![ast::string::Fragment::String(tok.src(self.src).to_string())];
+        let mut frags = vec![ast::string::Fragment::String(tok.src(self.src).to_string())];
         let mut end = tok.span;
         while self.peek().eof_is(TokenKind::Dollar) {
             self.next();
@@ -29,9 +28,7 @@ where
             if self.peek().is(TokenKind::String) {
                 // TODO: Same deal here
                 let str_tok = self.next();
-                frags.push(ast::string::Fragment::String(
-                    str_tok.src(self.src).to_string(),
-                ));
+                frags.push(ast::string::Fragment::String(str_tok.src(self.src).to_string()));
 
                 end = str_tok.span;
             } else {

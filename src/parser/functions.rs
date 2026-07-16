@@ -1,5 +1,3 @@
-use std::hint;
-
 use crate::{
     ast,
     parser::Parser,

@@ -1,4 +1,4 @@
-use std::{convert, hint};
+use std::{convert, fmt, hint, ops};
 
 use crate::parser::numbers::{ErrorSet, IsEmpty, NumberParsingError, float};
 
@@ -14,11 +14,32 @@ pub enum ErrorKind {
     TooLarge,
 }
 
+#[derive(Debug, Copy, Clone)]
 pub struct ParsingError(pub(super) NumberParsingError);
 
 impl ParsingError {
     pub fn new() -> Self {
         Self(NumberParsingError::new())
+    }
+}
+
+impl fmt::Display for ParsingError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+impl ops::Deref for ParsingError {
+    type Target = NumberParsingError;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl ops::DerefMut for ParsingError {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
 
@@ -119,9 +140,8 @@ pub(super) fn parse_bytes(mut src: &[u8]) -> Result<u64, ParsingError> {
                         break 'byte_match;
                     }
 
-                    let new_result = result
-                        .checked_mul(radix)
-                        .and_then(|result| result.checked_add(digit));
+                    let new_result =
+                        result.checked_mul(radix).and_then(|result| result.checked_add(digit));
 
                     if let Some(new_result) = new_result {
                         result = new_result;
