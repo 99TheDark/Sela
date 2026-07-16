@@ -1,7 +1,7 @@
 List
 ├─ Declaration
 │  ├─ Pattern: Identifier (extreme_overflow)
-│  └─ Value: Floating-Point Number (-inf)
+│  └─ Value: Floating-Point Number (0)
 ├─ Declaration
 │  ├─ Pattern: Identifier (extreme_underflow)
 │  └─ Value: Floating-Point Number (inf)

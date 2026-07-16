@@ -30,7 +30,7 @@ impl ScalbTen for f64 {
             res
         } else {
             hint::cold_path();
-            if exp > 0 { f64::INFINITY } else { f64::NEG_INFINITY }
+            if exp > 0 { if self > 0f64 { f64::INFINITY } else { f64::NEG_INFINITY } } else { 0f64 }
         }
     }
 }
