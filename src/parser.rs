@@ -177,6 +177,7 @@ where
             self.parse_binary(lhs, tok, op_kind)
         } else {
             match tok.kind {
+                Dot => self.parse_access(lhs),
                 DotDot => self.parse_led_range(lhs, RangeKind::Full),
                 DotDotLt => self.parse_led_range(lhs, RangeKind::Excl),
                 DotDotEq => self.parse_led_range(lhs, RangeKind::Incl),

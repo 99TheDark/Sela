@@ -1,16 +1,60 @@
 List
 ├─ Declaration
-│  ├─ Pattern: Identifier (extreme_overflow)
-│  └─ Value: Floating-Point Number (0)
-├─ Declaration
-│  ├─ Pattern: Identifier (extreme_underflow)
-│  └─ Value: Floating-Point Number (inf)
-├─ Declaration
-│  ├─ Pattern: Identifier (zero_exponent)
-│  └─ Value: Floating-Point Number (5.5)
-├─ Declaration
-│  ├─ Pattern: Identifier (zero_padded_exponent)
+│  ├─ Pattern: Identifier (space_after_sign)
 │  └─ Value: <! Unknown Floating-Point Number !>
+├─ Integer (5)
+├─ Declaration
+│  ├─ Pattern: Identifier (double_minus_exp)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: <! Unknown Floating-Point Number !>
+│     ├─ Operator: Subtract (-)
+│     └─ Right-hand Side: Integer (5)
+├─ Declaration
+│  ├─ Pattern: Identifier (float_with_trailing_plus)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Floating-Point Number (12300)
+│     ├─ Operator: Add (+)
+│     └─ Right-hand Side: Declaration
+│        ├─ Pattern: Identifier (giant_pure_number)
+│        └─ Value: <! Unknown Floating-Point Number !>
+├─ Declaration
+│  ├─ Pattern: Identifier (standard_leading_zero)
+│  └─ Value: <! Unknown Floating-Point Number !>
+├─ Declaration
+│  ├─ Pattern: Identifier (isolated_dot_expr)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Binary Operation
+│     │  ├─ Left-hand Side: Integer (1)
+│     │  ├─ Operator: Add (+)
+│     │  └─ Right-hand Side: <! Unknown !>
+│     ├─ Operator: Add (+)
+│     └─ Right-hand Side: Integer (2)
 └─ Declaration
-   ├─ Pattern: Identifier (negative_zero_exponent)
-   └─ Value: Floating-Point Number (12.34)
+   ├─ Pattern: Identifier (multiple_points_mixed)
+   └─ Value: Binary Operation
+      ├─ Left-hand Side: Binary Operation
+      │  ├─ Left-hand Side: Member Access
+      │  │  ├─ Parent: Member Access
+      │  │  │  ├─ Parent: Floating-Point Number (1.2000000000000002)
+      │  │  │  └─ Child: Integer (3)
+      │  │  └─ Child: Integer (4)
+      │  ├─ Operator: Subtract (-)
+      │  └─ Right-hand Side: Member Access
+      │     ├─ Parent: Member Access
+      │     │  ├─ Parent: Member Access
+      │     │  │  ├─ Parent: Member Access
+      │     │  │  │  ├─ Parent: Integer (5)
+      │     │  │  │  └─ Child: Integer (6)
+      │     │  │  └─ Child: Integer (7)
+      │     │  └─ Child: Integer (8)
+      │     └─ Child: Integer (9)
+      ├─ Operator: Add (+)
+      └─ Right-hand Side: Member Access
+         ├─ Parent: Member Access
+         │  ├─ Parent: Member Access
+         │  │  ├─ Parent: Member Access
+         │  │  │  ├─ Parent: Identifier (a)
+         │  │  │  └─ Child: Identifier (y)
+         │  │  └─ Child: Integer (12)
+         │  └─ Child: Integer (34)
+         └─ Child: Integer (5)

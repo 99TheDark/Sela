@@ -62,10 +62,12 @@
 // /*cd*/ef /*ghij /*klmno/*pqr*/stuvwxyz*/*/ ÷
 // *//**/
 
-let extreme_overflow = 1.0e+999999999999999999 
-let extreme_underflow = 1.0e-999999999999999999
-let zero_exponent = 5.5e0
-let zero_padded_exponent = 5.5e+000000000000000000001
-let negative_zero_exponent = 12.34e-0
+let space_after_sign = 1.0e+ 5
+let double_minus_exp = 1.0e--5
+let float_with_trailing_plus = 1.23e4+
+let giant_pure_number = 1.0e88888888888888888888888888888888
+let standard_leading_zero = 01.23
+let isolated_dot_expr = 1 + . + 2
+let multiple_points_mixed = 1.2.3.4 - 5. 6.7 .8.9 + a.y.12.34 .5
 
 // io.print("Hello, world)

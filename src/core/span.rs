@@ -46,8 +46,19 @@ impl Span {
     }
 
     // Assumes `to` is after `self`
+    // TODO: Maybe change to range for syntax sugar?
     pub fn to(&self, to: Self) -> Self {
         Self::new(self.start, to.end)
+    }
+
+    // Assumes u32 is within the span absolutely
+    pub fn split(&self, pos: u32) -> (Self, Self) {
+        (Self::new(self.start, pos), Self::new(pos + 1, self.end))
+    }
+
+    // Assumes u32 is within the span relatively
+    pub fn split_relative(&self, pos: u32) -> (Self, Self) {
+        (Self::new(self.start, self.start + pos), Self::new(self.start + pos + 1, self.end))
     }
 }
 

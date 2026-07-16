@@ -14,7 +14,6 @@ pub enum BinaryKind {
     BinOp(BinOpKind),
     KwBinOp(KwBinOpKind),
     Comp(CompKind),
-    Dot,
 }
 
 impl BinaryKind {
@@ -51,7 +50,6 @@ impl BinaryKind {
             Eq => Self::Assign(AssignKind::Eq),
             And => Self::KwBinOp(KwBinOpKind::And),
             Or => Self::KwBinOp(KwBinOpKind::Or),
-            Dot => Self::Dot,
             _ => return None,
         };
 
@@ -72,7 +70,6 @@ impl BinaryKind {
             BinOp(op) => ast::NodeKind::BinOp { lhs, op: *op, rhs },
             KwBinOp(op) => ast::NodeKind::KwBinOp { lhs, op: *op, rhs },
             Comp(comp) => ast::NodeKind::Comp { lhs, comp: *comp, rhs },
-            Dot => ast::NodeKind::Access { parent: lhs, child: rhs },
         };
 
         alloc.alloc(ast::Node::new(kind, span))
@@ -86,7 +83,6 @@ impl BinaryKind {
             BinOp(kind) => kind.to_sym(),
             KwBinOp(kind) => kind.to_sym(),
             Comp(kind) => kind.to_sym(),
-            Dot => Symbol::Dot,
         }
     }
 }

@@ -15,7 +15,7 @@ use crate::{
     token::Token,
 };
 
-#[bitfield/*(filled  = false)*/]
+#[bitfield(filled = false)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct NumberParsingError {
     pub under_consecutive: bool,
@@ -30,6 +30,8 @@ pub struct NumberParsingError {
     pub incomplete_radix: bool,
     pub unsupported_radix: bool,
     pub missing_exp_val: bool,
+    pub second_exp: bool,
+    pub exp_before_dot: bool,
     pub leading_zeros: bool,
     pub invalid_digit: bool,
     pub non_numeric: bool,
@@ -149,7 +151,7 @@ impl NumberParsingError {
         }
 
         // Should this be SmallVec since usually you have 0-2 errors?
-        let mut errors = ArrayVec::<String, 8>::new();
+        let mut errors = ArrayVec::<String, 10>::new();
         if !under_errs.is_empty() {
             errors
                 .push(format!("underscores may not appear {}", under_errs.join_natural(",", "or")));
@@ -172,6 +174,16 @@ impl NumberParsingError {
 
         if self.missing_exp_val() {
             errors.push("the exponent is missing from the literal".to_string());
+        }
+
+        if self.second_exp() {
+            errors.push("you appear to have attempted to scale more than once".to_string());
+        }
+
+        if self.exp_before_dot() {
+            errors.push(
+                "the literal contains an exponent scale before the decimal point".to_string(),
+            );
         }
 
         if self.invalid_digit() {

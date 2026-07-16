@@ -11,7 +11,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
     pub(super) fn number(&self) -> NextToken {
         // Looks all the way to one byte ahead. Make sure to subtract 1 from offset.
         let mut offset = 0;
-        let mut seen_dot = false;
+        let mut pre_dot_idx = None::<usize>;
         let mut seen_exp = false;
         let mut just_saw_exp_sign = false;
         for bytes in self.bytes[self.idx..].windows(2) {
@@ -24,7 +24,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 [b'+' | b'-', _] if just_saw_exp_sign => just_saw_exp_sign = false,
                 [b'0'..=b'9' | b'_', _] => {}
                 [b'a'..=b'z' | b'A'..=b'Z', _] => {}
-                [b'.', b'0'..=b'9' | b'_'] if !seen_dot => seen_dot = true,
+                [b'.', b'0'..=b'9' | b'_'] if pre_dot_idx.is_none() => pre_dot_idx = Some(offset),
 
                 _ => break,
             }
@@ -38,6 +38,10 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             }
         }
 
-        if seen_dot || seen_exp { (TokenKind::Float, offset) } else { (TokenKind::Int, offset) }
+        if pre_dot_idx.is_some() || seen_exp {
+            (TokenKind::Float, offset)
+        } else {
+            (TokenKind::Int, offset)
+        }
     }
 }

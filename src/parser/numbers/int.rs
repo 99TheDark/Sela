@@ -126,6 +126,7 @@ pub(super) fn parse_bytes_for_float(
     mut src: &[u8],
     max_digits: usize,
     can_lead_zeros: bool,
+    stop_at_exp: bool,
 ) -> Result<FloatParsingOutput, ParsingError> {
     let mut errors = ParsingError::new();
     let mut result = 0u64;
@@ -135,7 +136,10 @@ pub(super) fn parse_bytes_for_float(
     let mut first_digit: Option<u8> = None;
 
     while let [byte, rest @ ..] = src {
-        if matches!(byte, b'.' | b'e' | b'E') {
+        if *byte == b'.' {
+            break;
+        }
+        if *byte == b'e' | b'E' && stop_at_exp {
             break;
         }
 
