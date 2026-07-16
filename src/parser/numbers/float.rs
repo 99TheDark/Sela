@@ -1,7 +1,10 @@
 use core::fmt;
 use std::{convert, ops};
 
-use crate::parser::numbers::{ErrorSet, IsEmpty, NumberParsingError, UnwrapAccumulate, int};
+use crate::{
+    core::scalb::ScalbTen,
+    parser::numbers::{ErrorSet, IsEmpty, NumberParsingError, UnwrapAccumulate, int},
+};
 
 #[derive(Copy, Clone)]
 pub enum ErrorKind {
@@ -153,7 +156,7 @@ pub(super) fn parse_bytes(mut src: &[u8]) -> Result<f64, ParsingError> {
         let scaling_factor = exp_part as i64 * exp_sign - dec.num_digits_capped as i64;
 
         // What if big int_part + big negative exp part? underflow bc x*(10^e) instead of x*10*10*10*...*10 (e times)
-        significand * 10f64.powi(scaling_factor as i32)
+        significand.scalb10(scaling_factor as i32)
     };
 
     if errors.is_empty() { Ok(result) } else { Err(errors) }
