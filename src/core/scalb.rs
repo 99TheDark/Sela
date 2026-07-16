@@ -1,3 +1,5 @@
+use std::hint;
+
 pub trait ScalbTen {
     fn scalb10(self, exp: i32) -> Self;
 }
@@ -12,8 +14,9 @@ impl ScalbTen for f64 {
         ];
 
         if (-22..=9).contains(&exp) {
-            self * 10f64.powi(exp)
-        } else {
+            self * POWERS_OF_TEN[(exp + 22) as usize]
+        } else if (-308..=308).contains(&exp) {
+            hint::cold_path();
             let mut res = self;
             if exp >= 0 {
                 for _ in 0..exp {
@@ -25,6 +28,9 @@ impl ScalbTen for f64 {
                 }
             }
             res
+        } else {
+            hint::cold_path();
+            if exp > 0 { f64::INFINITY } else { f64::NEG_INFINITY }
         }
     }
 }

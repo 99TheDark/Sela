@@ -1,54 +1,16 @@
 List
 ├─ Declaration
-│  ├─ Pattern: Identifier (x)
-│  └─ Value: Binary Operation
-│     ├─ Left-hand Side: Binary Operation
-│     │  ├─ Left-hand Side: Floating-Point Number (0.00001432186)
-│     │  ├─ Operator: Add (+)
-│     │  └─ Right-hand Side: Floating-Point Number (53.887)
-│     ├─ Operator: Subtract (-)
-│     └─ Right-hand Side: Floating-Point Number (inf)
+│  ├─ Pattern: Identifier (extreme_overflow)
+│  └─ Value: Floating-Point Number (-inf)
 ├─ Declaration
-│  ├─ Pattern: Identifier (z)
-│  └─ Value: Binary Operation
-│     ├─ Left-hand Side: Binary Operation
-│     │  ├─ Left-hand Side: Binary Operation
-│     │  │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  ├─ Left-hand Side: Binary Operation
-│     │  │  │  │  │  │  ├─ Left-hand Side: Floating-Point Number (1168.5)
-│     │  │  │  │  │  │  ├─ Operator: Add (+)
-│     │  │  │  │  │  │  └─ Right-hand Side: Binary Operation
-│     │  │  │  │  │  │     ├─ Left-hand Side: Floating-Point Number (inf)
-│     │  │  │  │  │  │     ├─ Operator: Multiply (*)
-│     │  │  │  │  │  │     └─ Right-hand Side: <! Unknown Floating-Point Number !>
-│     │  │  │  │  │  ├─ Operator: Add (+)
-│     │  │  │  │  │  └─ Right-hand Side: Floating-Point Number (3.141592653589796)
-│     │  │  │  │  ├─ Operator: Add (+)
-│     │  │  │  │  └─ Right-hand Side: Floating-Point Number (3.141592653589796)
-│     │  │  │  ├─ Operator: Add (+)
-│     │  │  │  └─ Right-hand Side: Floating-Point Number (0)
-│     │  │  ├─ Operator: Subtract (-)
-│     │  │  └─ Right-hand Side: <! Unknown Floating-Point Number !>
-│     │  ├─ Operator: Add (+)
-│     │  └─ Right-hand Side: Floating-Point Number (123.456)
-│     ├─ Operator: Subtract (-)
-│     └─ Right-hand Side: Member Access
-│        ├─ Parent: Integer (0)
-│        └─ Child: Unary Operation
-│           ├─ Operator: Posit (+)
-│           └─ Right-hand Side: <! Unknown !>
-└─ Binary Operation
-   ├─ Left-hand Side: Binary Operation
-   │  ├─ Left-hand Side: Integer (0)
-   │  ├─ Operator: Subtract (-)
-   │  └─ Right-hand Side: Floating-Point Number (2300)
-   ├─ Operator: Add (+)
-   └─ Right-hand Side: Binary Operation
-      ├─ Left-hand Side: Binary Operation
-      │  ├─ Left-hand Side: Floating-Point Number (inf)
-      │  ├─ Operator: Divide (/)
-      │  └─ Right-hand Side: <! Unknown Floating-Point Number !>
-      ├─ Operator: Multiply (*)
-      └─ Right-hand Side: <! Unknown Floating-Point Number !>
+│  ├─ Pattern: Identifier (extreme_underflow)
+│  └─ Value: Floating-Point Number (inf)
+├─ Declaration
+│  ├─ Pattern: Identifier (zero_exponent)
+│  └─ Value: Floating-Point Number (5.5)
+├─ Declaration
+│  ├─ Pattern: Identifier (zero_padded_exponent)
+│  └─ Value: <! Unknown Floating-Point Number !>
+└─ Declaration
+   ├─ Pattern: Identifier (negative_zero_exponent)
+   └─ Value: Floating-Point Number (12.34)
