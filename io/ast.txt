@@ -1,60 +1,32 @@
 List
 ├─ Declaration
-│  ├─ Pattern: Identifier (space_after_sign)
-│  └─ Value: <! Unknown Floating-Point Number !>
-├─ Integer (5)
+│  ├─ Pattern: Identifier (float_exclusive_range)
+│  └─ Value: Range
+│     ├─ From: Some Floating-Point Number (1.2000000000000002)
+│     ├─ Range Type: Exclusive Range (..<)
+│     └─ To: Some Floating-Point Number (3.4000000000000004)
 ├─ Declaration
-│  ├─ Pattern: Identifier (double_minus_exp)
-│  └─ Value: Binary Operation
-│     ├─ Left-hand Side: <! Unknown Floating-Point Number !>
-│     ├─ Operator: Subtract (-)
-│     └─ Right-hand Side: Integer (5)
+│  ├─ Pattern: Identifier (float_inclusive_range)
+│  └─ Value: Range
+│     ├─ From: Some Floating-Point Number (1.2000000000000002)
+│     ├─ Range Type: Inclusive Range (..=)
+│     └─ To: Some Floating-Point Number (3.4000000000000004)
 ├─ Declaration
-│  ├─ Pattern: Identifier (float_with_trailing_plus)
+│  ├─ Pattern: Identifier (float_method_call)
+│  └─ Value: Invocation
+│     ├─ Callee: Member Access
+│     │  ├─ Parent: Floating-Point Number (1.23)
+│     │  └─ Child: Identifier (to_string)
+│     └─ Arguments: Parentheses
+├─ Declaration
+│  ├─ Pattern: Identifier (tight_math)
 │  └─ Value: Binary Operation
-│     ├─ Left-hand Side: Floating-Point Number (12300)
+│     ├─ Left-hand Side: Floating-Point Number (1.2000000000000002)
 │     ├─ Operator: Add (+)
-│     └─ Right-hand Side: Declaration
-│        ├─ Pattern: Identifier (giant_pure_number)
-│        └─ Value: <! Unknown Floating-Point Number !>
-├─ Declaration
-│  ├─ Pattern: Identifier (standard_leading_zero)
-│  └─ Value: <! Unknown Floating-Point Number !>
-├─ Declaration
-│  ├─ Pattern: Identifier (isolated_dot_expr)
-│  └─ Value: Binary Operation
-│     ├─ Left-hand Side: Binary Operation
-│     │  ├─ Left-hand Side: Integer (1)
-│     │  ├─ Operator: Add (+)
-│     │  └─ Right-hand Side: <! Unknown !>
-│     ├─ Operator: Add (+)
-│     └─ Right-hand Side: Integer (2)
+│     └─ Right-hand Side: Floating-Point Number (3.4000000000000004)
 └─ Declaration
-   ├─ Pattern: Identifier (multiple_points_mixed)
+   ├─ Pattern: Identifier (loose_math)
    └─ Value: Binary Operation
-      ├─ Left-hand Side: Binary Operation
-      │  ├─ Left-hand Side: Member Access
-      │  │  ├─ Parent: Member Access
-      │  │  │  ├─ Parent: Floating-Point Number (1.2000000000000002)
-      │  │  │  └─ Child: Integer (3)
-      │  │  └─ Child: Integer (4)
-      │  ├─ Operator: Subtract (-)
-      │  └─ Right-hand Side: Member Access
-      │     ├─ Parent: Member Access
-      │     │  ├─ Parent: Member Access
-      │     │  │  ├─ Parent: Member Access
-      │     │  │  │  ├─ Parent: Integer (5)
-      │     │  │  │  └─ Child: Integer (6)
-      │     │  │  └─ Child: Integer (7)
-      │     │  └─ Child: Integer (8)
-      │     └─ Child: Integer (9)
+      ├─ Left-hand Side: Floating-Point Number (1.2000000000000002)
       ├─ Operator: Add (+)
-      └─ Right-hand Side: Member Access
-         ├─ Parent: Member Access
-         │  ├─ Parent: Member Access
-         │  │  ├─ Parent: Member Access
-         │  │  │  ├─ Parent: Identifier (a)
-         │  │  │  └─ Child: Identifier (y)
-         │  │  └─ Child: Integer (12)
-         │  └─ Child: Integer (34)
-         └─ Child: Integer (5)
+      └─ Right-hand Side: Floating-Point Number (3.4000000000000004)

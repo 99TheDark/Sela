@@ -1,73 +1,65 @@
-// ei124AOIK14231__wo49SDJKF314013r___uweroiwe-&Berwerr
+ei124AOIK14231__wo49SDJKF314013r___uweroiwe-&Berwerr
 
-// ab+
-// true-12_.__345_e-8
+ab+
+true-12_.__345_e-8
 
-// let function ≠ ∫(&v)dx
-// let k: Int = 3 - 2 + // Statement 1
-//                7 * 8 // Statement 1
-//              - 2     // Statement 2
+let function ≠ ∫(&v)dx
+let k: Int = 3 - 2 + // Statement 1
+               7 * 8 // Statement 1
+             - 2     // Statement 2
 
-// let a1 = ((0 - 1) * 2 + 5 / 6 + 0) * (3 + 4) / 8 + 4 - 7 * 8 - 
-//              1 + 94 * 14087 / (
-//                 6 + 88 - 1
-//     )
+let a1 = ((0 - 1) * 2 + 5 / 6 + 0) * (3 + 4) / 8 + 4 - 7 * 8 - 
+             1 + 94 * 14087 / (
+                6 + 88 - 1
+    )
 
-// let u = 5 ^
+let u = 5 ^
 
-// 2-
-//     1
+2-
+    1
 
-// let v = 3 == 2 and y > 5 or !a1
+let v = 3 == 2 and y > 5 or !a1
 
-// use std.io
-// use charm.ship
-// if x > 5 {
-//     io.print("Hello, world!")
-//     io.print("u = 5 ^ (2 - 1) = $(u).")
-// } else {
-//     io.print("Oh no...")
-//     io.print("$(test) $(othertest + "woah $(chill)")$(finaltest)|+1")
-// }
+use std.io
+use charm.ship
+if x > 5 {
+    io.print("Hello, world!")
+    io.print("u = 5 ^ (2 - 1) = $(u).")
+} else {
+    io.print("Oh no...")
+    io.print("$(test) $(othertest + "woah $(chill)")$(finaltest)|+1")
+}
 
-// let x = ship.Ship(row: 6, column: 3, direction: ship.Direction.Horizontal)
+let x = ship.Ship(row: 6, column: 3, direction: ship.Direction.Horizontal)
 
-// if !!!true {}
+if !!!true {}
 
-// n >>= if x >= 5 { 3 << 2 } else { n - 1 }
+n >>= if x >= 5 { 3 << 2 } else { n - 1 }
 
-// for num in 1..=5 {
-//     io.print(num)
-// }
+for num in 1..=5 {
+    io.print(num)
+}
 
-// v = 1 - v
+v = 1 - v
 
-// loop {
-//     while x > 5 {
-//         x -= 1
-//         x += 2e8
-//     }
-// }
+loop {
+    while x > 5 {
+        x -= 1
+        x += 2e8
+    }
+}
 
-// let x = 1249_08329408140121__95_2
+let x = 1249_08329408140121__95_2
 
-// func add(a: Int, b: Int) -> Int { a + b }
+func add(a: Int, b: Int) -> Int { a + b }
 
-// func apply(x, y: Int) -> Int {
-//     let res = x(y)
-//     res
-// }
+func apply(x, y: Int) -> Int {
+    let res = x(y)
+    res
+}
 
-// /*ab
-// /*cd*/ef /*ghij /*klmno/*pqr*/stuvwxyz*/*/ ÷
-// *//**/
+/*ab
+/*cd*/ef /*ghij /*klmno/*pqr*/stuvwxyz*/*/ ÷
+*//**/
 
-let space_after_sign = 1.0e+ 5
-let double_minus_exp = 1.0e--5
-let float_with_trailing_plus = 1.23e4+
-let giant_pure_number = 1.0e88888888888888888888888888888888
-let standard_leading_zero = 01.23
-let isolated_dot_expr = 1 + . + 2
-let multiple_points_mixed = 1.2.3.4 - 5. 6.7 .8.9 + a.y.12.34 .5
-
-// io.print("Hello, world)
+io.print("Hello, world)
