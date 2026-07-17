@@ -1,4 +1,4 @@
-On my machine (M1 Macbook Air, Apple Silicon, 8GB RAM Unified), all files in fully AST-legal syntax and roughly 3.5M LOC each:
+On my machine (M1 Macbook Air, Apple Silicon, 8GB RAM Unified), all files in fully AST-legal syntax and roughly 3.6M LOC each:
 
 |Language|MLOC/s|MB/s|
 |-|-|-|
