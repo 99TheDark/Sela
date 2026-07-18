@@ -1,7 +1,7 @@
 use crate::{
     ast::{self, range::RangeKind},
     diagnostics::ErrorKind,
-    parser::Parser,
+    parser::{PResult, Parser},
     token::{Token, precedence::Precedence},
 };
 
@@ -11,7 +11,7 @@ where
     'src: 'tok,
 {
     // TODO: Combine shared logic of nud + led
-    pub(super) fn parse_nud_range(&mut self, tok: Token, range: RangeKind) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_nud_range(&mut self, tok: Token, range: RangeKind) -> PResult<'ast> {
         let (to, span) = if self.peek().led_prec() != Precedence::None {
             let rhs = self.parse_expr(Precedence::Range);
             (Some(rhs), tok.span.to(rhs.span))
@@ -66,7 +66,7 @@ where
         &mut self,
         lhs: ast::NodeRef<'ast>,
         range: RangeKind,
-    ) -> ast::NodeRef<'ast> {
+    ) -> PResult<'ast> {
         let from = Some(lhs);
 
         let (to, span) = if self.peek().led_prec() == Precedence::None {

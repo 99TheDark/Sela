@@ -117,7 +117,7 @@ where
         self.tokens.get(self.idx).map_or(Precedence::None, |tok| tok.led_prec())
     }
 
-    fn parse_nud(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+    fn parse_nud(&mut self, tok: Token) -> PResult<'ast> {
         use TokenKind::*;
         match tok.kind {
             Ident => self.parse_ident(tok),
@@ -170,7 +170,7 @@ where
         }
     }
 
-    fn parse_led(&mut self, lhs: ast::NodeRef<'ast>, tok: Token) -> ast::NodeRef<'ast> {
+    fn parse_led(&mut self, lhs: ast::NodeRef<'ast>, tok: Token) -> PResult<'ast> {
         use TokenKind::*;
         // Maybe make this a manual pattern?
         if let Some(op_kind) = BinaryKind::from_token(tok) {
@@ -191,7 +191,7 @@ where
     }
 
     #[inline(always)]
-    fn parse_expr(&mut self, min_prec: Precedence) -> ast::NodeRef<'ast> {
+    fn parse_expr(&mut self, min_prec: Precedence) -> PResult<'ast> {
         let left_tok = self.next();
         let mut left = self.parse_nud(left_tok);
         while min_prec < self.peek_prec() {

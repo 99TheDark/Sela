@@ -1,6 +1,6 @@
 use crate::{
     ast,
-    parser::Parser,
+    parser::{PResult, Parser},
     token::{Token, kind::TokenKind, precedence::Precedence},
 };
 
@@ -9,11 +9,11 @@ where
     'src: 'ast,
     'src: 'tok,
 {
-    pub(super) fn parse_char(&mut self, _tok: Token) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_char(&mut self, _tok: Token) -> PResult<'ast> {
         todo!()
     }
 
-    pub(super) fn parse_string(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_string(&mut self, tok: Token) -> PResult<'ast> {
         // TODO: Unescape
         let mut frags = vec![ast::string::Fragment::String(tok.src(self.src).to_string())];
         let mut end = tok.span;

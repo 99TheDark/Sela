@@ -1,6 +1,6 @@
 use crate::{
     ast,
-    parser::Parser,
+    parser::{PResult, Parser},
     token::{Token, kind::TokenKind, precedence::Precedence},
 };
 
@@ -10,14 +10,14 @@ where
     'src: 'tok,
 {
     #[inline]
-    pub(super) fn parse_loop(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_loop(&mut self, tok: Token) -> PResult<'ast> {
         let lbrace = self.expect(TokenKind::LBrace);
         let body = self.parse_block(lbrace);
         self.alloc(ast::Node::new(ast::NodeKind::Loop { body }, tok.span.to(body.span)))
     }
 
     #[inline]
-    pub(super) fn parse_while(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_while(&mut self, tok: Token) -> PResult<'ast> {
         let cond = self.parse_expr(Precedence::None);
         let lbrace = self.expect(TokenKind::LBrace);
         let body = self.parse_block(lbrace);
@@ -25,7 +25,7 @@ where
     }
 
     #[inline]
-    pub(super) fn parse_for(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_for(&mut self, tok: Token) -> PResult<'ast> {
         let vari = self.parse_expr(Precedence::None);
         self.expect(TokenKind::In);
         let iter = self.parse_expr(Precedence::None);
@@ -35,7 +35,7 @@ where
     }
 
     #[inline]
-    pub(super) fn parse_if(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_if(&mut self, tok: Token) -> PResult<'ast> {
         let cond = self.parse_expr(Precedence::None);
         let lbrace = self.expect(TokenKind::LBrace);
         let body = self.parse_block(lbrace);

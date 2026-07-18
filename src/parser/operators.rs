@@ -2,7 +2,7 @@ use std::hint;
 
 use crate::{
     ast::{self, binary::BinaryKind, unop::UnOpKind},
-    parser::Parser,
+    parser::{PResult, Parser},
     token::{Token, kind::TokenKind, precedence::Precedence},
 };
 
@@ -16,12 +16,12 @@ where
         lhs: ast::NodeRef<'ast>,
         tok: Token,
         binary: BinaryKind,
-    ) -> ast::NodeRef<'ast> {
+    ) -> PResult<'ast> {
         let rhs = self.parse_expr(tok.led_prec());
         binary.make_node(lhs, rhs, self.arena)
     }
 
-    pub(super) fn parse_access(&mut self, lhs: ast::NodeRef<'ast>) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_access(&mut self, lhs: ast::NodeRef<'ast>) -> PResult<'ast> {
         self.eat_nls();
         'double_tuple_access: {
             if self.peek().is(TokenKind::Float) {
@@ -55,7 +55,7 @@ where
         self.alloc(ast::Node::new(kind, lhs.span.to(rhs.span)))
     }
 
-    pub(super) fn parse_unop(&mut self, tok: Token, op: UnOpKind) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_unop(&mut self, tok: Token, op: UnOpKind) -> PResult<'ast> {
         let rhs = self.parse_expr(tok.nud_prec());
         let kind = ast::NodeKind::UnOp { op, rhs };
         self.alloc(ast::Node::new(kind, tok.span.to(rhs.span)))

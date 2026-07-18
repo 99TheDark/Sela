@@ -1,6 +1,6 @@
 use crate::{
     ast,
-    parser::Parser,
+    parser::{PResult, Parser},
     token::{Token, kind::TokenKind, precedence::Precedence},
 };
 
@@ -10,7 +10,7 @@ where
     'src: 'tok,
 {
     #[inline]
-    pub(super) fn parse_func(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+    pub(super) fn parse_func(&mut self, tok: Token) -> PResult<'ast> {
         let name = if self.peek().is(TokenKind::Ident) {
             let ident_tok = self.next();
             Some(self.parse_ident(ident_tok))
