@@ -23,14 +23,14 @@ pub mod token;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
     let file =
-        if cfg!(debug_assertions) { "io/current.se" } else { "io/tests/huge_errorless_messy.se" };
+        if cfg!(debug_assertions) { "io/current.se" } else { "io/tests/medium_errorless_messy.se" };
     // Should I just read (no to_string?)
     let src = fs::read_to_string(file)?;
 
     // TODO: Move to a testing suite
     if !cfg!(debug_assertions) && args[1..].contains(&"iter".to_string()) {
         const COLD_RUNS: u64 = 3;
-        const WARN_RUNS: u64 = 10;
+        const WARN_RUNS: u64 = 50;
 
         std::thread::scope(|s| {
             s.spawn(move || {
