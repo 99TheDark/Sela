@@ -11,7 +11,7 @@ use crate::{
     ast,
     core::span::Span,
     diagnostics::{Diagnostics, ErrorKind, natural::Natural},
-    parser::{PResult, Parser},
+    parser::Parser,
     token::Token,
 };
 
@@ -218,7 +218,7 @@ where
     'src: 'tok,
 {
     // Could be a trait...
-    pub(super) fn parse_int(&mut self, tok: Token) -> PResult<'ast> {
+    pub(super) fn parse_int(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         match int::parse_bytes(tok.byte_src(self.src)) {
             Ok(val) => self.alloc_atom(ast::NodeKind::Int(val), tok),
             Err(errs) => {
@@ -229,7 +229,7 @@ where
         }
     }
 
-    pub(super) fn parse_radix_int(&mut self, tok: Token) -> PResult<'ast> {
+    pub(super) fn parse_radix_int(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         match radix_int::parse_bytes(tok.byte_src(self.src)) {
             Ok(val) => self.alloc_atom(ast::NodeKind::Int(val), tok),
             Err(errs) => {
@@ -240,7 +240,7 @@ where
         }
     }
 
-    pub(super) fn parse_float(&mut self, tok: Token) -> PResult<'ast> {
+    pub(super) fn parse_float(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         match float::parse_bytes(tok.byte_src(self.src)) {
             Ok(val) => self.alloc_atom(ast::NodeKind::Float(val), tok),
             Err(errs) => {

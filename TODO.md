@@ -3,8 +3,13 @@
 - Make binary operators & funcs actually stop in time based on lines
 - Implement preorder parsing
 - Implement `mut X` nud
+- Swap pure `NodeKind::Error` to use any node with unknowns filling the holes (via {..Default}), but must be inside an `Error` so all of that keeps working
+- Better expect error msg
+- Implement `impl`/`type`/`alias`/`enum`/`[]` etc
 - Remove deref/derefmut in place of something that doesn't leak all internals easily
-- Why do I have `&'a [NodeRef]` instead of `Vec<NodeRef>` again...? That's just more indirection
+- Why do I have `&'a [NodeRef]` instead of `Vec<NodeRef>` again...? That's just more indirection. It does seem to run faster though
+- Unify parse delimited and parse statements
+- Look at all `self.parse_pre_body()?` + `self.expect_and_recover(..)?` (the qmark)
 - Handle numbers like `00001230` gracefully as `1230` (no overflow, proper errors)
     - Same for floats
 - Maybe unify floats+ints+radix ints in parser
@@ -31,3 +36,4 @@
 - Maybe try out on-demand lexing/file reading
 - Attempt throwing a test warmup file to lex+parse while the project directory is being explored to train the branch predictor
 - Use `std::hint::spin_loop()`
+- Make strings stop being lexed upon new line unless backslash slash + ws before it

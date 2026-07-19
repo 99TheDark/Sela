@@ -1,4 +1,5 @@
 use core::fmt;
+use std::{convert, ops};
 
 use crate::{
     ast::{
@@ -24,13 +25,11 @@ pub struct Node<'a> {
     pub span: Span,
 }
 
-pub type NodeRef<'a> = &'a Node<'a>;
-
 impl<'a> Node<'a> {
-    pub const EMPTY: Self = Self { kind: NodeKind::Unknown, span: Span::ZERO };
+    pub const EMPTY: Self = Self { kind: NodeKind::Error, span: Span::ZERO };
 
     pub fn failed(span: Span) -> Self {
-        Self { kind: NodeKind::Unknown, span }
+        Self { kind: NodeKind::Error, span }
     }
 
     pub fn new(kind: NodeKind<'a>, span: Span) -> Self {
@@ -61,10 +60,12 @@ pub enum NodeKind<'a> {
     String(&'a [string::Fragment<'a>]),
     Decl { pat: NodeRef<'a>, val: NodeRef<'a> },
     Assign { pat: NodeRef<'a>, assign: AssignKind, val: NodeRef<'a> },
+    Mut(NodeRef<'a>),
     If { cond: NodeRef<'a>, body: NodeRef<'a>, fallback: Option<NodeRef<'a>> },
     Loop { body: NodeRef<'a> },
     While { cond: NodeRef<'a>, body: NodeRef<'a> },
-    For { vari: NodeRef<'a>, iter: NodeRef<'a>, body: NodeRef<'a> },
+    For { clause: NodeRef<'a>, body: NodeRef<'a> },
+    In { vari: NodeRef<'a>, iter: NodeRef<'a> },
     FuncSig { params: NodeRef<'a>, ret: Option<NodeRef<'a>> },
     Func { name: Option<NodeRef<'a>>, sig: NodeRef<'a>, body: Option<NodeRef<'a>> },
     Use { path: NodeRef<'a> },
@@ -73,10 +74,63 @@ pub enum NodeKind<'a> {
     Block(&'a [NodeRef<'a>]),
     Pair { lhs: NodeRef<'a>, rhs: NodeRef<'a> },
 
+    Error,
+
     Unknown,
     UnknownInt,
     UnknownFloat,
     UnknownChar,
     UnknownString,
     UnknownRange { from: Option<NodeRef<'a>>, range: RangeKind, to: Option<NodeRef<'a>> },
+}
+
+pub type NodeRef<'a> = &'a Node<'a>;
+
+impl<'a> ops::Try for NodeRef<'a> {
+    type Output = Self;
+    type Residual = Self;
+
+    fn from_output(output: Self::Output) -> Self {
+        output
+    }
+
+    fn branch(self) -> ops::ControlFlow<Self::Residual, Self::Output> {
+        match self.kind {
+            NodeKind::Error => ops::ControlFlow::Break(self),
+            _ => ops::ControlFlow::Continue(self),
+        }
+    }
+}
+
+impl<'a> ops::FromResidual<NodeRef<'a>> for NodeRef<'a> {
+    fn from_residual(residual: NodeRef<'a>) -> Self {
+        residual
+    }
+}
+
+impl<'a> ops::FromResidual<Result<convert::Infallible, NodeRef<'a>>> for NodeRef<'a> {
+    fn from_residual(residual: Result<convert::Infallible, NodeRef<'a>>) -> Self {
+        match residual {
+            Err(err) => err,
+        }
+    }
+}
+
+impl<'a> ops::Residual<NodeRef<'a>> for NodeRef<'a> {
+    type TryType = Self;
+}
+
+impl<'a> From<NodeRef<'a>> for Result<NodeRef<'a>, NodeRef<'a>> {
+    fn from(value: NodeRef<'a>) -> Self {
+        match value.kind {
+            NodeKind::Error => Err(value),
+            _ => Ok(value),
+        }
+    }
+}
+
+impl<'a> Node<'a> {
+    pub fn is_error(self) -> bool {
+        matches!(self.kind, NodeKind::Error)
+    }
 }

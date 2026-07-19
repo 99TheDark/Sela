@@ -84,7 +84,7 @@ impl<'a> Diagnostics<'a> {
         message: String,
         span: Span,
         alloc: &'ast Bump,
-    ) -> PResult<'ast> {
+    ) -> ast::NodeRef<'ast> {
         self.emit(kind, message, span);
         alloc.alloc(ast::Node::failed(span))
     }

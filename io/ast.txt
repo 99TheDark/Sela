@@ -1,4 +1,34 @@
 List
+├─ Declaration
+│  ├─ Pattern: Identifier (x)
+│  └─ Value: Integer (5)
+├─ <! Error !>
+├─ Declaration
+│  ├─ Pattern: Identifier (tuple)
+│  └─ Value: Parentheses
+│     ├─ Integer (1)
+│     ├─ Integer (2)
+│     └─ Integer (3)
+├─ Declaration
+│  ├─ Pattern: Mutable
+│  │  └─ Identifier (y)
+│  └─ Value: Integer (7)
+├─ If Statement
+│  ├─ Condition: Comparison
+│  │  ├─ Left-hand Side: Identifier (x)
+│  │  ├─ Comparator: Greater Than (>)
+│  │  └─ Right-hand Side: Integer (5)
+│  ├─ Then Body: Empty Block
+│  └─ Else Body: Some Empty Block
+├─ While Loop
+│  ├─ Condition: Comparison
+│  │  ├─ Left-hand Side: Identifier (x)
+│  │  ├─ Comparator: Greater Than (>)
+│  │  └─ Right-hand Side: Integer (1)
+│  └─ Body: Empty Block
+├─ Block
+│  ├─ <! Error !>
+│  └─ <! Error !>
 ├─ Binary Operation
 │  ├─ Left-hand Side: Identifier (ei124AOIK14231__wo49SDJKF314013r___uweroiwe)
 │  ├─ Operator: Subtract (-)
@@ -12,27 +42,21 @@ List
 │  │  └─ Right-hand Side: Boolean (true)
 │  ├─ Operator: Subtract (-)
 │  └─ Right-hand Side: <! Unknown Floating-Point Number !>
+├─ <! Error !>
 ├─ Declaration
-│  ├─ Pattern: Invocation
-│  │  ├─ Callee: Identifier (function)
-│  │  └─ Arguments: Parentheses
-│  │     └─ Unary Operation
-│  │        ├─ Operator: Reference (&)
-│  │        └─ Right-hand Side: Identifier (v)
-│  └─ Value: Declaration
-│     ├─ Pattern: Pair
-│     │  ├─ Left: Identifier (k)
-│     │  └─ Right: Identifier (Int)
-│     └─ Value: Binary Operation
-│        ├─ Left-hand Side: Binary Operation
-│        │  ├─ Left-hand Side: Integer (3)
-│        │  ├─ Operator: Subtract (-)
-│        │  └─ Right-hand Side: Integer (2)
-│        ├─ Operator: Add (+)
-│        └─ Right-hand Side: Binary Operation
-│           ├─ Left-hand Side: Integer (7)
-│           ├─ Operator: Multiply (*)
-│           └─ Right-hand Side: Integer (8)
+│  ├─ Pattern: Pair
+│  │  ├─ Left: Identifier (k)
+│  │  └─ Right: Identifier (Int)
+│  └─ Value: Binary Operation
+│     ├─ Left-hand Side: Binary Operation
+│     │  ├─ Left-hand Side: Integer (3)
+│     │  ├─ Operator: Subtract (-)
+│     │  └─ Right-hand Side: Integer (2)
+│     ├─ Operator: Add (+)
+│     └─ Right-hand Side: Binary Operation
+│        ├─ Left-hand Side: Integer (7)
+│        ├─ Operator: Multiply (*)
+│        └─ Right-hand Side: Integer (8)
 ├─ Unary Operation
 │  ├─ Operator: Negate (-)
 │  └─ Right-hand Side: Integer (2)
@@ -226,9 +250,10 @@ List
 │           ├─ Operator: Subtract (-)
 │           └─ Right-hand Side: Integer (1)
 ├─ For Loop
-│  ├─ Variable: Identifier (num)
-│  ├─ Iterable: Range
-│  │  ├─ From: Some Integer (1)
+│  ├─ Clause: Range
+│  │  ├─ From: Some In
+│  │  │  ├─ Variable: Identifier (num)
+│  │  │  └─ Iterable: Integer (1)
 │  │  ├─ Range Type: Inclusive Range (..=)
 │  │  └─ To: Some Integer (5)
 │  └─ Body: Block
@@ -297,6 +322,28 @@ List
 │     │     └─ Arguments: Parentheses
 │     │        └─ Identifier (y)
 │     └─ Identifier (res)
+├─ While Loop
+│  ├─ Condition: While Loop
+│  │  ├─ Condition: Comparison
+│  │  │  ├─ Left-hand Side: Identifier (x)
+│  │  │  ├─ Comparator: Greater Than (>)
+│  │  │  └─ Right-hand Side: Integer (5)
+│  │  └─ Body: Empty Block
+│  └─ Body: Block
+│     ├─ <! Error !>
+│     └─ <! Error !>
+├─ Declaration
+│  ├─ Pattern: Parentheses
+│  │  ├─ Mutable
+│  │  │  └─ Identifier (a)
+│  │  ├─ Mutable
+│  │  │  └─ Identifier (b)
+│  │  └─ Identifier (c)
+│  └─ Value: Parentheses
+│     ├─ Integer (9)
+│     ├─ Integer (9)
+│     └─ String
+│        └─ Raw String: "\"TheDark\""
 └─ Invocation
    ├─ Callee: Member Access
    │  ├─ Parent: Identifier (io)

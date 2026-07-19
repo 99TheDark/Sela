@@ -1,12 +1,13 @@
 pub mod atoms;
+pub mod binary;
 pub mod control;
 pub mod functions;
 pub mod groups;
 pub mod numbers;
-pub mod operators;
 pub mod properties;
 pub mod ranges;
 pub mod text;
+pub mod unary;
 pub mod variables;
 
 use std::{hint, mem::MaybeUninit};
@@ -27,10 +28,8 @@ pub struct Parser<'tok, 'ast, 'diag, 'src> {
     diag: &'diag mut Diagnostics<'src>,
     arena: &'ast Bump,
     eof_token: Token,
+    brace_stop_depth: usize,
 }
-
-pub struct ParserError;
-pub type PResult<'ast> = Result<ast::NodeRef<'ast>, ParserError>;
 
 impl<'tok, 'ast, 'diag, 'src> Parser<'tok, 'ast, 'diag, 'src>
 where
@@ -46,11 +45,15 @@ where
         let eof_loc = tokens.last().map_or(0, |tok| tok.span.end);
         let eof_token = Token::new(TokenKind::EOF, Span::single(eof_loc));
 
-        Self { src, tokens, idx: 0, diag, arena, eof_token }
+        Self { src, tokens, idx: 0, diag, arena, eof_token, brace_stop_depth: 0 }
     }
 
     fn alloc<T>(&mut self, elem: T) -> &'ast T {
         self.arena.alloc(elem)
+    }
+
+    fn alloc_node(&mut self, kind: ast::NodeKind<'ast>, span: Span) -> ast::NodeRef<'ast> {
+        self.alloc(ast::Node::new(kind, span))
     }
 
     // What about early returns?? I wish there were linear types too...
@@ -60,7 +63,7 @@ where
     }
 
     #[inline]
-    fn eat_until<F>(&mut self, cond: F)
+    fn eat_while<F>(&mut self, cond: F)
     where
         F: Fn(Token) -> bool,
     {
@@ -72,12 +75,7 @@ where
     // There must be a way to make this more performant...
     #[inline(always)]
     fn eat_nls(&mut self) {
-        self.eat_until(|tok| tok.is_nl());
-    }
-
-    #[inline(always)]
-    fn eat_line(&mut self) {
-        self.eat_until(|tok| !tok.is_nl());
+        self.eat_while(|tok| tok.is_nl());
     }
 
     fn peek(&self) -> Token {
@@ -100,16 +98,53 @@ where
         }
     }
 
-    fn expect(&mut self, expected: TokenKind) -> Token {
-        let tok = self.next();
-        if tok.kind != expected {
+    #[inline]
+    fn recover<F: Fn(TokenKind) -> bool>(&mut self, is_end: F) {
+        self.eat_while(|t| !t.is_nl() && !is_end(t.kind));
+    }
+
+    fn recover_if_error<F: Fn(TokenKind) -> bool>(&mut self, node: ast::NodeRef<'ast>, is_end: F) {
+        if node.is_error() {
+            self.recover(is_end);
+        }
+    }
+
+    fn expect(&mut self, expected: TokenKind, cur_span: Span) -> Result<Token, ast::NodeRef<'ast>> {
+        self.eat_nls();
+        let tok = self.peek();
+        if !tok.is(expected) {
+            hint::cold_path();
             self.diag.emit(
                 ErrorKind::Syntax,
                 format!("Expected {:?} token, found {:?} token instead", expected, tok.kind),
                 tok.span,
             );
+            self.recover(|t| t == expected);
+            Err(self.alloc_node(ast::NodeKind::Error, cur_span))
+        } else {
+            self.true_next();
+            Ok(tok)
+        }
+    }
+
+    fn expect_invariant(&mut self, expected: TokenKind) -> Token {
+        let tok = self.next();
+        if !tok.is(expected) {
+            hint::cold_path(); // Should be ICE cold
+            panic!(
+                "Internal compiler error: Lexer invariant contradicted. Expected {:?} token, found {:?} instead",
+                expected, tok
+            );
         }
         tok
+    }
+
+    fn parse_pre_body(&mut self) -> ast::NodeRef<'ast> {
+        // This is so ugly but I have no better solution
+        self.brace_stop_depth += 1;
+        let expr = self.parse_expr(Precedence::None);
+        self.brace_stop_depth -= 1;
+        expr
     }
 
     #[inline(always)]
@@ -117,7 +152,7 @@ where
         self.tokens.get(self.idx).map_or(Precedence::None, |tok| tok.led_prec())
     }
 
-    fn parse_nud(&mut self, tok: Token) -> PResult<'ast> {
+    fn parse_nud(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         use TokenKind::*;
         match tok.kind {
             Ident => self.parse_ident(tok),
@@ -140,12 +175,24 @@ where
                 ast::NodeKind::Parens,
             ),
             LBrack => todo!(),
+            LBrace if self.brace_stop_depth != 0 => {
+                // But what about something like func(...) -> ({}) {}?
+                // I need to have a custom type parser or a stack
+                hint::cold_path();
+                self.diag.fail(
+                    ErrorKind::Syntax,
+                    format!("Invalid type: Hit start of block"),
+                    tok.span,
+                    self.arena,
+                )
+            }
             LBrace => self.parse_block(tok),
             DotDot => self.parse_nud_range(tok, RangeKind::Full),
             DotDotLt => self.parse_nud_range(tok, RangeKind::Excl),
             DotDotEq => self.parse_nud_range(tok, RangeKind::Incl),
             Tick => todo!(),
             Let => self.parse_decl(tok),
+            Mut => self.parse_mut(tok),
             True => self.parse_bool(tok, true),
             False => self.parse_bool(tok, false),
             If => self.parse_if(tok),
@@ -155,11 +202,10 @@ where
             Func => self.parse_func(tok),
             Use => self.parse_use(tok),
             Charm => self.alloc_atom(ast::NodeKind::Charm, tok),
-            NoChar => todo!(),
+            EmptyChar => todo!(),
             UntermChar => self.alloc_atom(ast::NodeKind::UnknownChar, tok),
-            UntermQuotEsc => todo!(),
             UntermStr => self.alloc_atom(ast::NodeKind::UnknownString, tok),
-            Unknown => self.alloc_atom(ast::NodeKind::Unknown, tok),
+            Unknown => self.alloc_atom(ast::NodeKind::Error, tok),
             // _ => panic!("Illegal or not implemented: {:#?}", tok), // TODO: Rich error messages
             _ => self.diag.fail(
                 ErrorKind::Syntax,
@@ -170,7 +216,7 @@ where
         }
     }
 
-    fn parse_led(&mut self, lhs: ast::NodeRef<'ast>, tok: Token) -> PResult<'ast> {
+    fn parse_led(&mut self, lhs: ast::NodeRef<'ast>, tok: Token) -> ast::NodeRef<'ast> {
         use TokenKind::*;
         // Maybe make this a manual pattern?
         if let Some(op_kind) = BinaryKind::from_token(tok) {
@@ -185,26 +231,27 @@ where
                 LBrack => todo!(),
                 At => todo!(),
                 Colon => self.parse_pair(lhs, tok), // There is a better way for sure than to pass in tok
+                In => self.parse_in(lhs),
                 _ => panic!(),
             }
         }
     }
 
     #[inline(always)]
-    fn parse_expr(&mut self, min_prec: Precedence) -> PResult<'ast> {
+    fn parse_expr(&mut self, min_prec: Precedence) -> ast::NodeRef<'ast> {
         let left_tok = self.next();
-        let mut left = self.parse_nud(left_tok);
+        let mut left = self.parse_nud(left_tok)?;
         while min_prec < self.peek_prec() {
             let tok = self.next();
-            left = self.parse_led(left, tok);
+            left = self.parse_led(left, tok)?;
         }
         left
     }
 
-    fn parse_stmts<F>(&mut self, should_exit: F) -> BumpVec<'ast, ast::NodeRef<'ast>>
-    where
-        F: Fn(Token) -> bool,
-    {
+    fn parse_stmts(
+        &mut self,
+        closing_kind: Option<TokenKind>, // Could change to a generic for monomorphization
+    ) -> BumpVec<'ast, ast::NodeRef<'ast>> {
         let mut stmts = BumpVec::new_in(self.arena);
         loop {
             self.eat_nls();
@@ -212,18 +259,19 @@ where
                 hint::cold_path();
                 break;
             }
-            if should_exit(self.peek()) {
+            if Some(self.peek().kind) == closing_kind {
                 self.true_next();
                 break;
             }
 
             let stmt = self.parse_expr(Precedence::None);
+            self.recover_if_error(stmt, |t| Some(t) == closing_kind);
             stmts.push(stmt);
         }
         stmts
     }
 
     pub fn parse(mut self) -> BumpVec<'ast, ast::NodeRef<'ast>> {
-        self.parse_stmts(|_| false)
+        self.parse_stmts(None)
     }
 }

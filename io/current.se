@@ -1,3 +1,30 @@
+let x = 5
+
+if x > 3 {
+    x += 1
+} else
+
+12 + 13 == 35
+
+let tuple= (1,
+2,
+3
+,)
+
+let mut y = 7
+
+if x > 5 {} else{
+
+}
+
+while 
+
+x>1
+
+{}{while whiel}
+
+for {}
+
 ei124AOIK14231__wo49SDJKF314013r___uweroiwe-&Berwerr
 
 ab+
@@ -57,6 +84,12 @@ func apply(x, y: Int) -> Int {
     let res = x(y)
     res
 }
+
+while while x>5 {}{ func (a:Int)->{
+    {}+(,)-
+}}
+
+let (mut a, mut b, c) = (9, 9, "TheDark")
 
 /*ab
 /*cd*/ef /*ghij /*klmno/*pqr*/stuvwxyz*/*/ ÷

@@ -1,6 +1,6 @@
 use crate::{
     ast,
-    parser::{PResult, Parser},
+    parser::Parser,
     token::{Token, kind::TokenKind},
 };
 
@@ -13,12 +13,9 @@ where
         &mut self,
         lhs: ast::NodeRef<'ast>,
         tok: Token,
-    ) -> PResult<'ast> {
+    ) -> ast::NodeRef<'ast> {
         let rhs =
             self.parse_delimited(tok, TokenKind::Comma, TokenKind::RParen, ast::NodeKind::Parens);
-        self.alloc(ast::Node::new(
-            ast::NodeKind::Invoc { callee: lhs, args: rhs },
-            lhs.span.to(rhs.span),
-        ))
+        self.alloc_node(ast::NodeKind::Invoc { callee: lhs, args: rhs }, lhs.span.to(rhs.span))
     }
 }

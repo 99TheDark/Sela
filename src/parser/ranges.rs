@@ -1,7 +1,7 @@
 use crate::{
     ast::{self, range::RangeKind},
     diagnostics::ErrorKind,
-    parser::{PResult, Parser},
+    parser::Parser,
     token::{Token, precedence::Precedence},
 };
 
@@ -11,9 +11,9 @@ where
     'src: 'tok,
 {
     // TODO: Combine shared logic of nud + led
-    pub(super) fn parse_nud_range(&mut self, tok: Token, range: RangeKind) -> PResult<'ast> {
+    pub(super) fn parse_nud_range(&mut self, tok: Token, range: RangeKind) -> ast::NodeRef<'ast> {
         let (to, span) = if self.peek().led_prec() != Precedence::None {
-            let rhs = self.parse_expr(Precedence::Range);
+            let rhs = self.parse_expr(Precedence::Range)?;
             (Some(rhs), tok.span.to(rhs.span))
         } else {
             (None, tok.span)
@@ -59,18 +59,18 @@ where
             }
         };
 
-        self.alloc(ast::Node::new(kind, span))
+        self.alloc_node(kind, span)
     }
 
     pub(super) fn parse_led_range(
         &mut self,
         lhs: ast::NodeRef<'ast>,
         range: RangeKind,
-    ) -> PResult<'ast> {
+    ) -> ast::NodeRef<'ast> {
         let from = Some(lhs);
 
         let (to, span) = if self.peek().led_prec() == Precedence::None {
-            let rhs = self.parse_expr(Precedence::Range);
+            let rhs = self.parse_expr(Precedence::Range)?;
             (Some(rhs), lhs.span.to(rhs.span))
         } else {
             (None, lhs.span)
@@ -116,6 +116,6 @@ where
             }
         };
 
-        self.alloc(ast::Node::new(kind, span))
+        self.alloc_node(kind, span)
     }
 }

@@ -67,6 +67,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             4 => match ident {
                 b"type" => Type,
                 b"enum" => Enum,
+                b"impl" => Impl,
                 b"idea" => Idea,
                 b"func" => Func,
                 b"else" => Else,
@@ -79,7 +80,6 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             5 => match ident {
                 b"alias" => Alias,
                 b"const" => Const,
-                b"class" => Class,
                 b"while" => While,
                 b"match" => Match,
                 b"break" => Break,

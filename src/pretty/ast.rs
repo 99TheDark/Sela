@@ -26,10 +26,12 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             String(_) => f.write("String"),
             Decl { .. } => f.write("Declaration"),
             Assign { .. } => f.write("Assignment"),
+            Mut(..) => f.write("Mutable"),
             If { .. } => f.write("If Statement"),
             Loop { .. } => f.write("Loop"),
             While { .. } => f.write("While Loop"),
             For { .. } => f.write("For Loop"),
+            In { .. } => f.write("In"),
             FuncSig { .. } => f.write("Function Signature"),
             Func { .. } => f.write("Function"),
             Block(e) if e.is_empty() => f.write("Empty Block"),
@@ -38,6 +40,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Pair { .. } => f.write("Pair"),
             Use { .. } => f.write("Use"),
             Charm => f.write("Charm"),
+            Error => f.write("<! Error !>"),
             Unknown => f.write("<! Unknown !>"),
             UnknownInt => f.write("<! Unknown Integer !>"),
             UnknownFloat => f.write("<! Unknown Floating-Point Number !>"),
@@ -59,7 +62,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Ident(_) => AnsiColor::Cyan,
             Decl { .. } | Assign { .. } => AnsiColor::Green,
             Block(e) if e.is_empty() => AnsiColor::Gray,
-            Unknown
+            Error
+            | Unknown
             | UnknownInt
             | UnknownFloat
             | UnknownChar
@@ -118,6 +122,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .named("Assigner", assign)
                 .named("Value", *val)
                 .finish(),
+            Mut(inner) => pretty::Builder::new().unnamed(*inner).finish(),
             If { cond, body, fallback } => pretty::Builder::new()
                 .named("Condition", *cond)
                 .named("Then Body", *body)
@@ -127,11 +132,12 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             While { cond, body } => {
                 pretty::Builder::new().named("Condition", *cond).named("Body", *body).finish()
             }
-            For { vari, iter, body } => pretty::Builder::new()
-                .named("Variable", *vari)
-                .named("Iterable", *iter)
-                .named("Body", *body)
-                .finish(),
+            For { clause, body } => {
+                pretty::Builder::new().named("Clause", *clause).named("Body", *body).finish()
+            }
+            In { vari, iter } => {
+                pretty::Builder::new().named("Variable", *vari).named("Iterable", *iter).finish()
+            }
             FuncSig { params, ret } => pretty::Builder::new()
                 .named("Parameters", *params)
                 .named("Return Type", ret)
@@ -146,8 +152,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Pair { lhs, rhs } => {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
             }
-            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | Unknown | UnknownInt
-            | UnknownFloat | UnknownChar | UnknownString => pretty::Builder::empty(),
+            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | Error | Unknown
+            | UnknownInt | UnknownFloat | UnknownChar | UnknownString => pretty::Builder::empty(),
         }
     }
 }

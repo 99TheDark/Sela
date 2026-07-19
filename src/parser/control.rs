@@ -1,7 +1,7 @@
 use crate::{
     ast,
-    parser::{PResult, Parser},
-    token::{Token, kind::TokenKind, precedence::Precedence},
+    parser::Parser,
+    token::{Token, kind::TokenKind},
 };
 
 impl<'tok, 'ast, 'diag, 'src> Parser<'tok, 'ast, 'diag, 'src>
@@ -10,45 +10,40 @@ where
     'src: 'tok,
 {
     #[inline]
-    pub(super) fn parse_loop(&mut self, tok: Token) -> PResult<'ast> {
-        let lbrace = self.expect(TokenKind::LBrace);
+    pub(super) fn parse_loop(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let lbrace = self.expect(TokenKind::LBrace, tok.span)?;
         let body = self.parse_block(lbrace);
-        self.alloc(ast::Node::new(ast::NodeKind::Loop { body }, tok.span.to(body.span)))
+        self.alloc_node(ast::NodeKind::Loop { body }, tok.span.to(body.span))
     }
 
     #[inline]
-    pub(super) fn parse_while(&mut self, tok: Token) -> PResult<'ast> {
-        let cond = self.parse_expr(Precedence::None);
-        let lbrace = self.expect(TokenKind::LBrace);
+    pub(super) fn parse_while(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let cond = self.parse_pre_body()?;
+        let lbrace = self.expect(TokenKind::LBrace, tok.span.to(cond.span))?;
         let body = self.parse_block(lbrace);
-        self.alloc(ast::Node::new(ast::NodeKind::While { cond, body }, tok.span.to(body.span)))
+        self.alloc_node(ast::NodeKind::While { cond, body }, tok.span.to(body.span))
     }
 
     #[inline]
-    pub(super) fn parse_for(&mut self, tok: Token) -> PResult<'ast> {
-        let vari = self.parse_expr(Precedence::None);
-        self.expect(TokenKind::In);
-        let iter = self.parse_expr(Precedence::None);
-        let lbrace = self.expect(TokenKind::LBrace);
+    pub(super) fn parse_for(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let clause = self.parse_pre_body()?;
+        let lbrace = self.expect(TokenKind::LBrace, tok.span.to(clause.span))?;
         let body = self.parse_block(lbrace);
-        self.alloc(ast::Node::new(ast::NodeKind::For { vari, iter, body }, tok.span.to(body.span)))
+        self.alloc_node(ast::NodeKind::For { clause, body }, tok.span.to(body.span))
     }
 
     #[inline]
-    pub(super) fn parse_if(&mut self, tok: Token) -> PResult<'ast> {
-        let cond = self.parse_expr(Precedence::None);
-        let lbrace = self.expect(TokenKind::LBrace);
+    pub(super) fn parse_if(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let cond = self.parse_pre_body()?;
+        let lbrace = self.expect(TokenKind::LBrace, tok.span.to(cond.span))?;
         let body = self.parse_block(lbrace);
         let fallback = if self.peek().is(TokenKind::Else) {
-            self.next();
-            let else_lbrace = self.expect(TokenKind::LBrace);
+            let else_kw = self.next();
+            let else_lbrace = self.expect(TokenKind::LBrace, tok.span.to(else_kw.span))?;
             Some(self.parse_block(else_lbrace))
         } else {
             None
         };
-        self.alloc(ast::Node::new(
-            ast::NodeKind::If { cond, body, fallback },
-            tok.span.to(body.span),
-        ))
+        self.alloc_node(ast::NodeKind::If { cond, body, fallback }, tok.span.to(body.span))
     }
 }

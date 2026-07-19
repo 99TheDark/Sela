@@ -5,17 +5,19 @@ pub enum TokenKind {
     Whitespace,
     NewLine,
     LineComment,
+    DocLineComment, //\\  (Document Line Comment)
     BlockComment,
-    Ident,
-    Int,
-    RadixInt,
-    Float,
-    Char,
-    String,
-    Annot,
-    Eq,     //\\ =
-    Plus,   //\\ +
-    PlusEq, //\\ +=
+    DocBlockComment, //\\ (Document Block Comment)
+    Ident,           //\\ (Identifier)
+    Int,             //\\ (Integer)
+    RadixInt,        //\\ (Radix Integer)
+    Float,           //\\ (Floating-Point Number)
+    Char,            //\\ (Character)
+    String,          //\\ (String)
+    Annot,           //\\ (Annotation)
+    Eq,              //\\ =
+    Plus,            //\\ +
+    PlusEq,          //\\ +=
     // PlusBar,   //\\ +|
     // PlusBarEq, //\\ +|=
     // PlusPct,   //\\ +%
@@ -80,18 +82,18 @@ pub enum TokenKind {
     Arrow,    //\\ ->
 
     Let,   //\\ let
-    Const, //\\ const
-    Mut,   //\\ mut
+    Const, //\\ const (Constant)
+    Mut,   //\\ mut   (Mutable)  --- Maybe change to `uniq`?
     Type,  //\\ type
     Alias, //\\ alias
-    Enum,  //\\ enum
-    Class, //\\ class
+    Enum,  //\\ enum  (Enumeration)
+    Impl,  //\\ impl  (Implement)
     Idea,  //\\ idea
-    Func,  //\\ func
-    Mod,   //\\ mod
-    Pub,   //\\ pub
-    Inn,   //\\ inn
-    Pri,   //\\ pri
+    Func,  //\\ func  (Function)
+    Mod,   //\\ mod   (Module)
+    Pub,   //\\ pub   (Public)
+    Inn,   //\\ inn   (Inner)
+    Pri,   //\\ pri   (Private)
     If,    //\\ if
     Else,  //\\ else
     Loop,  //\\ loop
@@ -113,11 +115,10 @@ pub enum TokenKind {
     And,   //\\ and
     Or,    //\\ or
 
-    NoChar,        //\\ ''
-    UntermComment, //\\ /* blah blah
-    UntermChar,
-    UntermQuotEsc,
-    UntermStr,
+    EmptyChar,     //\\ ''           (Empty Character)
+    UntermComment, //\\ /* blah blah (Unterminated Comment)
+    UntermChar,    //\\ ' blah       (Unterminated Character)
+    UntermStr,     //\\ "blah blah   (Unterminated String)
 
     // Poison tokens are handled only for better error messages from common mistakes
     PsnAmpAmp,     //\\ && //! &&T + x & &y -> maybe remove + peephole
@@ -147,7 +148,7 @@ pub enum TokenKind {
     PsnBSlash,     //\\ \
 
     Unknown,
-    EOF,
+    EOF, // (End of File)
 }
 
 impl TokenKind {
@@ -161,10 +162,7 @@ impl TokenKind {
 
     pub const fn is_invalid(&self) -> bool {
         use TokenKind::*;
-        matches!(
-            self,
-            Unknown | EOF | NoChar | UntermComment | UntermChar | UntermQuotEsc | UntermStr
-        )
+        matches!(self, Unknown | EOF | EmptyChar | UntermComment | UntermChar | UntermStr)
     }
 
     pub const fn is_recovery_terminator(&self) -> bool {
@@ -192,7 +190,7 @@ impl TokenKind {
             Or => Precedence::ShortOr,
             And => Precedence::ShortAnd,
             EqEq | NotEq => Precedence::Equal,
-            Gt | Lt | GtEq | LtEq => Precedence::Inequal,
+            Gt | Lt | GtEq | LtEq | In => Precedence::Relat,
             Bar => Precedence::EagerOr,
             Caret => Precedence::EagerXor,
             Amp => Precedence::EagerAnd,

@@ -51,7 +51,7 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
 
         let can_be_annot = match &self.bytes[self.idx + 1] {
             b'\n' => return (TokenKind::UntermChar, 2),
-            b'\'' => return (TokenKind::NoChar, 2),
+            b'\'' => return (TokenKind::EmptyChar, 2),
             b if b.is_ascii_whitespace() => false,
             _ => true,
         };
