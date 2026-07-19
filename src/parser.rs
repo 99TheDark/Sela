@@ -99,6 +99,7 @@ where
     }
 
     #[inline]
+    #[cold]
     fn recover<F: Fn(TokenKind) -> bool>(&mut self, is_end: F) {
         self.eat_while(|t| !t.is_nl() && !is_end(t.kind));
     }
@@ -109,7 +110,11 @@ where
         }
     }
 
-    fn expect(&mut self, expected: TokenKind, cur_span: Span) -> Result<Token, ast::NodeRef<'ast>> {
+    fn expect<F: Fn() -> Span>(
+        &mut self,
+        expected: TokenKind,
+        make_span: F,
+    ) -> Result<Token, ast::NodeRef<'ast>> {
         self.eat_nls();
         let tok = self.peek();
         if !tok.is(expected) {
@@ -120,7 +125,7 @@ where
                 tok.span,
             );
             self.recover(|t| t == expected);
-            Err(self.alloc_node(ast::NodeKind::Error, cur_span))
+            Err(self.alloc_node(ast::NodeKind::Error, make_span()))
         } else {
             self.true_next();
             Ok(tok)

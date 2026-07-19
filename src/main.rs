@@ -30,29 +30,35 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // TODO: Move to a testing suite
     if !cfg!(debug_assertions) && args[1..].contains(&"iter".to_string()) {
         const COLD_RUNS: u64 = 3;
-        const WARN_RUNS: u64 = 5;
+        const WARN_RUNS: u64 = 10;
 
         std::thread::scope(|s| {
-            for i in 0..COLD_RUNS {
-                s.spawn(|| compile(file.to_string(), &src)).join().unwrap().unwrap();
-                println!("Cold run {} / {}\n", i + 1, COLD_RUNS);
-            }
+            s.spawn(move || {
+                for i in 0..COLD_RUNS {
+                    compile(file.to_string(), &src).unwrap();
+                    println!("Cold run {} / {}\n", i + 1, COLD_RUNS);
+                }
 
-            let mut total_loc_per_s = 0;
-            let mut total_mb_per_s = 0;
-            for i in 0..WARN_RUNS {
-                let res = s.spawn(|| compile(file.to_string(), &src)).join();
-                let Ok(res) = res else { panic!("{:?}", res) };
-                let Ok(res) = res else { panic!("{:?}", res) };
+                let mut total_loc_per_s = 0;
+                let mut total_mb_per_s = 0;
+                for i in 0..WARN_RUNS {
+                    let res = compile(file.to_string(), &src).unwrap();
 
-                let (loc_per_s, mb_per_s) = res;
-                total_loc_per_s += loc_per_s;
-                total_mb_per_s += mb_per_s;
-                println!("Warm run {} / {}\n", i + 1, WARN_RUNS);
-            }
+                    let (loc_per_s, mb_per_s) = res;
+                    total_loc_per_s += loc_per_s;
+                    total_mb_per_s += mb_per_s;
+                    println!("Warm run {} / {}\n", i + 1, WARN_RUNS);
+                }
 
-            println!("--- TOTAL ---");
-            println!("{} LOC/s; {} MB/s", total_loc_per_s / WARN_RUNS, total_mb_per_s / WARN_RUNS);
+                println!("--- TOTAL ---");
+                println!(
+                    "{} LOC/s; {} MB/s",
+                    total_loc_per_s / WARN_RUNS,
+                    total_mb_per_s / WARN_RUNS
+                );
+            })
+            .join()
+            .unwrap()
         });
     } else {
         compile(file.to_string(), &src)?;

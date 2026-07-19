@@ -2,8 +2,8 @@
 - Implement forced parens on operators
 - Make binary operators & funcs actually stop in time based on lines
 - Implement preorder parsing
-- Implement `mut X` nud
 - Swap pure `NodeKind::Error` to use any node with unknowns filling the holes (via {..Default}), but must be inside an `Error` so all of that keeps working
+- Mean -> Median in benchmarks
 - Better expect error msg
 - Implement `impl`/`type`/`alias`/`enum`/`[]` etc
 - Remove deref/derefmut in place of something that doesn't leak all internals easily
