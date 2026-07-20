@@ -20,12 +20,7 @@ where
 
         let lparen =
             self.expect(TokenKind::LParen, name.map_or(tok.span, |n| tok.span.to(n.span)))?;
-        let params = self.parse_delimited(
-            lparen,
-            TokenKind::Comma,
-            TokenKind::RParen,
-            ast::NodeKind::Parens,
-        );
+        let params = self.parse_parens(lparen);
 
         let ret = if self.peek().is(TokenKind::Arrow) {
             self.next();

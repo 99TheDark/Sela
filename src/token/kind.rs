@@ -88,6 +88,7 @@ pub enum TokenKind {
     Alias, //\\ alias
     Enum,  //\\ enum  (Enumeration)
     Impl,  //\\ impl  (Implement)
+    // Dyn,   //\\ dyn   (Dynamic)
     Idea,  //\\ idea
     Func,  //\\ func  (Function)
     Mod,   //\\ mod   (Module)

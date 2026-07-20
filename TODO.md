@@ -2,15 +2,15 @@
 - Implement forced parens on operators
 - Implement preorder parsing
 - Make diagnostic printing fixes that handles non unicode characters
-- Implement lexer errors
+- Implement all lexer errors
 - Better number errors with less 'the literal' repetition (group like underscores)
 - Swap pure `NodeKind::Error` to use any node with unknowns filling the holes (via {..Default}), but must be inside an `Error` so all of that keeps working
 - Mean -> Median in benchmarks
 - Better expect error msg
+    - Better EOF error handling (esp. in `expect`s)
 - Fully finish design of const decl + const blocks + const params + etc
-- Implement `impl`/`const`/`idea`/`match`/`enum`/`break`/`return`/`continue`/`'annot`/char/`[]`
+- Implement `impl`/`const`/`idea`/`match`/`enum`/`break`/`return`/`continue`/char
 - Store line # -> str width in a big table for efficient functions
-- Store 
 - Remove deref/derefmut in place of something that doesn't leak all internals easily
 - Why do I have `&'a [NodeRef]` instead of `Vec<NodeRef>` again...? That's just more indirection. It does seem to run faster though
 - Unify parse delimited and parse statements

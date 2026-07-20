@@ -12,6 +12,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
         use crate::ast::NodeKind::*;
         match &self.kind {
             Ident(name) => f.write(format!("Identifier ({})", name)),
+            Annot(name) => f.write(format!("Annotation ({})", name)),
             BinOp { .. } => f.write("Binary Operation"),
             KwBinOp { .. } => f.write("Binary Keyword Operation"),
             Comp { .. } => f.write("Comparison"),
@@ -19,6 +20,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             UnOp { .. } => f.write("Unary Operation"),
             Access { .. } => f.write("Member Access"),
             Invoc { .. } => f.write("Invocation"),
+            Select { .. } => f.write("Selection"),
             Int(val) => f.write(format!("Integer ({})", val)),
             Float(val) => f.write(format!("Floating-Point Number ({})", val)),
             Bool(val) => f.write(format!("Boolean ({})", val)),
@@ -38,6 +40,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Func { .. } => f.write("Function"),
             Block(e) if e.is_empty() => f.write("Empty Block"),
             Parens(_) => f.write("Parentheses"),
+            Bracks(_) => f.write("Brackets"),
             Block(_) => f.write("Block"),
             Pair { .. } => f.write("Pair"),
             Use { .. } => f.write("Use"),
@@ -111,6 +114,9 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Invoc { callee, args } => {
                 pretty::Builder::new().named("Callee", *callee).named("Arguments", *args).finish()
             }
+            Select { src, disc } => {
+                pretty::Builder::new().named("Source", *src).named("Discriminant", *disc).finish()
+            }
             String(frags) => pretty::Builder::new()
                 .fold(*frags, |builder, frag| match frag {
                     ast::string::Fragment::String(inner) => builder.named("Raw String", inner),
@@ -163,12 +169,12 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Vis { modif, child } => {
                 pretty::Builder::new().named("Modifier", modif).named("Child", *child).finish()
             }
-            Parens(elems) | Block(elems) => elems.children(),
+            Parens(elems) | Bracks(elems) | Block(elems) => elems.children(),
             Pair { lhs, rhs } => {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
             }
-            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | LSelf | BSelf | Error
-            | Unknown | UnknownInt | UnknownFloat | UnknownChar | UnknownString => {
+            Ident(_) | Annot(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | LSelf | BSelf
+            | Error | Unknown | UnknownInt | UnknownFloat | UnknownChar | UnknownString => {
                 pretty::Builder::empty()
             }
         }

@@ -47,6 +47,7 @@ impl<'a> fmt::Debug for Node<'a> {
 #[derive(Debug, Copy, Clone)]
 pub enum NodeKind<'a> {
     Ident(&'a str),
+    Annot(&'a str),
     BinOp { lhs: NodeRef<'a>, op: BinOpKind, rhs: NodeRef<'a> },
     KwBinOp { lhs: NodeRef<'a>, op: KwBinOpKind, rhs: NodeRef<'a> },
     Comp { lhs: NodeRef<'a>, comp: CompKind, rhs: NodeRef<'a> },
@@ -54,6 +55,7 @@ pub enum NodeKind<'a> {
     UnOp { op: UnOpKind, rhs: NodeRef<'a> },
     Access { parent: NodeRef<'a>, child: NodeRef<'a> },
     Invoc { callee: NodeRef<'a>, args: NodeRef<'a> },
+    Select { src: NodeRef<'a>, disc: NodeRef<'a> },
     Int(u64),
     Float(f64),
     Bool(bool),
@@ -77,6 +79,7 @@ pub enum NodeKind<'a> {
     LSelf,
     BSelf,
     Parens(&'a [NodeRef<'a>]),
+    Bracks(&'a [NodeRef<'a>]),
     Block(&'a [NodeRef<'a>]),
     Pair { lhs: NodeRef<'a>, rhs: NodeRef<'a> },
 

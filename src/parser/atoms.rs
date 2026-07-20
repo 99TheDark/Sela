@@ -22,6 +22,11 @@ where
         self.alloc_atom(ast::NodeKind::Ident(tok.src(self.src)), tok)
     }
 
+    pub(super) fn parse_annot(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        let src = tok.span.shrink(1, 0).src(self.src);
+        self.alloc_atom(ast::NodeKind::Annot(src), tok)
+    }
+
     pub(super) fn parse_little_self(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         self.alloc_atom(ast::NodeKind::LSelf, tok)
     }

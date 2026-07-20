@@ -59,11 +59,6 @@ impl Token {
     }
 
     #[inline(always)]
-    pub fn eof_not_is(self, kind: TokenKind) -> bool {
-        self.kind != kind && self.kind != TokenKind::EOF
-    }
-
-    #[inline(always)]
     pub fn nud_prec(&self) -> Precedence {
         self.kind.nud_prec()
     }

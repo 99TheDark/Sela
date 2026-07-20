@@ -99,6 +99,10 @@ where
         }
     }
 
+    fn advance(&mut self) {
+        self.idx += 1;
+    }
+
     #[inline]
     #[cold]
     fn recover<F: Fn(TokenKind) -> bool>(&mut self, is_end: F) {
@@ -124,7 +128,7 @@ where
             self.recover(|t| t == expected);
             Err(self.alloc_node(ast::NodeKind::Error, cur_span))
         } else {
-            self.true_next();
+            self.advance();
             Ok(tok)
         }
     }
@@ -163,20 +167,14 @@ where
             Float => self.parse_float(tok),
             Char => self.parse_char(tok),
             String => self.parse_string(tok),
-            Annot => todo!(),
+            Annot => self.parse_annot(tok),
             Plus => self.parse_unop(tok, UnOpKind::Pos),
             Dash => self.parse_unop(tok, UnOpKind::Neg),
             Star => self.parse_unop(tok, UnOpKind::Deref),
             Amp => self.parse_unop(tok, UnOpKind::Ref),
             Not => self.parse_unop(tok, UnOpKind::Not),
-            // Maybe make these use both parse_stmts() and parse_delimited()?
-            LParen => self.parse_delimited(
-                tok,
-                TokenKind::Comma,
-                TokenKind::RParen,
-                ast::NodeKind::Parens,
-            ),
-            LBrack => todo!(),
+            LParen => self.parse_parens(tok),
+            LBrack => self.parse_bracks(tok),
             LBrace if self.brace_stop_depth != 0 => {
                 // But what about something like func(...) -> ({}) {}?
                 // I need to have a custom type parser or a stack
@@ -236,8 +234,8 @@ where
                 DotDot => self.parse_led_range(lhs, RangeKind::Full),
                 DotDotLt => self.parse_led_range(lhs, RangeKind::Excl),
                 DotDotEq => self.parse_led_range(lhs, RangeKind::Incl),
-                LParen => self.parse_invocation(lhs, tok), // Maybe broaden to ( / [ / {
-                LBrack => todo!(),
+                LParen => self.parse_invoc(lhs, tok),
+                LBrack => self.parse_select(lhs, tok),
                 At => todo!(),
                 Colon => self.parse_pair(lhs, tok), // There is a better way for sure than to pass in tok
                 In => self.parse_in(lhs),
@@ -257,10 +255,7 @@ where
         left
     }
 
-    fn parse_stmts(
-        &mut self,
-        closing_kind: Option<TokenKind>, // Could change to a generic for monomorphization
-    ) -> BumpVec<'ast, ast::NodeRef<'ast>> {
+    pub fn parse(mut self) -> BumpVec<'ast, ast::NodeRef<'ast>> {
         let mut stmts = BumpVec::new_in(self.arena);
         loop {
             self.eat_nls();
@@ -268,19 +263,14 @@ where
                 hint::cold_path();
                 break;
             }
-            if Some(self.peek().kind) == closing_kind {
-                self.true_next();
-                break;
-            }
 
             let stmt = self.parse_expr(Precedence::None);
-            self.recover_if_error(stmt, |t| Some(t) == closing_kind);
             stmts.push(stmt);
+
+            if stmt.is_error() {
+                self.eat_while(|tok| !tok.is_nl());
+            }
         }
         stmts
-    }
-
-    pub fn parse(mut self) -> BumpVec<'ast, ast::NodeRef<'ast>> {
-        self.parse_stmts(None)
     }
 }

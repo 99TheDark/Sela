@@ -345,7 +345,12 @@ List
 │  │  └─ Body: Empty Block
 │  └─ Body: Block
 │     ├─ <! Error !>
+│     ├─ Binary Operation
+│     │  ├─ Left-hand Side: Empty Block
+│     │  ├─ Operator: Add (+)
+│     │  └─ Right-hand Side: Brackets
 │     └─ <! Error !>
+├─ <! Error !>
 ├─ Declaration
 │  ├─ Pattern: Parentheses
 │  │  ├─ Mutable
@@ -358,6 +363,7 @@ List
 │     ├─ Integer (9)
 │     └─ String
 │        └─ Raw String: "\"TheDark\""
+├─ <! Error !>
 ├─ Assignment
 │  ├─ Pattern: Identifier (x)
 │  ├─ Assigner: Assignment (=)
@@ -366,5 +372,4 @@ List
    ├─ Callee: Member Access
    │  ├─ Parent: Identifier (io)
    │  └─ Child: Identifier (print)
-   └─ Arguments: Parentheses
-      └─ <! Unknown String !>
+   └─ Arguments: <! Error !>

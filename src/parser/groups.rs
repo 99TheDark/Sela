@@ -1,3 +1,5 @@
+use std::hint;
+
 use crate::{
     ast,
     diagnostics::ErrorKind,
@@ -10,6 +12,37 @@ where
     'src: 'ast,
     'src: 'tok,
 {
+    fn peek_relevant(&mut self, delim: TokenKind) -> Result<Token, ast::NodeRef<'ast>> {
+        let tok = if delim == TokenKind::NewLine {
+            let peeked = self.peek();
+            self.eat_nls();
+            peeked
+        } else {
+            self.eat_nls();
+            self.peek()
+        };
+
+        if tok.is_eof() {
+            hint::cold_path();
+            Err(self.diag.fail(
+                ErrorKind::Syntax,
+                format!("Expected delimiter {:?}, but hit the end of the file", delim),
+                self.eof_token.span,
+                self.arena,
+            ))
+        } else {
+            Ok(tok)
+        }
+    }
+
+    #[inline(always)]
+    fn skip_delim(&mut self, delim: TokenKind) {
+        if delim != TokenKind::NewLine {
+            self.advance();
+        }
+    }
+
+    #[inline(always)]
     pub(super) fn parse_delimited<F: FnOnce(&'ast [ast::NodeRef<'ast>]) -> ast::NodeKind<'ast>>(
         &mut self,
         tok: Token,
@@ -17,43 +50,73 @@ where
         end: TokenKind,
         constructor: F,
     ) -> ast::NodeRef<'ast> {
-        let mut elems = Vec::with_capacity(1); // Could make the capacity a parameter
-        self.eat_nls();
-        while self.peek().eof_not_is(end) {
+        'initial: {
+            self.eat_nls();
+            match self.peek() {
+                first if first.is(end) => {}
+                first if first.is(delim) => {
+                    // hint::cold_path(); // Maybe? I mean it's valid syntax, just rare
+                    self.skip_delim(delim);
+                    match self.peek_relevant(delim)? {
+                        tok if tok.is(end) => {}
+                        _ => self.diag.emit(
+                            ErrorKind::Syntax,
+                            format!("Leading delimiter {:?} not allowed", tok.kind),
+                            tok.span,
+                        ),
+                    }
+                }
+                _ => break 'initial,
+            }
+
+            let end = self.true_next();
+            return self.alloc_node(constructor(&[]), tok.span.to(end.span));
+        }
+
+        let mut elems = Vec::<ast::NodeRef<'ast>>::new();
+        loop {
             let elem = self.parse_expr(Precedence::None);
             self.recover_if_error(elem, |t| t == delim || t == end);
             elems.push(elem);
 
-            self.eat_nls();
-            match self.peek() {
-                t if t.kind == end => break,
-                t if t.kind == delim => {
-                    self.true_next();
-                }
-                t => {
+            match self.peek_relevant(delim)? {
+                tok if tok.is(delim) => self.skip_delim(delim),
+                tok if tok.is(end) => break,
+                _ => {
+                    hint::cold_path();
                     self.diag.emit(
                         ErrorKind::Syntax,
                         format!(
-                            "Expected {:?} or {:?} token, found {:?} token instead",
-                            delim, end, t.kind
+                            "Expected delimiter {:?}, found {:?} token instead",
+                            delim, tok.kind
                         ),
-                        t.span,
+                        tok.span,
                     );
-                    self.recover(|t| t == delim || t == end);
                 }
             }
-        }
-        let end = self.next();
 
+            if self.peek_relevant(delim)?.is(end) {
+                break;
+            }
+        }
+
+        let end = self.true_next();
         let elems = self.alloc(elems);
-        let kind = constructor(&elems);
-        self.alloc_node(kind, tok.span.to(end.span))
+        self.alloc_node(constructor(&elems), tok.span.to(end.span))
     }
 
+    #[inline]
+    pub(super) fn parse_parens(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        self.parse_delimited(tok, TokenKind::Comma, TokenKind::RParen, ast::NodeKind::Parens)
+    }
+
+    #[inline]
+    pub(super) fn parse_bracks(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        self.parse_delimited(tok, TokenKind::Comma, TokenKind::RBrack, ast::NodeKind::Bracks)
+    }
+
+    #[inline]
     pub(super) fn parse_block(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        let elems = self.parse_stmts(Some(TokenKind::RBrace));
-        let elems = self.alloc(elems);
-        let end = elems.last().map_or(tok.span, |last| last.span);
-        self.alloc_node(ast::NodeKind::Block(elems), tok.span.to(end))
+        self.parse_delimited(tok, TokenKind::NewLine, TokenKind::RBrace, ast::NodeKind::Block)
     }
 }
