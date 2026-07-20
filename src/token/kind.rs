@@ -103,17 +103,22 @@ pub enum TokenKind {
     Break, //\\ break
     Cont,  //\\ continue
     Ret,   //\\ return
-    LSelf, //\\ self
-    BSelf, //\\ Self
-    Macro, //\\ macro
+    LSelf, //\\ self  (Little Self)
+    BSelf, //\\ Self  (Big Self)
+    // Par,   //\\ par   (Parallel)
+    // Co,    //\\ co    (Concurrent)
+    // Async, //\\ async (Asynchronous)
+    // Await, //\\ await
+    // Macro, //\\ macro
     Use,   //\\ use
     Charm, //\\ charm
     As,    //\\ as
     True,  //\\ true
     False, //\\ false
     In,    //\\ in
-    And,   //\\ and
-    Or,    //\\ or
+    // Is,    //\\ is
+    And, //\\ and
+    Or,  //\\ or
 
     EmptyChar,     //\\ ''           (Empty Character)
     UntermComment, //\\ /* blah blah (Unterminated Comment)
@@ -142,10 +147,11 @@ pub enum TokenKind {
     PsnColonColon, //\\ ::
     PsnSpaceship,  //\\ <=>
     PsnDotDotDot,  //\\ ... //! What of .Red...Blue?
-    PsnPipe,       //\\ |>
-    PsnTilde,      //\\ ~
-    PsnTildeEq,    //\\ ~=
-    PsnBSlash,     //\\ \
+    // ...regardless, should that be (.Red)..(.Blue) or (.Red..).Blue?
+    PsnPipe,    //\\ |>
+    PsnTilde,   //\\ ~
+    PsnTildeEq, //\\ ~=
+    PsnBSlash,  //\\ \
 
     Unknown,
     EOF, // (End of File)

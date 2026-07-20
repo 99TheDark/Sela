@@ -203,6 +203,8 @@ where
             Loop => self.parse_loop(tok),
             While => self.parse_while(tok),
             For => self.parse_for(tok),
+            LSelf => self.parse_little_self(tok),
+            BSelf => self.parse_big_self(tok),
             Func => self.parse_func(tok),
             Use => self.parse_use(tok),
             Pub => self.parse_vis(tok, VisKind::Pub),

@@ -74,6 +74,8 @@ pub enum NodeKind<'a> {
     Use { path: NodeRef<'a> },
     Vis { modif: VisKind, child: NodeRef<'a> },
     Charm,
+    LSelf,
+    BSelf,
     Parens(&'a [NodeRef<'a>]),
     Block(&'a [NodeRef<'a>]),
     Pair { lhs: NodeRef<'a>, rhs: NodeRef<'a> },

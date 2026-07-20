@@ -21,4 +21,12 @@ where
     pub(super) fn parse_ident(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         self.alloc_atom(ast::NodeKind::Ident(tok.src(self.src)), tok)
     }
+
+    pub(super) fn parse_little_self(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        self.alloc_atom(ast::NodeKind::LSelf, tok)
+    }
+
+    pub(super) fn parse_big_self(&mut self, tok: Token) -> ast::NodeRef<'ast> {
+        self.alloc_atom(ast::NodeKind::BSelf, tok)
+    }
 }

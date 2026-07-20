@@ -83,7 +83,6 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
                 b"while" => While,
                 b"match" => Match,
                 b"break" => Break,
-                b"macro" => Macro,
                 b"charm" => Charm,
                 b"false" => False,
                 _ => Ident,

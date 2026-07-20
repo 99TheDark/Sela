@@ -43,6 +43,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Use { .. } => f.write("Use"),
             Vis { .. } => f.write("Visibility"),
             Charm => f.write("Charm"),
+            LSelf => f.write("Self Value"),
+            BSelf => f.write("Self Type"),
             Error => f.write("<! Error !>"),
             Unknown => f.write("<! Unknown !>"),
             UnknownInt => f.write("<! Unknown Integer !>"),
@@ -165,8 +167,10 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Pair { lhs, rhs } => {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()
             }
-            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | Error | Unknown
-            | UnknownInt | UnknownFloat | UnknownChar | UnknownString => pretty::Builder::empty(),
+            Ident(_) | Int(_) | Float(_) | Bool(_) | Char(_) | Charm | LSelf | BSelf | Error
+            | Unknown | UnknownInt | UnknownFloat | UnknownChar | UnknownString => {
+                pretty::Builder::empty()
+            }
         }
     }
 }
