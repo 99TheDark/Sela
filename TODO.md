@@ -24,7 +24,7 @@
 - Make error printer automatically wrap lines
 - Add complexity to errors (contextual regions, like where borrows occur, the start and end of a function, etc)
 - Remove `hint::cold_path`s that do little to nothing
-- Partial ranges (isn't this already here)
+- Partial ranges (isn't this already here?)
 - Implement parallellism for lexing + parsing + type signatures
 - Harvest type signatures (functions, types, aliases, classes, constants, etc) for a global pool
 - Make number parsing more efficient with fast loops for small numbers and such
