@@ -30,7 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // TODO: Move to a testing suite
     if !cfg!(debug_assertions) && args[1..].contains(&"iter".to_string()) {
         const COLD_RUNS: u64 = 10;
-        const WARN_RUNS: u64 = 50;
+        const WARN_RUNS: u64 = 30;
 
         std::thread::scope(|s| {
             s.spawn(move || {

@@ -7,17 +7,14 @@
 - Swap pure `NodeKind::Error` to use any node with unknowns filling the holes (via {..Default}), but must be inside an `Error` so all of that keeps working
 - Mean -> Median in benchmarks
 - Better expect error msg
-- Implement `impl`/`idea`/`match`/`enum`/`break`/`return`/`continue`/`self`/`Self`/`[]`
+- Implement `impl`/`const`/`idea`/`match`/`enum`/`break`/`return`/`continue`/`'annot`/char/`self`/`Self`/`[]`
 - Remove deref/derefmut in place of something that doesn't leak all internals easily
 - Why do I have `&'a [NodeRef]` instead of `Vec<NodeRef>` again...? That's just more indirection. It does seem to run faster though
 - Unify parse delimited and parse statements
-- Handle numbers like `00001230` gracefully as `1230` (no overflow, proper errors)
-    - Same for floats
 - Move pretty to diagnostics
 - Lex -> Parse -> Output `use` metadata to check first!
 - Abtract away arena alloc + preorder + idx + slice to a `Cursor<T>`
 - Handle ultra-wide errors and errors at the end of a line
-- '\r\n' checking?
 - Crap I forgot to implement escape codes into strings
 - Ensure file size is reasonable for lexer/parser peeking not to overflow integers
 - `mmap` large files and otherwise don't

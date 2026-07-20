@@ -26,6 +26,7 @@ impl Stopwatch {
             last_split = split;
 
             print!("{:<pad$} - ", label, pad = padding);
+            // TODO: Add decimals for constant sig figs
             if nanos >= 3_600_000_000_000 {
                 println!("{}h", nanos / 3_600_000_000_000)
             } else if nanos >= 60_000_000_000 {
