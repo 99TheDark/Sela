@@ -27,6 +27,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Decl { .. } => f.write("Declaration"),
             Assign { .. } => f.write("Assignment"),
             Mut(..) => f.write("Mutable"),
+            Type { .. } => f.write("New Type"),
+            Alias { .. } => f.write("Alias Type"),
             If { .. } => f.write("If Statement"),
             Loop { .. } => f.write("Loop"),
             While { .. } => f.write("While Loop"),
@@ -39,6 +41,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             Block(_) => f.write("Block"),
             Pair { .. } => f.write("Pair"),
             Use { .. } => f.write("Use"),
+            Vis { .. } => f.write("Visibility"),
             Charm => f.write("Charm"),
             Error => f.write("<! Error !>"),
             Unknown => f.write("<! Unknown !>"),
@@ -51,10 +54,10 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
     }
 
     fn color(&self) -> Option<AnsiColor> {
+        // TODO: Update all of this
         use ast::NodeKind::*;
         let col = match &self.kind {
-            // BinOp(..) | Comp(..) | Range(..) | UnOp(..) => AnsiColor::White,
-            Use { .. } | Charm => AnsiColor::Blue,
+            Use { .. } | Vis { .. } | Charm => AnsiColor::Blue,
             KwBinOp { .. } | If { .. } | Loop { .. } | While { .. } | For { .. } => {
                 AnsiColor::Purple
             }
@@ -123,6 +126,13 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .named("Value", *val)
                 .finish(),
             Mut(inner) => pretty::Builder::new().unnamed(*inner).finish(),
+            Type { new, base } => {
+                pretty::Builder::new().named("New Type", *new).named("Base Type", *base).finish()
+            }
+            Alias { alt, src } => pretty::Builder::new()
+                .named("Alternate Type", *alt)
+                .named("Source Type", *src)
+                .finish(),
             If { cond, body, fallback } => pretty::Builder::new()
                 .named("Condition", *cond)
                 .named("Then Body", *body)
@@ -148,6 +158,9 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .named("Body", body)
                 .finish(),
             Use { path } => pretty::Builder::new().named("Path", *path).finish(),
+            Vis { modif, child } => {
+                pretty::Builder::new().named("Modifier", modif).named("Child", *child).finish()
+            }
             Parens(elems) | Block(elems) => elems.children(),
             Pair { lhs, rhs } => {
                 pretty::Builder::new().named("Left", *lhs).named("Right", *rhs).finish()

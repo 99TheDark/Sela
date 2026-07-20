@@ -1,33 +1,28 @@
 # To do
 - Implement forced parens on operators
-- Make binary operators & funcs actually stop in time based on lines
 - Implement preorder parsing
 - Swap pure `NodeKind::Error` to use any node with unknowns filling the holes (via {..Default}), but must be inside an `Error` so all of that keeps working
 - Mean -> Median in benchmarks
 - Better expect error msg
-- Implement `impl`/`type`/`alias`/`enum`/`[]` etc
+- Implement `impl`/`idea`/`match`/`enum`/`break`/`return`/`continue`/`self`/`Self`/`[]`
 - Remove deref/derefmut in place of something that doesn't leak all internals easily
 - Why do I have `&'a [NodeRef]` instead of `Vec<NodeRef>` again...? That's just more indirection. It does seem to run faster though
 - Unify parse delimited and parse statements
 - Look at all `self.parse_pre_body()?` + `self.expect_and_recover(..)?` (the qmark)
 - Handle numbers like `00001230` gracefully as `1230` (no overflow, proper errors)
     - Same for floats
-- Maybe unify floats+ints+radix ints in parser
 - Move pretty to diagnostics
 - Lex -> Parse -> Output `use` metadata to check first!
 - Abtract away arena alloc + preorder + idx + slice to a `Cursor<T>`
 - Handle ultra-wide errors and errors at the end of a line
-- Remove unneeded crates
 - '\r\n' checking?
 - Crap I forgot to implement escape codes into strings
 - Ensure file size is reasonable for lexer/parser peeking not to overflow integers
 - `mmap` large files and otherwise don't
 - Make error printer automatically wrap lines
-- Add complexity to errors (contextual regions, like where borrows occur, the start and end of a function, etc) 
+- Add complexity to errors (contextual regions, like where borrows occur, the start and end of a function, etc)
 - Remove `hint::cold_path`s that do little to nothing
-- Better error escaping for incorrect tokens; e.g. `{ let a = }` should properly exit the block
-    - Eat the entire line if the compiler gets really confused
-- Partial ranges
+- Partial ranges (isn't this already here)
 - Implement parallellism for lexing + parsing + type signatures
 - Harvest type signatures (functions, types, aliases, classes, constants, etc) for a global pool
 - Make number parsing more efficient with fast loops for small numbers and such
@@ -37,3 +32,4 @@
 - Attempt throwing a test warmup file to lex+parse while the project directory is being explored to train the branch predictor
 - Use `std::hint::spin_loop()`
 - Make strings stop being lexed upon new line unless backslash slash + ws before it
+- Maybe unify floats+ints+radix ints in parser

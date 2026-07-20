@@ -106,8 +106,8 @@ fn compile(file: String, src: &str) -> Result<(u64, u64), pretty::Error> {
 
             if cfg!(debug_assertions) {
                 pretty::write_file("io/ast.txt".to_string(), &ast)?;
-                pretty::print(&ast)?;
-                println!();
+                // pretty::print(&ast)?;
+                // println!();
             }
             ast
         };

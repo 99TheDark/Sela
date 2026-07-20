@@ -11,7 +11,7 @@ where
 {
     pub(super) fn parse_decl(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         let pat = self.parse_expr(Precedence::Assign)?;
-        self.expect(TokenKind::Eq, || tok.span.to(pat.span))?;
+        self.expect(TokenKind::Eq, tok.span.to(pat.span))?;
         let val = self.parse_expr(Precedence::Assign)?;
         self.alloc_node(ast::NodeKind::Decl { pat, val }, tok.span.to(val.span))
     }

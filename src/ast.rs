@@ -1,10 +1,10 @@
 use core::fmt;
-use std::{convert, ops};
+use std::{convert, hint, ops};
 
 use crate::{
     ast::{
         assign::AssignKind, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind,
-        range::RangeKind, unop::UnOpKind,
+        range::RangeKind, unop::UnOpKind, vis::VisKind,
     },
     core::span::Span,
 };
@@ -18,6 +18,7 @@ pub mod range;
 pub mod string;
 pub mod symbol;
 pub mod unop;
+pub mod vis;
 
 #[derive(Copy, Clone)]
 pub struct Node<'a> {
@@ -61,6 +62,8 @@ pub enum NodeKind<'a> {
     Decl { pat: NodeRef<'a>, val: NodeRef<'a> },
     Assign { pat: NodeRef<'a>, assign: AssignKind, val: NodeRef<'a> },
     Mut(NodeRef<'a>),
+    Type { new: NodeRef<'a>, base: NodeRef<'a> },
+    Alias { alt: NodeRef<'a>, src: NodeRef<'a> },
     If { cond: NodeRef<'a>, body: NodeRef<'a>, fallback: Option<NodeRef<'a>> },
     Loop { body: NodeRef<'a> },
     While { cond: NodeRef<'a>, body: NodeRef<'a> },
@@ -69,6 +72,7 @@ pub enum NodeKind<'a> {
     FuncSig { params: NodeRef<'a>, ret: Option<NodeRef<'a>> },
     Func { name: Option<NodeRef<'a>>, sig: NodeRef<'a>, body: Option<NodeRef<'a>> },
     Use { path: NodeRef<'a> },
+    Vis { modif: VisKind, child: NodeRef<'a> },
     Charm,
     Parens(&'a [NodeRef<'a>]),
     Block(&'a [NodeRef<'a>]),
@@ -96,7 +100,10 @@ impl<'a> ops::Try for NodeRef<'a> {
 
     fn branch(self) -> ops::ControlFlow<Self::Residual, Self::Output> {
         match self.kind {
-            NodeKind::Error => ops::ControlFlow::Break(self),
+            NodeKind::Error => {
+                hint::cold_path();
+                ops::ControlFlow::Break(self)
+            }
             _ => ops::ControlFlow::Continue(self),
         }
     }

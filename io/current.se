@@ -85,6 +85,9 @@ func apply(x, y: Int) -> Int {
     res
 }
 
+type Person = (pub name: String, age: UInt)
+alias Dude = Person
+
 while while x>5 {}{ func (a:Int)->{
     {}+(,)-
 }}

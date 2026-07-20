@@ -7,6 +7,7 @@ pub mod numbers;
 pub mod properties;
 pub mod ranges;
 pub mod text;
+pub mod types;
 pub mod unary;
 pub mod variables;
 
@@ -15,7 +16,7 @@ use std::{hint, mem::MaybeUninit};
 use bumpalo::{Bump, collections::Vec as BumpVec};
 
 use crate::{
-    ast::{self, binary::BinaryKind, range::RangeKind, unop::UnOpKind},
+    ast::{self, binary::BinaryKind, range::RangeKind, unop::UnOpKind, vis::VisKind},
     core::span::Span,
     diagnostics::{Diagnostics, ErrorKind},
     token::{Token, kind::TokenKind, precedence::Precedence},
@@ -110,11 +111,7 @@ where
         }
     }
 
-    fn expect<F: Fn() -> Span>(
-        &mut self,
-        expected: TokenKind,
-        make_span: F,
-    ) -> Result<Token, ast::NodeRef<'ast>> {
+    fn expect(&mut self, expected: TokenKind, cur_span: Span) -> Result<Token, ast::NodeRef<'ast>> {
         self.eat_nls();
         let tok = self.peek();
         if !tok.is(expected) {
@@ -125,7 +122,7 @@ where
                 tok.span,
             );
             self.recover(|t| t == expected);
-            Err(self.alloc_node(ast::NodeKind::Error, make_span()))
+            Err(self.alloc_node(ast::NodeKind::Error, cur_span))
         } else {
             self.true_next();
             Ok(tok)
@@ -198,6 +195,8 @@ where
             Tick => todo!(),
             Let => self.parse_decl(tok),
             Mut => self.parse_mut(tok),
+            Type => self.parse_type(tok),
+            Alias => self.parse_alias(tok),
             True => self.parse_bool(tok, true),
             False => self.parse_bool(tok, false),
             If => self.parse_if(tok),
@@ -206,6 +205,9 @@ where
             For => self.parse_for(tok),
             Func => self.parse_func(tok),
             Use => self.parse_use(tok),
+            Pub => self.parse_vis(tok, VisKind::Pub),
+            Inn => self.parse_vis(tok, VisKind::Inn),
+            Pri => self.parse_vis(tok, VisKind::Pri),
             Charm => self.alloc_atom(ast::NodeKind::Charm, tok),
             EmptyChar => todo!(),
             UntermChar => self.alloc_atom(ast::NodeKind::UnknownChar, tok),

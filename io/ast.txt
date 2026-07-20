@@ -322,6 +322,20 @@ List
 │     │     └─ Arguments: Parentheses
 │     │        └─ Identifier (y)
 │     └─ Identifier (res)
+├─ New Type
+│  ├─ New Type: Identifier (Person)
+│  └─ Base Type: Parentheses
+│     ├─ Visibility
+│     │  ├─ Modifier: Public (pub)
+│     │  └─ Child: Pair
+│     │     ├─ Left: Identifier (name)
+│     │     └─ Right: Identifier (String)
+│     └─ Pair
+│        ├─ Left: Identifier (age)
+│        └─ Right: Identifier (UInt)
+├─ Alias Type
+│  ├─ Alternate Type: Identifier (Dude)
+│  └─ Source Type: Identifier (Person)
 ├─ While Loop
 │  ├─ Condition: While Loop
 │  │  ├─ Condition: Comparison

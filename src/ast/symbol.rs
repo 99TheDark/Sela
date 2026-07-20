@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::ast::{
     assign::AssignKind, binop::BinOpKind, comp::CompKind, kwbinop::KwBinOpKind, range::RangeKind,
-    unop::UnOpKind,
+    unop::UnOpKind, vis::VisKind,
 };
 
 pub trait Symbolic {
@@ -19,7 +19,7 @@ pub enum Symbol {
     Range(RangeKind),
     UnOp(UnOpKind),
     Assign(AssignKind),
-    Dot,
+    Vis(VisKind),
 }
 
 impl Symbolic for Symbol {
@@ -33,7 +33,7 @@ impl Symbolic for Symbol {
             Range(kind) => kind.name(),
             UnOp(kind) => kind.name(),
             Assign(kind) => kind.name(),
-            Dot => "Member Access",
+            Vis(kind) => kind.name(),
         }
     }
 
@@ -47,7 +47,7 @@ impl Symbolic for Symbol {
             Range(kind) => kind.as_str(),
             UnOp(kind) => kind.as_str(),
             Assign(kind) => kind.as_str(),
-            Dot => ".",
+            Vis(kind) => kind.as_str(),
         }
     }
 }

@@ -217,7 +217,6 @@ where
     'src: 'ast,
     'src: 'tok,
 {
-    // Could be a trait...
     pub(super) fn parse_int(&mut self, tok: Token) -> ast::NodeRef<'ast> {
         match int::parse_bytes(tok.byte_src(self.src)) {
             Ok(val) => self.alloc_atom(ast::NodeKind::Int(val), tok),

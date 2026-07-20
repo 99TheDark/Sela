@@ -1,5 +1,5 @@
 use crate::{
-    ast::{self, unop::UnOpKind},
+    ast::{self, unop::UnOpKind, vis::VisKind},
     parser::Parser,
     token::{Token, precedence::Precedence},
 };
@@ -13,6 +13,12 @@ where
         let inner = self.parse_expr(Precedence::Unary)?;
         let kind = ast::NodeKind::Mut(inner);
         self.alloc_node(kind, tok.span.to(inner.span))
+    }
+
+    pub(super) fn parse_vis(&mut self, tok: Token, modif: VisKind) -> ast::NodeRef<'ast> {
+        let child = self.parse_expr(Precedence::Unary)?;
+        let kind = ast::NodeKind::Vis { modif, child };
+        self.alloc_node(kind, tok.span.to(child.span))
     }
 
     pub(super) fn parse_unop(&mut self, tok: Token, op: UnOpKind) -> ast::NodeRef<'ast> {

@@ -1,2 +1,1 @@
-sudo cargo build --release > /dev/null
-./target/release/sela iter
+sudo cargo run --release iter
