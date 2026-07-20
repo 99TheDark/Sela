@@ -13,6 +13,10 @@ impl Span {
         Self { start, end }
     }
 
+    pub const fn new_usz(start: usize, end: usize) -> Self {
+        Self { start: start as u32, end: end as u32 }
+    }
+
     pub const fn single(loc: u32) -> Self {
         Self { start: loc, end: loc }
     }

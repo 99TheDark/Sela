@@ -19,7 +19,7 @@ use crate::{
 
 pub struct Lexer<'tok, 'src> {
     bytes: &'tok [u8],
-    idx: usize,
+    idx: usize, // Maybe should be a u32 for extra safety...?
     interp_stack: SmallVec<[u32; 2]>,
     just_exited_interp: bool,
     diag: &'tok mut Diagnostics<'src>,
@@ -193,7 +193,6 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
             let start = self.idx;
 
             if !byte.is_ascii() {
-                hint::cold_path();
                 self.skip_non_ascii();
             }
 

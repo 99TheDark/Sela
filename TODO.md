@@ -1,6 +1,9 @@
 # To do
 - Implement forced parens on operators
 - Implement preorder parsing
+- Make diagnostic printing fixes that handles non unicode characters
+- Implement lexer errors
+- Better number errors with less 'the literal' repetition (group like underscores)
 - Swap pure `NodeKind::Error` to use any node with unknowns filling the holes (via {..Default}), but must be inside an `Error` so all of that keeps working
 - Mean -> Median in benchmarks
 - Better expect error msg
@@ -8,7 +11,6 @@
 - Remove deref/derefmut in place of something that doesn't leak all internals easily
 - Why do I have `&'a [NodeRef]` instead of `Vec<NodeRef>` again...? That's just more indirection. It does seem to run faster though
 - Unify parse delimited and parse statements
-- Look at all `self.parse_pre_body()?` + `self.expect_and_recover(..)?` (the qmark)
 - Handle numbers like `00001230` gracefully as `1230` (no overflow, proper errors)
     - Same for floats
 - Move pretty to diagnostics

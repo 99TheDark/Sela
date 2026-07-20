@@ -103,12 +103,13 @@ impl ops::BitOrAssign<NumberParsingError> for NumberParsingError {
     }
 }
 
-trait UnwrapAccumulate<T, U: ErrorSet> {
-    fn unwrap_acc(self, accumulator: &mut U) -> T;
+trait UnwrapAccumulate<T> {
+    fn unwrap_acc<U: ErrorSet>(self, accumulator: &mut U) -> T;
+    fn err_skip_to<F: Fn(&u8) -> bool>(self, src: &mut &[u8], skip_to: F) -> Self;
 }
 
-impl<T: Default, U: ErrorSet, V: ErrorSet> UnwrapAccumulate<T, V> for Result<T, U> {
-    fn unwrap_acc(self, accumulator: &mut V) -> T {
+impl<T: Default, U: ErrorSet> UnwrapAccumulate<T> for Result<T, U> {
+    fn unwrap_acc<V: ErrorSet>(self, accumulator: &mut V) -> T {
         match self {
             Ok(val) => val,
             Err(err) => {
@@ -116,6 +117,18 @@ impl<T: Default, U: ErrorSet, V: ErrorSet> UnwrapAccumulate<T, V> for Result<T, 
                 T::default()
             }
         }
+    }
+
+    fn err_skip_to<F: Fn(&u8) -> bool>(self, src: &mut &[u8], should_stop: F) -> Self {
+        if self.is_err() {
+            while let [byte, ..] = src {
+                if should_stop(byte) {
+                    break;
+                }
+                *src = &mut &src[1..];
+            }
+        }
+        self
     }
 }
 

@@ -2,6 +2,7 @@ use std::hint;
 
 use crate::{
     core::span::Span,
+    diagnostics::ErrorKind,
     lexer::{Lexer, NextToken, words::WordLegal},
     token::{Token, kind::TokenKind},
 };
@@ -27,19 +28,35 @@ impl<'tok, 'src> Lexer<'tok, 'src> {
         }
     }
 
+    #[cold]
     pub(super) fn skip_non_ascii(&mut self) {
         let width = self.bytes[self.idx].leading_ones() as usize;
+
         if 2 <= width && width <= 4 && self.idx + width <= self.bytes.len() {
             // I'm sure I could optimize this
             let char_bytes = &self.bytes[self.idx..self.idx + width];
             if str::from_utf8(char_bytes).is_ok() {
                 self.idx += width;
+                self.diag.emit(
+                    ErrorKind::Syntax,
+                    format!("Unicode characters are not allowed to be used as identifiers"),
+                    Span::new(self.idx as u32, (self.idx + width) as u32 + 1),
+                );
                 return;
             }
         }
 
-        // TODO: Warn
+        // This can't even be reached because the file reader catches it
+        hint::cold_path();
         self.idx += 1;
+        self.diag.emit(
+            ErrorKind::Syntax,
+            format!(
+                "Unicode characters are not allowed to be used as identifiers, \
+                 and the unicode character is unknown"
+            ),
+            Span::new(self.idx as u32, self.idx as u32),
+        );
     }
 
     pub(super) fn char_or_lifetime(&self) -> NextToken {

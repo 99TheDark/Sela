@@ -98,4 +98,6 @@ let (mut a, mut b, c) = (9, 9, "TheDark")
 /*cd*/ef /*ghij /*klmno/*pqr*/stuvwxyz*/*/ ÷
 *//**/
 
+x=00000000000000000000000000000000000000000000000.000123456789 🦀
+
 io.print("Hello, world)

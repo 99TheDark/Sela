@@ -358,6 +358,10 @@ List
 │     ├─ Integer (9)
 │     └─ String
 │        └─ Raw String: "\"TheDark\""
+├─ Assignment
+│  ├─ Pattern: Identifier (x)
+│  ├─ Assigner: Assignment (=)
+│  └─ Value: <! Unknown Floating-Point Number !>
 └─ Invocation
    ├─ Callee: Member Access
    │  ├─ Parent: Identifier (io)

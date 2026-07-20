@@ -116,13 +116,16 @@ pub(super) fn parse_bytes(mut src: &[u8]) -> Result<f64, ParsingError> {
     // One of: X.Y, X.YeZ, X.Ye+Z, X.Ye-Z, XeY, Xe+Y, Xe-Y
     let mut errors = ParsingError::new();
 
-    let int = int::parse_bytes_for_float(&src, MAX_DIGITS, false, true).unwrap_acc(&mut errors);
+    let int = int::parse_bytes_for_float(&src, MAX_DIGITS, false, true)
+        .err_skip_to(&mut src, |b| matches!(b, b'.' | b'e' | b'E'))
+        .unwrap_acc(&mut errors);
 
     // Guaranteed to have another byte (X.X or XeX)
     src = &src[int.len..];
     let dec = if src[0] == b'.' {
         src = &src[1..];
         int::parse_bytes_for_float(&src, MAX_DIGITS - int.num_digits_capped, true, true)
+            .err_skip_to(&mut src, |b| matches!(b, b'.' | b'e' | b'E'))
             .unwrap_acc(&mut errors)
     } else {
         int::FloatParsingOutput::default()
@@ -143,8 +146,9 @@ pub(super) fn parse_bytes(mut src: &[u8]) -> Result<f64, ParsingError> {
             errors.raise(ErrorKind::MissingExpVal);
             (int::FloatParsingOutput::default(), 0)
         } else {
-            let exp =
-                int::parse_bytes_for_float(&src, usize::MAX, false, false).unwrap_acc(&mut errors);
+            let exp = int::parse_bytes_for_float(&src, usize::MAX, false, false)
+                .err_skip_to(&mut src, |b| matches!(b, b'.' | b'e' | b'E'))
+                .unwrap_acc(&mut errors);
             if exp.num_digits != 0 { (exp, sign) } else { (int::FloatParsingOutput::default(), 0) }
         }
     } else {

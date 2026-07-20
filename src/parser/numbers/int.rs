@@ -79,7 +79,7 @@ pub(super) fn parse_bytes(mut src: &[u8]) -> Result<u64, ParsingError> {
 
     if src.len() > 1 && src[0] == b'0' && src[1] != b'_' {
         errors.raise(ErrorKind::LeadingZeros);
-        let non_zero_pos = src.iter().position(|&b| b != b'0').map_or(0, |p| p + 1);
+        let non_zero_pos = src.iter().position(|&b| b != b'0').map_or(0, |p| p);
         src = &src[non_zero_pos..];
     }
 
@@ -114,7 +114,7 @@ pub(super) fn parse_bytes(mut src: &[u8]) -> Result<u64, ParsingError> {
     if errors.is_empty() { Ok(result) } else { Err(errors) }
 }
 
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub(super) struct FloatParsingOutput {
     pub part: u64,
     pub num_digits: usize,
@@ -165,7 +165,7 @@ pub(super) fn parse_bytes_for_float(
 
                 match first_digit {
                     Some(first) if first == 0 && !can_lead_zeros => {
-                        errors.raise(ErrorKind::LeadingZeros)
+                        errors.raise(ErrorKind::LeadingZeros);
                     }
                     None => first_digit = Some(digit),
                     _ => {}
