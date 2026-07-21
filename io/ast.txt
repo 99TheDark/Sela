@@ -363,6 +363,45 @@ List
 │     ├─ Integer (9)
 │     └─ String
 │        └─ Raw String: "\"TheDark\""
+├─ Implementation
+│  ├─ Generic Declarations: Some Brackets
+│  │  ├─ Annotation ('a)
+│  │  ├─ Identifier (T)
+│  │  ├─ Pair
+│  │  │  ├─ Left: Identifier (U)
+│  │  │  └─ Right: Identifier (V)
+│  │  └─ Identifier (W)
+│  ├─ Target: Implementation Target
+│  │  ├─ Idea: Some Selection
+│  │  │  ├─ Source: Identifier (Foo)
+│  │  │  └─ Discriminant: Brackets
+│  │  │     ├─ Annotation ('a)
+│  │  │     ├─ Identifier (T)
+│  │  │     └─ Selection
+│  │  │        ├─ Source: Identifier (Bar)
+│  │  │        └─ Discriminant: Brackets
+│  │  │           └─ Identifier (U)
+│  │  └─ Type: Selection
+│  │     ├─ Source: Identifier (Baz)
+│  │     └─ Discriminant: Brackets
+│  │        ├─ Identifier (W)
+│  │        └─ Identifier (T)
+│  └─ Body: Block
+│     └─ <! Error !>
+├─ Implementation
+│  ├─ Generic Declarations: None
+│  ├─ Target: Implementation Target
+│  │  ├─ Idea: None
+│  │  └─ Type: Selection
+│  │     ├─ Source: Identifier (Quux)
+│  │     └─ Discriminant: Brackets
+│  │        ├─ Annotation ('life)
+│  │        └─ Identifier (B)
+│  └─ Body: Block
+│     └─ Range
+│        ├─ From: None
+│        ├─ Range Type: Full Range (..)
+│        └─ To: None
 ├─ Enumeration
 │  ├─ Relation: Identifier (Season)
 │  └─ Body: Block

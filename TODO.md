@@ -13,7 +13,7 @@
     - Better EOF error handling (esp. in `expect`s)
 - Figure out where `clause` syntax and implement that
 - Fully flesh out the design of `const` decl + `const` blocks + `const` params + etc
-- Implement `impl`/`idea`/`match`/`break`/`return`/`continue`/char
+- Implement `idea`/`match`/`break`/`return`/`continue`/char
 - Store line # -> str width in a big table for efficient functions
 - Remove deref/derefmut in place of something that doesn't leak all internals easily
 - Why do I have `&'a [NodeRef]` instead of `Vec<NodeRef>` again...? That's just more indirection. It does seem to run faster though

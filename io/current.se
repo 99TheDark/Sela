@@ -94,8 +94,8 @@ while while x>5 {}{ func (a:Int)->{
 
 let (mut a, mut b, c) = (9, 9, "TheDark")
 
-// impl['a, T, U: V, W] Foo['a, T, Bar[U]] for Baz[W, T] { ... }
-// impl Quux['life, B] { .. }
+impl['a, T, U: V, W] Foo['a, T, Bar[U]] for Baz[W, T] { ... }
+impl Quux['life, B] { .. }
 
 enum Season {
     Winter
