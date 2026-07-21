@@ -11,7 +11,7 @@
 - Mean -> Median in benchmarks
 - Better expect error msg
     - Better EOF error handling (esp. in `expect`s)
-- Figure out where `clause` syntax and implement that
+- Figure out `where` clause syntax and implement that
 - Fully flesh out the design of `const` decl + `const` blocks + `const` params + etc
 - Implement `idea`/`match`/`break`/`return`/`continue`/char
 - Store line # -> str width in a big table for efficient functions
