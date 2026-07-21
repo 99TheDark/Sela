@@ -3,6 +3,7 @@ pub mod binary;
 pub mod control;
 pub mod functions;
 pub mod groups;
+pub mod items;
 pub mod numbers;
 pub mod properties;
 pub mod ranges;
@@ -83,6 +84,11 @@ where
         *self.tokens.get(self.idx).unwrap_or(&self.eof_token)
     }
 
+    fn peek_next(&mut self) -> Token {
+        self.eat_nls();
+        self.peek()
+    }
+
     fn next(&mut self) -> Token {
         self.eat_nls();
         self.true_next()
@@ -116,8 +122,7 @@ where
     }
 
     fn expect(&mut self, expected: TokenKind, cur_span: Span) -> Result<Token, ast::NodeRef<'ast>> {
-        self.eat_nls();
-        let tok = self.peek();
+        let tok = self.peek_next();
         if !tok.is(expected) {
             hint::cold_path();
             self.diag.emit(
@@ -171,7 +176,7 @@ where
             Plus => self.parse_unop(tok, UnOpKind::Pos),
             Dash => self.parse_unop(tok, UnOpKind::Neg),
             Star => self.parse_unop(tok, UnOpKind::Deref),
-            Amp => self.parse_unop(tok, UnOpKind::Ref),
+            Amp => self.parse_ref(tok),
             Not => self.parse_unop(tok, UnOpKind::Not),
             LParen => self.parse_parens(tok),
             LBrack => self.parse_bracks(tok),
@@ -195,6 +200,9 @@ where
             Mut => self.parse_mut(tok),
             Type => self.parse_type(tok),
             Alias => self.parse_alias(tok),
+            Enum => self.parse_enum(tok),
+            Impl => self.parse_impl(tok),
+            Idea => self.parse_idea(tok),
             True => self.parse_bool(tok, true),
             False => self.parse_bool(tok, false),
             If => self.parse_if(tok),
@@ -209,11 +217,10 @@ where
             Inn => self.parse_vis(tok, VisKind::Inn),
             Pri => self.parse_vis(tok, VisKind::Pri),
             Charm => self.alloc_atom(ast::NodeKind::Charm, tok),
-            EmptyChar => todo!(),
-            UntermChar => self.alloc_atom(ast::NodeKind::UnknownChar, tok),
-            UntermStr => self.alloc_atom(ast::NodeKind::UnknownString, tok),
-            Unknown => self.alloc_atom(ast::NodeKind::Error, tok),
-            // _ => panic!("Illegal or not implemented: {:#?}", tok), // TODO: Rich error messages
+            EmptyChar => self.alloc_atom(ast::NodeKind::UnknownChar, tok),
+            UntermChar => self.alloc_atom(ast::NodeKind::UnknownChar, tok), // TODO: Remove
+            UntermStr => self.alloc_atom(ast::NodeKind::UnknownString, tok), // TODO: Remove
+            Unknown => self.alloc_atom(ast::NodeKind::Unknown, tok),
             _ => self.diag.fail(
                 ErrorKind::Syntax,
                 format!("Invalid Nud {:?}", tok.kind),
@@ -258,8 +265,7 @@ where
     pub fn parse(mut self) -> BumpVec<'ast, ast::NodeRef<'ast>> {
         let mut stmts = BumpVec::new_in(self.arena);
         loop {
-            self.eat_nls();
-            if self.peek().is_eof() {
+            if self.peek_next().is_eof() {
                 hint::cold_path();
                 break;
             }

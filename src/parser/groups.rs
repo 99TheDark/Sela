@@ -2,10 +2,16 @@ use std::hint;
 
 use crate::{
     ast,
+    core::span::Span,
     diagnostics::ErrorKind,
     parser::Parser,
     token::{Token, kind::TokenKind, precedence::Precedence},
 };
+
+pub(super) enum DelimEnclosement {
+    Enclosed,
+    Unenclosed { start: Span },
+}
 
 impl<'tok, 'ast, 'diag, 'src> Parser<'tok, 'ast, 'diag, 'src>
 where
@@ -48,11 +54,11 @@ where
         tok: Token,
         delim: TokenKind,
         end: TokenKind,
+        enclosement: DelimEnclosement,
         constructor: F,
     ) -> ast::NodeRef<'ast> {
         'initial: {
-            self.eat_nls();
-            match self.peek() {
+            match self.peek_next() {
                 first if first.is(end) => {}
                 first if first.is(delim) => {
                     // hint::cold_path(); // Maybe? I mean it's valid syntax, just rare
@@ -100,23 +106,40 @@ where
             }
         }
 
-        let end = self.true_next();
+        let span = match enclosement {
+            DelimEnclosement::Enclosed => tok.span.to(self.true_next().span),
+
+            // Guaranteed to have a last element, otherwise it would have returned early
+            DelimEnclosement::Unenclosed { start } => start.to(elems.last().unwrap().span),
+        };
+
         let elems = self.alloc(elems);
-        self.alloc_node(constructor(&elems), tok.span.to(end.span))
+        self.alloc_node(constructor(&elems), span)
+    }
+
+    #[inline]
+    fn parse_group<F: FnOnce(&'ast [ast::NodeRef<'ast>]) -> ast::NodeKind<'ast>>(
+        &mut self,
+        tok: Token,
+        delim: TokenKind,
+        end: TokenKind,
+        constructor: F,
+    ) -> ast::NodeRef<'ast> {
+        self.parse_delimited(tok, delim, end, DelimEnclosement::Enclosed, constructor)
     }
 
     #[inline]
     pub(super) fn parse_parens(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        self.parse_delimited(tok, TokenKind::Comma, TokenKind::RParen, ast::NodeKind::Parens)
+        self.parse_group(tok, TokenKind::Comma, TokenKind::RParen, ast::NodeKind::Parens)
     }
 
     #[inline]
     pub(super) fn parse_bracks(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        self.parse_delimited(tok, TokenKind::Comma, TokenKind::RBrack, ast::NodeKind::Bracks)
+        self.parse_group(tok, TokenKind::Comma, TokenKind::RBrack, ast::NodeKind::Bracks)
     }
 
     #[inline]
     pub(super) fn parse_block(&mut self, tok: Token) -> ast::NodeRef<'ast> {
-        self.parse_delimited(tok, TokenKind::NewLine, TokenKind::RBrace, ast::NodeKind::Block)
+        self.parse_group(tok, TokenKind::NewLine, TokenKind::RBrace, ast::NodeKind::Block)
     }
 }

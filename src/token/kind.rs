@@ -13,11 +13,13 @@ pub enum TokenKind {
     RadixInt,        //\\ (Radix Integer)
     Float,           //\\ (Floating-Point Number)
     Char,            //\\ (Character)
-    String,          //\\ (String)
-    Annot,           //\\ (Annotation)
-    Eq,              //\\ =
-    Plus,            //\\ +
-    PlusEq,          //\\ +=
+    String,
+    // RawString, // maybe string = any string, raw = no interpolation, pure = no interp or escape?
+    // PureString,
+    Annot,  //\\ (Annotation)
+    Eq,     //\\ =
+    Plus,   //\\ +
+    PlusEq, //\\ +=
     // PlusBar,   //\\ +|
     // PlusBarEq, //\\ +|=
     // PlusPct,   //\\ +%

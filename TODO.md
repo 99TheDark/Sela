@@ -5,11 +5,15 @@
 - Implement all lexer errors
 - Better number errors with less 'the literal' repetition (group like underscores)
 - Swap pure `NodeKind::Error` to use any node with unknowns filling the holes (via {..Default}), but must be inside an `Error` so all of that keeps working
+- Figure out how to handle `io.print("Hello, world)` without printing the same error twice (lexer+parser errors)
+- Decide if enums should have commas between them, and if so update to not use `parse_block`
+- Handle garbage like `impl {}` (maybe just ban same-level blocks?)
 - Mean -> Median in benchmarks
 - Better expect error msg
     - Better EOF error handling (esp. in `expect`s)
-- Fully finish design of const decl + const blocks + const params + etc
-- Implement `impl`/`const`/`idea`/`match`/`enum`/`break`/`return`/`continue`/char
+- Figure out where `clause` syntax and implement that
+- Fully flesh out the design of `const` decl + `const` blocks + `const` params + etc
+- Implement `impl`/`idea`/`match`/`break`/`return`/`continue`/char
 - Store line # -> str width in a big table for efficient functions
 - Remove deref/derefmut in place of something that doesn't leak all internals easily
 - Why do I have `&'a [NodeRef]` instead of `Vec<NodeRef>` again...? That's just more indirection. It does seem to run faster though
@@ -30,8 +34,9 @@
 - Make number parsing more efficient with fast loops for small numbers and such
 
 # Try
-- Maybe try out on-demand lexing/file reading
+- Try out on-demand lexing/file reading
 - Attempt throwing a test warmup file to lex+parse while the project directory is being explored to train the branch predictor
 - Use `std::hint::spin_loop()`
 - Make strings stop being lexed upon new line unless backslash slash + ws before it
-- Maybe unify floats+ints+radix ints in parser
+- Unify floats+ints+radix ints in parser
+- Have `&'a` be two different nodes, not one `Life(..)`

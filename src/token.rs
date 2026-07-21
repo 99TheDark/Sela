@@ -53,6 +53,7 @@ impl Token {
         self.kind == kind && self.kind != TokenKind::EOF
     }
 
+    // Is this really needed as a unique function...?
     #[inline(always)]
     pub fn eof_is(self, kind: TokenKind) -> bool {
         self.kind == kind && self.kind != TokenKind::EOF

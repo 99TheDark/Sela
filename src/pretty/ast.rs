@@ -12,7 +12,8 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
         use crate::ast::NodeKind::*;
         match &self.kind {
             Ident(name) => f.write(format!("Identifier ({})", name)),
-            Annot(name) => f.write(format!("Annotation ({})", name)),
+            Annot(name) => f.write(format!("Annotation ('{})", name)),
+            Life(name, _) => f.write(format!("Lifetime Annotation (&'{})", name)),
             BinOp { .. } => f.write("Binary Operation"),
             KwBinOp { .. } => f.write("Binary Keyword Operation"),
             Comp { .. } => f.write("Comparison"),
@@ -38,6 +39,11 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
             In { .. } => f.write("In"),
             FuncSig { .. } => f.write("Function Signature"),
             Func { .. } => f.write("Function"),
+            Impl { .. } => f.write("Implementation"),
+            ImplTarget { .. } => f.write("Implementation Target"),
+            Idea { .. } => f.write("Idea"),
+            Enum { .. } => f.write("Enumeration"),
+            Relat { .. } => f.write("Type Relationship"),
             Block(e) if e.is_empty() => f.write("Empty Block"),
             Parens(_) => f.write("Parentheses"),
             Bracks(_) => f.write("Brackets"),
@@ -85,6 +91,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
     fn children(&'a self) -> pretty::ChildNodes<'a, B> {
         use ast::NodeKind::*;
         match &self.kind {
+            Life(_, rhs) => pretty::Builder::new().unnamed(*rhs).finish(),
             BinOp { lhs, op, rhs } => pretty::Builder::new()
                 .named("Left-hand Side", *lhs)
                 .named("Operator", op)
@@ -165,6 +172,23 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
                 .named("Signature", *sig)
                 .named("Body", body)
                 .finish(),
+            Impl { decls, target, body } => pretty::Builder::new()
+                .named("Generic Declarations", decls)
+                .named("Target", *target)
+                .named("Body", *body)
+                .finish(),
+            ImplTarget { idea, typ } => {
+                pretty::Builder::new().named("Idea", idea).named("Type", *typ).finish()
+            }
+            Idea { relat, body } => {
+                pretty::Builder::new().named("Relation", *relat).named("Body", *body).finish()
+            }
+            Enum { relat, body } => {
+                pretty::Builder::new().named("Relation", *relat).named("Body", *body).finish()
+            }
+            Relat { child, parents } => {
+                pretty::Builder::new().named("Child", *child).named("Parents", parents).finish()
+            }
             Use { path } => pretty::Builder::new().named("Path", *path).finish(),
             Vis { modif, child } => {
                 pretty::Builder::new().named("Modifier", modif).named("Child", *child).finish()

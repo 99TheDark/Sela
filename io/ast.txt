@@ -363,7 +363,66 @@ List
 │     ├─ Integer (9)
 │     └─ String
 │        └─ Raw String: "\"TheDark\""
-├─ <! Error !>
+├─ Enumeration
+│  ├─ Relation: Identifier (Season)
+│  └─ Body: Block
+│     ├─ Identifier (Winter)
+│     ├─ Identifier (Spring)
+│     ├─ Identifier (Summer)
+│     └─ Identifier (Fall)
+├─ Enumeration
+│  ├─ Relation: Type Relationship
+│  │  ├─ Child: Selection
+│  │  │  ├─ Source: Identifier (Expr)
+│  │  │  └─ Discriminant: Brackets
+│  │  │     └─ Annotation ('a)
+│  │  └─ Parents: List
+│  │     ├─ Identifier (Debug)
+│  │     └─ Identifier (Eq)
+│  └─ Body: Block
+│     ├─ Invocation
+│     │  ├─ Callee: Identifier (Ident)
+│     │  └─ Arguments: Parentheses
+│     │     └─ Lifetime Annotation (&'a)
+│     │        └─ Identifier (String)
+│     ├─ Invocation
+│     │  ├─ Callee: Identifier (Int)
+│     │  └─ Arguments: Parentheses
+│     │     └─ Identifier (Int)
+│     ├─ Invocation
+│     │  ├─ Callee: Identifier (Add)
+│     │  └─ Arguments: Parentheses
+│     │     ├─ Pair
+│     │     │  ├─ Left: Identifier (lhs)
+│     │     │  └─ Right: Lifetime Annotation (&'a)
+│     │     │     └─ Selection
+│     │     │        ├─ Source: Identifier (Expr)
+│     │     │        └─ Discriminant: Brackets
+│     │     │           └─ Annotation ('a)
+│     │     └─ Pair
+│     │        ├─ Left: Identifier (rhs)
+│     │        └─ Right: Lifetime Annotation (&'a)
+│     │           └─ Selection
+│     │              ├─ Source: Identifier (Expr)
+│     │              └─ Discriminant: Brackets
+│     │                 └─ Annotation ('a)
+│     └─ Invocation
+│        ├─ Callee: Identifier (WeirdMut)
+│        └─ Arguments: Parentheses
+│           └─ Lifetime Annotation (&'a)
+│              └─ Mutable
+│                 └─ Unary Operation
+│                    ├─ Operator: Reference (&)
+│                    └─ Right-hand Side: Selection
+│                       ├─ Source: Identifier (Q)
+│                       └─ Discriminant: Brackets
+│                          ├─ Annotation ('rs)
+│                          ├─ Annotation ('tuv)
+│                          ├─ Identifier (W)
+│                          └─ Selection
+│                             ├─ Source: Identifier (XY)
+│                             └─ Discriminant: Brackets
+│                                └─ Annotation ('z)
 ├─ Assignment
 │  ├─ Pattern: Identifier (x)
 │  ├─ Assigner: Assignment (=)
