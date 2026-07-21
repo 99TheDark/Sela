@@ -44,8 +44,8 @@ where
             )
         };
 
-        let lbrace = self.expect(TokenKind::LBrace, tok.span.to(target.span));
-        let body = self.parse_block(tok);
+        let lbrace = self.expect(TokenKind::LBrace, tok.span.to(target.span))?;
+        let body = self.parse_block(lbrace);
 
         self.alloc_node(ast::NodeKind::Impl { decls, target, body }, tok.span.to(body.span))
     }
