@@ -383,7 +383,7 @@ List
 │     ├─ Invocation
 │     │  ├─ Callee: Identifier (Ident)
 │     │  └─ Arguments: Parentheses
-│     │     └─ Lifetime Annotation (&'a)
+│     │     └─ Lifetime-Bound Reference (&'a)
 │     │        └─ Identifier (String)
 │     ├─ Invocation
 │     │  ├─ Callee: Identifier (Int)
@@ -394,14 +394,14 @@ List
 │     │  └─ Arguments: Parentheses
 │     │     ├─ Pair
 │     │     │  ├─ Left: Identifier (lhs)
-│     │     │  └─ Right: Lifetime Annotation (&'a)
+│     │     │  └─ Right: Lifetime-Bound Reference (&'a)
 │     │     │     └─ Selection
 │     │     │        ├─ Source: Identifier (Expr)
 │     │     │        └─ Discriminant: Brackets
 │     │     │           └─ Annotation ('a)
 │     │     └─ Pair
 │     │        ├─ Left: Identifier (rhs)
-│     │        └─ Right: Lifetime Annotation (&'a)
+│     │        └─ Right: Lifetime-Bound Reference (&'a)
 │     │           └─ Selection
 │     │              ├─ Source: Identifier (Expr)
 │     │              └─ Discriminant: Brackets
@@ -409,7 +409,7 @@ List
 │     └─ Invocation
 │        ├─ Callee: Identifier (WeirdMut)
 │        └─ Arguments: Parentheses
-│           └─ Lifetime Annotation (&'a)
+│           └─ Lifetime-Bound Reference (&'a)
 │              └─ Mutable
 │                 └─ Unary Operation
 │                    ├─ Operator: Reference (&)

@@ -13,7 +13,7 @@ impl<'a, B: io::Write> Pretty<'a, B> for ast::Node<'a> {
         match &self.kind {
             Ident(name) => f.write(format!("Identifier ({})", name)),
             Annot(name) => f.write(format!("Annotation ('{})", name)),
-            Life(name, _) => f.write(format!("Lifetime Annotation (&'{})", name)),
+            Life(name, _) => f.write(format!("Lifetime-Bound Reference (&'{})", name)),
             BinOp { .. } => f.write("Binary Operation"),
             KwBinOp { .. } => f.write("Binary Keyword Operation"),
             Comp { .. } => f.write("Comparison"),
